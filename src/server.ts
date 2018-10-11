@@ -1,11 +1,14 @@
 import errorHandler from "errorhandler";
+import { ENVIRONMENT } from "./util/constants";
 
 import app from "./app";
 
 /**
  * Error Handler. Provides full stack - remove for production
  */
-app.use(errorHandler());
+if (ENVIRONMENT !== "production") {
+  app.use(errorHandler());
+}
 
 /**
  * Start Express server.
