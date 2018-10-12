@@ -1,25 +1,25 @@
 import passport from "passport";
 import * as usersService from "../services/users";
 import passportLocal from "passport-local";
-import { default as User } from "../models/User";
+import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
 import bcrypt from "bcrypt";
 
 const LocalStrategy   = passportLocal.Strategy;
 
-passport.serializeUser<any, any>((user, done) => {
+passport.serializeUser<any, any>((user: User, done) => {
     done(undefined, user.id);
 });
 
-passport.deserializeUser((id: number, done) => {
-    /*usersService.fetchUser(id, (err, user) => {
-        done(err, user);
-    });*/
-    const user = usersService.fetchUser(id);
-    if (!user) {
-        throw new HttpError(404, "User doesn't exist");
-    } else {
+passport.deserializeUser(async (id: number, done) => {
+    try {
+        const user = await usersService.fetchUser(id);
+        if (!user) {
+            throw new Error("User doesn't exist");
+        }
         done(undefined, user);
+    } catch (err) {
+        done(err);
     }
 });
 
