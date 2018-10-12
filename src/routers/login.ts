@@ -10,7 +10,7 @@ router.post("/", function(req, res, next) {
     passport.authenticate("local-login", function(err: Error, user: any) {
         if (err) { return next(err); }
         // stop if it fails
-        if (!user) { return res.json({ message: "Invalid Email or Password" }); }
+        if (!user) { return res.status(401).json({ message: "Invalid Email or Password" }); }
 
         req.logIn(user, function(err) {
             // return if does not match
