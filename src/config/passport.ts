@@ -28,7 +28,7 @@ passport.deserializeUser(async (id: number, done) => {
  * Sign in using Email and Password.
  */
 passport.use("local-login", new LocalStrategy({ usernameField: "email", passwordField: "password" }, (email: string, password: string, done) => {
-    usersService.fetchUserByEmail(email.toLowerCase()).then(function(user: any) {
+    usersService.fetchUserByEmail(email.toLowerCase()).then(function(user) {
         if (!user) {
             return done(undefined, false, { message: `Email ${email} not found.` });
         }
@@ -53,7 +53,7 @@ passport.use("local-login", new LocalStrategy({ usernameField: "email", password
             }
         });*/
 
-    });
+    }).catch(done);
 }));
 
 module.exports = passport;
