@@ -22,9 +22,14 @@ export interface User {
   password: string;
   gender: Gender;
   language: Language;
-  activationKey: string;
+  activationKey?: string;
   status: UserStatus;
   accountCreatedTimestamp: Date;
-  resetcode: string;
-  creatorId: number;
+  resetcode?: string;
+  creatorId?: number;
+
+  /**
+   * Optional properties which are not columns
+   */
+  creator?: User;
 }
