@@ -41,7 +41,7 @@ passport.use("local-login", new LocalStrategy({ usernameField: "email", password
         if (isEqual) {
             done(undefined, user);
         } else {
-            done(undefined, false, { message: `Passwords dont match.` });
+            done(undefined, false, { message: `Passwords don't match.` });
         }
     } catch (err) {
         done(err);
