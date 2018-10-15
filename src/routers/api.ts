@@ -1,7 +1,7 @@
 import { Router } from "express";
 import userRouter from "./user";
 import loginRouter from "./login";
-
+import opleidingRouter from "./opleiding";
 
 const router = Router({
   mergeParams: true,
@@ -19,6 +19,7 @@ const router = Router({
 
 router.use("/user", userRouter);
 router.use("/login", loginRouter);
+router.use("/opleidingen", opleidingRouter);
 
 
 export default router;

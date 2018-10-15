@@ -10,6 +10,24 @@ describe("GET /api/user/:id", () => {
 
 });
 
+describe("GET /api/opleidingen/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/opleidingen/10")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/opleidingen", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/opleidingen")
+            .expect(200);
+    });
+
+});
+
 describe("POST /api/login", () => {
 
   it("should return 200 on succesful login", () => {
