@@ -3,7 +3,8 @@ import * as usersService from "../services/users";
 import passportLocal from "passport-local";
 import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
+import { doesNotThrow } from "assert";
 
 const LocalStrategy   = passportLocal.Strategy;
 
@@ -27,34 +28,25 @@ passport.deserializeUser(async (id: number, done) => {
 /**
  * Sign in using Email and Password.
  */
-passport.use("local-login", new LocalStrategy({ usernameField: "email", passwordField: "password" }, (email: string, password: string, done) => {
-    usersService.fetchUserByEmail(email.toLowerCase()).then(function(user) {
+passport.use("local-login", new LocalStrategy({ usernameField: "email", passwordField: "password" }, async (email: string, password: string, done) => {
+    try {
+        const user = await usersService.fetchUserByEmail(email.toLowerCase());
         if (!user) {
-            return done(undefined, false, { message: `Email ${email} not found.` });
+            done(undefined, false, { message: `Email ${email} not found.` });
+            return;
         }
-        console.log(user);
-        console.log(password);
-        if (password === user.password) {
-            console.log("match");
+
+        console.log(password, user.password);
+        const isEqual = await bcrypt.compare(password, user.password);
+        if (isEqual) {
             done(undefined, user);
         } else {
-            console.log("no match");
-            done(undefined, false);
+            done(undefined, false, { message: `Passwords dont match.` });
         }
-/*
-        bcrypt.compare(password, user.password, function(err: Error, res: any) {
-            if (err) { throw (err); }
-            if (res) {
-                console.log("match");
-                done(undefined, user);
-            } else {
-                console.log("unmatch");
-                done(undefined, false);
-            }
-        });*/
-
-    }).catch(done);
+    } catch (err) {
+        done(err);
+    }
 }));
 
-module.exports = passport;
+export default passport;
 
