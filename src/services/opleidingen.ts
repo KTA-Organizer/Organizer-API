@@ -12,7 +12,7 @@ function rowToOpleiding(row: any): Opleiding {
 }
 
 export async function fetchAllOpleidingen()  {
-    const rows = await knex("users")
+    const rows = await knex("opleidingen")
         .select("*")
         .map(rowToOpleiding);
     if (rows.length < 1)
