@@ -18,3 +18,12 @@ export async function fetchUser(id: number)  {
     return;
   return rowToUser(rows[0]);
 }
+
+export async function fetchUserByEmail(email: string)  {
+    const rows = await knex("users")
+        .select("*")
+        .where({ email });
+    if (rows.length < 1)
+        return;
+    return rowToUser(rows[0]);
+}

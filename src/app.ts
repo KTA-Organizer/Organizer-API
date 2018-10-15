@@ -7,6 +7,7 @@ import morgan from "morgan";
 import path from "path";
 import expressValidator from "express-validator";
 import { SESSION_SECRET } from "./util/constants";
+import passport from "passport";
 
 // Router (route handlers)
 import appRouter from "./routers/app";
@@ -29,9 +30,13 @@ app.use(session({
   secret: SESSION_SECRET,
 }));
 
+// passport
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+
 // Security
 app.use(lusca({
-  csrf: true,
+  csrf: false,
   xframe: "SAMEORIGIN",
   hsts: {maxAge: 31536000, includeSubDomains: true, preload: true},
   xssProtection: true,
@@ -40,6 +45,9 @@ app.use(lusca({
 
 // Loging
 app.use(morgan("dev"));
+
+// server secret
+const SERVER_SECRET = "gertjesamson";
 
 // Static files
 app.use(
