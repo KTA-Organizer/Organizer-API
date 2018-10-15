@@ -3,7 +3,7 @@
 
 This API provides all logic on which to build the client.
 
-## [API Docs](API.md)
+## [API Docs](https://ktaorganizer.docs.apiary.io/)
 
 ## Setup
 - `$ npm install`
