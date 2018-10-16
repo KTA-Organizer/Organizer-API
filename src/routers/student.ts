@@ -14,11 +14,11 @@ router.get("/:id", [
     check("id").isNumeric(),
     sanitize("id").toInt()
 ], executor(async function(req, res, matchedData) {
-    const teacher = await studentsService.fetchStudent(matchedData.id);
-    if (!teacher) {
+    const student = await studentsService.fetchStudent(matchedData.id);
+    if (!student) {
         throw new HttpError(404, "Student doesn't exist");
     }
-    return teacher;
+    return student;
 }));
 
 export default router;

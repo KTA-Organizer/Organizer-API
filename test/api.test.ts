@@ -64,6 +64,24 @@ describe("GET /api/doelstellingscategorie", () => {
 
 });
 
+describe("GET /api/doelstellingen/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingen/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/doelstellingen", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingen")
+            .expect(200);
+    });
+
+});
+
 
 describe("GET /api/modules/:id", () => {
 

@@ -2,9 +2,8 @@ import { Router } from "express";
 import { check } from "express-validator/check";
 import { sanitize } from "express-validator/filter";
 import executor from "./executor";
-import * as modulesService from "../services/modules";
+import * as doelstellingenService from "../services/doelstellingen";
 import { HttpError } from "../util/httpStatus";
-
 
 const router = Router({
     mergeParams: true,
@@ -15,19 +14,19 @@ router.get("/:id", [
     check("id").isNumeric(),
     sanitize("id").toInt()
 ], executor(async function(req, res, matchedData) {
-    const module = await modulesService.fetchModule(matchedData.id);
-    if (!module) {
-        throw new HttpError(404, "Module doesn't exist");
+    const doelstelling = await doelstellingenService.fetchDoelstelling(matchedData.id);
+    if (!doelstelling) {
+        throw new HttpError(404, "Doelstelling doesn't exist");
     }
-    return module;
+    return doelstelling;
 }));
 
 router.get("/", executor(async function(req, res) {
-    const modules = await modulesService.fetchAllModules();
-    if (modules.length < 1) {
-        throw new HttpError(404, "Modules not found");
+    const doelstellingen = await doelstellingenService.fetchAllDoelstellingen();
+    if (doelstellingen.length < 1) {
+        throw new HttpError(404, "Doelstellingen not found");
     }
-    return modules;
+    return doelstellingen;
 }));
 
 

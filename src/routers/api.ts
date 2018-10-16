@@ -7,6 +7,7 @@ import meldingRouter from "./melding";
 import moduleRouter from "./module";
 import studentRouter from "./student";
 import doelstellingsCategorieRouter from "./doelstellingscategorie";
+import doelstellingenRouter from "./doelstelling";
 
 const router = Router({
   mergeParams: true,
@@ -30,6 +31,7 @@ router.use("/meldingen", meldingRouter);
 router.use("/modules", moduleRouter);
 router.use("/student", studentRouter);
 router.use("/doelstellingsCategorie", doelstellingsCategorieRouter);
+router.use("/doelstellingen", doelstellingenRouter);
 
 
 export default router;

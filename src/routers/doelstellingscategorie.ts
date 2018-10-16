@@ -14,19 +14,19 @@ router.get("/:id", [
     check("id").isNumeric(),
     sanitize("id").toInt()
 ], executor(async function(req, res, matchedData) {
-    const melding = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(matchedData.id);
-    if (!melding) {
+    const doelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(matchedData.id);
+    if (!doelstellingsCategorie) {
         throw new HttpError(404, "DoelstellingsCategorie doesn't exist");
     }
-    return melding;
+    return doelstellingsCategorie;
 }));
 
 router.get("/", executor(async function(req, res) {
-    const meldingen = await doelstellingsCategoriesService.fetchAllDoelstellingsCategories();
-    if (meldingen.length < 1) {
+    const doelstellingsCategories = await doelstellingsCategoriesService.fetchAllDoelstellingsCategories();
+    if (doelstellingsCategories.length < 1) {
         throw new HttpError(404, "DoelstellingsCategories not found");
     }
-    return meldingen;
+    return doelstellingsCategories;
 }));
 
 
