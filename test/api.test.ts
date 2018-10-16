@@ -46,6 +46,25 @@ describe("GET /api/meldingen", () => {
 
 });
 
+describe("GET /api/doelstellingscategorie/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingscategorie/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/doelstellingscategorie", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingscategorie")
+            .expect(200);
+    });
+
+});
+
+
 describe("GET /api/modules/:id", () => {
 
     it("should return 200 OK", () => {
