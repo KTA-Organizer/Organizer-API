@@ -24,7 +24,7 @@ router.get("/:id", [
 router.get("/", executor(async function(req, res) {
     const opleidingen = await opleidingenService.fetchAllOpleidingen();
     if (opleidingen.length < 1) {
-        throw new HttpError(404, "Opleiding doesn't exist");
+        throw new HttpError(404, "Opleidingen not found");
     }
     return opleidingen;
 }));

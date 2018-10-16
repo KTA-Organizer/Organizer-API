@@ -46,6 +46,24 @@ describe("GET /api/meldingen", () => {
 
 });
 
+describe("GET /api/modules/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/modules/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/modules", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/modules")
+            .expect(200);
+    });
+
+});
+
 describe("GET /api/teacher/:id", () => {
 
     it("should return 200 OK", () => {

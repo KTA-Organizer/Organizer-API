@@ -4,6 +4,7 @@ import loginRouter from "./login";
 import opleidingRouter from "./opleiding";
 import teacherRouter from "./teacher";
 import meldingRouter from "./melding";
+import moduleRouter from "./module";
 
 const router = Router({
   mergeParams: true,
@@ -24,6 +25,7 @@ router.use("/login", loginRouter);
 router.use("/opleidingen", opleidingRouter);
 router.use("/teacher", teacherRouter);
 router.use("/meldingen", meldingRouter);
+router.use("/modules", moduleRouter);
 
 
 export default router;
