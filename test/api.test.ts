@@ -73,6 +73,15 @@ describe("GET /api/teacher/:id", () => {
 
 });
 
+describe("GET /api/student/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/student/6")
+            .expect(200);
+    });
+
+});
+
 describe("POST /api/login", () => {
 
   it("should return 200 on succesful login", () => {
