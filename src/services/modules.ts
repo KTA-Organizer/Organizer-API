@@ -7,10 +7,14 @@ import * as opleidingenService from "../services/opleidingen";
 import * as usersService from "../services/users";
 
 function rowToModule(row: any): Module {
-    if (row.teacher) {
-        row.teacher = teachersService.fetchTeacher(row.teacher);
-        row.user = usersService.fetchUser(row.user);
-        row.opleiding = opleidingenService.fetchOpleiding(row.opleiding);
+    if (row.teacherId) {
+        row.teacher = teachersService.fetchTeacher(row.teacherId);
+    }
+    if (row.creatorId) {
+        row.creator = usersService.fetchUser(row.creatorId);
+    }
+    if (row.opleidingId) {
+        row.opleiding = opleidingenService.fetchOpleiding(row.opleidingId);
     }
     return row as Module;
 }

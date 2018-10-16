@@ -7,15 +7,15 @@ import { Module } from "../models/Module";
 import { OpleidingVolledig } from "../models/OpleidingVolledig";
 
 function rowToOpleiding(row: any): Opleiding {
-  if (row.creator) {
-    row.creator = usersService.fetchUser(row.creator);
+  if (row.creatorId) {
+    row.creator = usersService.fetchUser(row.creatorId);
   }
   return row as Opleiding;
 }
 
 function rowToOpleidingVolledig(opleiding: any) {
-  if (opleiding.creator) {
-    opleiding.creator = usersService.fetchUser(opleiding.creator);
+  if (opleiding.creatorId) {
+    opleiding.creator = usersService.fetchUser(opleiding.creatorId);
   }
   return opleiding as OpleidingVolledig;
 }

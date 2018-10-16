@@ -5,8 +5,8 @@ import { Melding } from "../models/Melding";
 import * as teachersService from "../services/teachers";
 
 function rowToMelding(row: any): Melding {
-    if (row.teacher) {
-        row.teacher = teachersService.fetchTeacher(row.teacher);
+    if (row.teacherId) {
+        row.teacher = teachersService.fetchTeacher(row.teacherId);
     }
     return row as Melding;
 }
