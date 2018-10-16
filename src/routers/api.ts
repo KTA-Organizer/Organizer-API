@@ -3,7 +3,7 @@ import userRouter from "./user";
 import loginRouter from "./login";
 import opleidingRouter from "./opleiding";
 import teacherRouter from "./teacher";
-
+import meldingRouter from "./melding";
 
 const router = Router({
   mergeParams: true,
@@ -23,6 +23,7 @@ router.use("/user", userRouter);
 router.use("/login", loginRouter);
 router.use("/opleidingen", opleidingRouter);
 router.use("/teacher", teacherRouter);
+router.use("/meldingen", meldingRouter);
 
 
 export default router;

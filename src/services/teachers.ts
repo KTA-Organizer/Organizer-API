@@ -1,8 +1,7 @@
 import logger from "../util/logger";
 import getKnexInstance from "./db";
 const knex = getKnexInstance();
-import { Opleiding } from "../models/Opleiding";
-import * as usersService from "../services/users";
+
 
 export async function fetchTeacher(id: number)  {
     const rows = await knex("teachers")
