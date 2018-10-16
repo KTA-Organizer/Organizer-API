@@ -28,6 +28,33 @@ describe("GET /api/opleidingen", () => {
 
 });
 
+describe("GET /api/meldingen/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/meldingen/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/meldingen", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/meldingen")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/teacher/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/teacher/4")
+            .expect(200);
+    });
+
+});
+
 describe("POST /api/login", () => {
 
   it("should return 200 on succesful login", () => {
