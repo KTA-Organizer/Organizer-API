@@ -46,10 +46,74 @@ describe("GET /api/meldingen", () => {
 
 });
 
+describe("GET /api/doelstellingscategorie/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingscategorie/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/doelstellingscategorie", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingscategorie")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/doelstellingen/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingen/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/doelstellingen", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/doelstellingen")
+            .expect(200);
+    });
+
+});
+
+
+describe("GET /api/modules/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/modules/1")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/modules", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/modules")
+            .expect(200);
+    });
+
+});
+
 describe("GET /api/teacher/:id", () => {
 
     it("should return 200 OK", () => {
         return request(app).get("/api/teacher/4")
+            .expect(200);
+    });
+
+});
+
+describe("GET /api/student/:id", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/student/6")
             .expect(200);
     });
 

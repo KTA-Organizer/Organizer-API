@@ -24,7 +24,7 @@ router.get("/:id", [
 router.get("/", executor(async function(req, res) {
     const meldingen = await meldingenService.fetchAllMeldingen();
     if (meldingen.length < 1) {
-        throw new HttpError(404, "Melding doesn't exist");
+        throw new HttpError(404, "Meldingen not found");
     }
     return meldingen;
 }));
