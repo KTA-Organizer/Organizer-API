@@ -18,7 +18,7 @@ router.get("/:id", [
   if (!user) {
     throw new HttpError(404, "User doesn't exist");
   }
-  return await user;
+  return user;
 }));
 
 export default router;

@@ -19,7 +19,7 @@ router.get("/:id", [
     if (!module) {
         throw new HttpError(404, "Module doesn't exist");
     }
-    return await module;
+    return module;
 }));
 
 router.get("/", executor(async function(req, res) {
@@ -27,7 +27,7 @@ router.get("/", executor(async function(req, res) {
     if (modules.length < 1) {
         throw new HttpError(404, "Modules not found");
     }
-    return await modules;
+    return modules;
 }));
 
 

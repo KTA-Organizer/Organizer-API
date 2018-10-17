@@ -45,6 +45,7 @@
     "lusca": "^1.5.2",
     "mongoose": "^4.13.11",
     "morgan": "^1.9.1",
+    "mysql": "^2.16.0",
     "mysql2": "^1.6.1",
     "nodemailer": "^4.4.1",
     "passport": "^0.4.0",

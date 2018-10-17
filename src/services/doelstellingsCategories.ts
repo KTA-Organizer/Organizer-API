@@ -4,31 +4,48 @@ const knex = getKnexInstance();
 import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 import * as usersService from "../services/users";
 import * as modulesService from "../services/modules";
+import { Doelstelling } from "../models/Doelstelling";
+import * as doelstellingService from "../services/doelstellingen";
 
 async function rowToDoelstellingsCategorie(row: any) {
-    if (row.creatorId) {
+    /*if (row.creatorId) {
         row.creator = await usersService.fetchUser(row.creatorId);
     }
     if (row.moduleId) {
         row.module = await modulesService.fetchModule(row.moduleId);
-    }
+    }*/
     return await row as DoelstellingsCategorie;
 }
 
-export async function fetchAllDoelstellingsCategories()  {
-    const rows = await knex("doelstellingscategories")
-        .select("*")
-        .map(rowToDoelstellingsCategorie);
-    if (rows.length < 1)
-        return;
-    return await rows;
+export async function fetchAllDoelstellingsCategories() {
+  const rows = await knex("doelstellingscategories")
+    .select("*")
+    .map(rowToDoelstellingsCategorie);
+  if (rows.length < 1) return;
+  return await rows;
 }
 
-export async function fetchDoelstellingsCategorie(id: number)  {
-    const rows = await knex("doelstellingscategories")
-        .select("*")
-        .where({ id });
-    if (rows.length < 1)
-        return;
-    return await rowToDoelstellingsCategorie(rows[0]);
+export async function fetchDoelstellingsCategorie(id: number) {
+  const rows = await knex("doelstellingscategories")
+    .select("*")
+    .where({ id });
+  if (rows.length < 1) return;
+  return rowToDoelstellingsCategorie(rows[0]);
+}
+
+export async function rowToFullDoelstellingsCategory(rows: any[]) {
+  const doelstellingsCategories = rows as DoelstellingsCategorie[];
+  for (const doelCat of rows) {
+    doelCat.doelstellingen = await doelstellingService.fetchDoelstellingForCategory(
+      doelCat.id
+    );
+  }
+  return rows;
+}
+
+export async function fetchDoelstellingsCategoryForModule(id: number) {
+  const rows = await knex("doelstellingscategories")
+    .select("*")
+    .where({ moduleId: id });
+  return rowToFullDoelstellingsCategory(rows);
 }

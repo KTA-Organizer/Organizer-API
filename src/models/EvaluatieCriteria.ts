@@ -1,5 +1,6 @@
 import { Doelstelling } from "./Doelstelling";
 import { User } from "./User";
+import { Aspect } from "./Aspect";
 
 export interface EvaluatieCriteria {
   id: number;
@@ -14,4 +15,5 @@ export interface EvaluatieCriteria {
    */
   doelstelling?: Doelstelling;
   creator?: User;
+  aspecten?: Aspect[];
 }

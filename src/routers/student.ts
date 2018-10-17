@@ -18,7 +18,7 @@ router.get("/:id", [
     if (!student) {
         throw new HttpError(404, "Student doesn't exist");
     }
-    return await student;
+    return student;
 }));
 
 export default router;

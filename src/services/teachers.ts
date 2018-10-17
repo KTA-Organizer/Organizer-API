@@ -9,7 +9,7 @@ export async function fetchTeacher(id: number)  {
         .where({teacherId: id});
     if (rows.length < 1)
         return;
-    return await rows[0];
+    return rows[0];
 }
 
  // "moet user meegevraagd worden?? teacher heeft zelfde id als de userid dus zou zinloos zijn om hem ook mee te geven in teacher"
