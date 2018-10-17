@@ -14,5 +14,5 @@ export interface Doelstelling {
    */
   doelstellingscategorie?: DoelstellingsCategorie;
   creator?: User;
-  EvaluatieCriteria?: EvaluatieCriteria[];
+  evaluatieCriteria?: EvaluatieCriteria[];
 }
