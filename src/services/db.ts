@@ -13,7 +13,7 @@ export default function getInstance() {
         password: MYSQL_PASSWORD,
         database: MYSQL_DATABASE
       },
-      pool: { min: 2, max: 10 }
+      pool: { min: 2, max: 8 }
     });
   }
   return instance;
