@@ -10,15 +10,12 @@ import * as doelstellingCategoryService from "../services/doelstellingsCategorie
 import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 
 async function rowToModule(row: any) {
-    if (row.teacherId) {
+    /*if (row.teacherId) {
         row.teacher = await teachersService.fetchTeacher(row.teacherId);
     }
     if (row.creatorId) {
         row.creator = await usersService.fetchUser(row.creatorId);
-    }
-    if (row.opleidingId) {
-        row.opleiding = await opleidingenService.fetchOpleiding(row.opleidingId);
-    }
+    }*/
     return row as Module;
 }
 

@@ -8,13 +8,13 @@ import { Doelstelling } from "../models/Doelstelling";
 import * as doelstellingService from "../services/doelstellingen";
 
 async function rowToDoelstellingsCategorie(row: any) {
-  if (row.creatorId) {
-    row.creator = await usersService.fetchUser(row.creatorId);
-  }
-  if (row.moduleId) {
-    row.module = await modulesService.fetchModule(row.moduleId);
-  }
-  return (await row) as DoelstellingsCategorie;
+    /*if (row.creatorId) {
+        row.creator = await usersService.fetchUser(row.creatorId);
+    }
+    if (row.moduleId) {
+        row.module = await modulesService.fetchModule(row.moduleId);
+    }*/
+    return await row as DoelstellingsCategorie;
 }
 
 export async function fetchAllDoelstellingsCategories() {

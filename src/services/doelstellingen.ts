@@ -7,15 +7,10 @@ import * as doelstellingsCategoriesService from "../services/doelstellingsCatego
 import * as evaluatieCriteriaService from "./evaluatieCriteria";
 
 async function rowToDoelstelling(row: any) {
-  if (row.creatorId) {
-    row.creator = await usersService.fetchUser(row.creatorId);
-  }
-  if (row.doelstellingscategorieId) {
-    row.doelstellingscategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(
-      row.doelstellingscategorieId
-    );
-  }
-  return (await row) as Doelstelling;
+    /*if (row.creatorId) {
+        row.creator = await usersService.fetchUser(row.creatorId);
+    }*/
+    return await row as Doelstelling;
 }
 
 export async function fetchAllDoelstellingen() {
