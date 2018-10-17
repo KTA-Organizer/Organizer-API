@@ -13,9 +13,10 @@ async function rowToOpleiding(row: any) {
 }
 
 export async function fetchAllOpleidingen() {
-  const rows = await knex("opleidingen").select("*");
-  const opleidingenPromises = rows.map(rowToOpleiding);
-  return await Promise.all(opleidingenPromises);
+  const rows = (await knex("opleidingen").select("*"))
+  .map(rowToOpleiding);
+  const opleidingenPromises = await Promise.all(rows);
+  return opleidingenPromises;
 }
 
 export async function fetchOpleiding(id: number) {
