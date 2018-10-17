@@ -1,13 +1,31 @@
 import logger from "../util/logger";
 import getKnexInstance from "./db";
 const knex = getKnexInstance();
-import { User } from "../models/User";
+import { User, UserRole } from "../models/User";
+import * as studentenService from "./studenten";
+import * as teachersService from "./teachers";
+import * as adminsService from "./admins";
 
 async function rowToUser(row: any) {
   if (row.accountCreatedTimestamp) {
     row.accountCreatedTimestamp = new Date(row.accountCreatedTimestamp);
   }
-  return await row as User;
+  const user = row as User;
+  user.role = await fetchUserRole(user.id);
+  return user;
+}
+
+export async function fetchUserRole(id: number): Promise<UserRole> {
+  if (await studentenService.fetchStudent(id)) {
+    return UserRole.student;
+  }
+  if (await teachersService.fetchTeacher(id)) {
+    return UserRole.teacher;
+  }
+  if (await adminsService.fetchAdmin(id)) {
+    return UserRole.admin;
+  }
+  return undefined;
 }
 
 export async function fetchUser(id: number)  {

@@ -14,6 +14,12 @@ export enum UserStatus {
   disabled = "DISABLED",
 }
 
+export enum UserRole {
+  student = "STUDENT",
+  teacher = "TEACHER",
+  admin = "ADMIN"
+}
+
 export interface User {
   id: number;
   email: string;
@@ -32,4 +38,5 @@ export interface User {
    * Optional properties which are not columns
    */
   creator?: User;
+  role?: UserRole;
 }
