@@ -6,17 +6,17 @@ import * as teachersService from "../services/teachers";
 import * as opleidingenService from "../services/opleidingen";
 import * as usersService from "../services/users";
 
-function rowToModule(row: any): Module {
+async function rowToModule(row: any) {
     if (row.teacherId) {
-        row.teacher = teachersService.fetchTeacher(row.teacherId);
+        row.teacher = await teachersService.fetchTeacher(row.teacherId);
     }
     if (row.creatorId) {
-        row.creator = usersService.fetchUser(row.creatorId);
+        row.creator = await usersService.fetchUser(row.creatorId);
     }
     if (row.opleidingId) {
-        row.opleiding = opleidingenService.fetchOpleiding(row.opleidingId);
+        row.opleiding = await opleidingenService.fetchOpleiding(row.opleidingId);
     }
-    return row as Module;
+    return await row as Module;
 }
 
 export async function fetchAllModules()  {
@@ -34,5 +34,5 @@ export async function fetchModule(id: number)  {
         .where({ id });
     if (rows.length < 1)
         return;
-    return rowToModule(rows[0]);
+    return await rowToModule(rows[0]);
 }

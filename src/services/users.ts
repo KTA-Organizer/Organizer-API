@@ -3,11 +3,11 @@ import getKnexInstance from "./db";
 const knex = getKnexInstance();
 import { User } from "../models/User";
 
-function rowToUser(row: any): User {
+async function rowToUser(row: any) {
   if (row.accountCreatedTimestamp) {
     row.accountCreatedTimestamp = new Date(row.accountCreatedTimestamp);
   }
-  return row as User;
+  return await row as User;
 }
 
 export async function fetchUser(id: number)  {
@@ -16,7 +16,7 @@ export async function fetchUser(id: number)  {
     .where({ id });
   if (rows.length < 1)
     return;
-  return rowToUser(rows[0]);
+  return await rowToUser(rows[0]);
 }
 
 export async function fetchUserByEmail(email: string)  {
@@ -25,5 +25,5 @@ export async function fetchUserByEmail(email: string)  {
         .where({ email });
     if (rows.length < 1)
         return;
-    return rowToUser(rows[0]);
+    return await rowToUser(rows[0]);
 }

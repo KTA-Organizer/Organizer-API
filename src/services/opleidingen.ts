@@ -13,11 +13,11 @@ function rowToOpleiding(row: any): Opleiding {
   return row as Opleiding;
 }
 
-function rowToOpleidingVolledig(opleiding: any) {
+async function rowToOpleidingVolledig(opleiding: any) {
   if (opleiding.creatorId) {
-    opleiding.creator = usersService.fetchUser(opleiding.creatorId);
+    opleiding.creator = await usersService.fetchUser(opleiding.creatorId);
   }
-  return opleiding as OpleidingVolledig;
+  return await opleiding as OpleidingVolledig;
 }
 
 export async function fetchAllOpleidingen() {
@@ -25,7 +25,7 @@ export async function fetchAllOpleidingen() {
     .select("*")
     .map(rowToOpleiding);
   if (rows.length < 1) return;
-  return rows;
+  return await rows;
 }
 
 export async function fetchOpleiding(id: number) {
@@ -34,3 +34,5 @@ export async function fetchOpleiding(id: number) {
   const modules = (await knex("modules").where("opleidingId", id));
   return new OpleidingVolledig(opleiding_rows[0], modules);
 }
+
+

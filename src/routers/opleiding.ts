@@ -18,7 +18,7 @@ router.get("/:id", [
     if (!opleiding) {
         throw new HttpError(404, "Opleiding doesn't exist");
     }
-    return opleiding;
+    return await opleiding;
 }));
 
 router.get("/", executor(async function(req, res) {
@@ -26,7 +26,7 @@ router.get("/", executor(async function(req, res) {
     if (opleidingen.length < 1) {
         throw new HttpError(404, "Opleidingen not found");
     }
-    return opleidingen;
+    return await opleidingen;
 }));
 
 

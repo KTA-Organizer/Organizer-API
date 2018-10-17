@@ -18,7 +18,7 @@ router.get("/:id", [
     if (!doelstelling) {
         throw new HttpError(404, "Doelstelling doesn't exist");
     }
-    return doelstelling;
+    return await doelstelling;
 }));
 
 router.get("/", executor(async function(req, res) {
@@ -26,7 +26,7 @@ router.get("/", executor(async function(req, res) {
     if (doelstellingen.length < 1) {
         throw new HttpError(404, "Doelstellingen not found");
     }
-    return doelstellingen;
+    return await doelstellingen;
 }));
 
 

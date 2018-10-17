@@ -18,7 +18,7 @@ router.get("/:id", [
     if (!melding) {
         throw new HttpError(404, "Melding doesn't exist");
     }
-    return melding;
+    return await melding;
 }));
 
 router.get("/", executor(async function(req, res) {
@@ -26,7 +26,7 @@ router.get("/", executor(async function(req, res) {
     if (meldingen.length < 1) {
         throw new HttpError(404, "Meldingen not found");
     }
-    return meldingen;
+    return await meldingen;
 }));
 
 

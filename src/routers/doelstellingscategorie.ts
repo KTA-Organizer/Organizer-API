@@ -18,7 +18,7 @@ router.get("/:id", [
     if (!doelstellingsCategorie) {
         throw new HttpError(404, "DoelstellingsCategorie doesn't exist");
     }
-    return doelstellingsCategorie;
+    return await doelstellingsCategorie;
 }));
 
 router.get("/", executor(async function(req, res) {
@@ -26,7 +26,7 @@ router.get("/", executor(async function(req, res) {
     if (doelstellingsCategories.length < 1) {
         throw new HttpError(404, "DoelstellingsCategories not found");
     }
-    return doelstellingsCategories;
+    return await doelstellingsCategories;
 }));
 
 

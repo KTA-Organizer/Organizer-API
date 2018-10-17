@@ -9,5 +9,5 @@ export async function fetchStudent(id: number)  {
         .where({studentId: id});
     if (rows.length < 1)
         return;
-    return rows[0];
+    return await rows[0];
 }
