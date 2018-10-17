@@ -31,7 +31,6 @@ export async function fetchAllOpleidingen() {
 export async function fetchOpleiding(id: number) {
   const opleiding_rows = await knex("opleidingen").where("id", id);
   if (opleiding_rows.length < 1) return;
-  opleiding_rows.modules = await knex("modules").where("opleidingId", id) as Module[];
-  console.log(rowToOpleidingVolledig(opleiding_rows));
-  return new OpleidingVolledig(opleiding_rows as Opleiding, opleiding_rows as Module[]);
+  const modules = (await knex("modules").where("opleidingId", id));
+  return new OpleidingVolledig(opleiding_rows[0], modules);
 }

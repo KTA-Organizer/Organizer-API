@@ -6,8 +6,8 @@ export class OpleidingVolledig {
   opleiding: Opleiding;
   modules: Module[];
 
-  constructor(opleiding: Opleiding, modules: Module[]) {
+  constructor(opleiding: Opleiding, modules: any[]) {
     this.opleiding = opleiding;
-    this.modules = modules;
+    this.modules = modules as Module[];
   }
 }
