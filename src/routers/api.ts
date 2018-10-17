@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userRouter from "./user";
-import loginRouter from "./login";
+import authRouter from "./auth";
 import opleidingRouter from "./opleiding";
 import teacherRouter from "./teacher";
 import meldingRouter from "./melding";
@@ -24,7 +24,7 @@ const router = Router({
 // });
 
 router.use("/user", userRouter);
-router.use("/login", loginRouter);
+router.use("/auth", authRouter);
 router.use("/opleidingen", opleidingRouter);
 router.use("/teacher", teacherRouter);
 router.use("/meldingen", meldingRouter);
