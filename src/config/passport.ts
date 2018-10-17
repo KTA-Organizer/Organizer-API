@@ -11,7 +11,6 @@ passport.serializeUser<User, number>((user, done) => {
 passport.deserializeUser<User, number>(async (id, done) => {
     try {
         const user = await usersService.fetchUser(id);
-        console.log(user);
         done(undefined, user);
     } catch (err) {
         done(err);
