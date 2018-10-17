@@ -6,12 +6,9 @@ import * as usersService from "../services/users";
 import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 
 async function rowToDoelstelling(row: any) {
-    if (row.creatorId) {
+    /*if (row.creatorId) {
         row.creator = await usersService.fetchUser(row.creatorId);
-    }
-    if (row.doelstellingscategorieId) {
-        row.doelstellingscategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(row.doelstellingscategorieId);
-    }
+    }*/
     return await row as Doelstelling;
 }
 

@@ -6,12 +6,12 @@ import * as usersService from "../services/users";
 import * as modulesService from "../services/modules";
 
 async function rowToDoelstellingsCategorie(row: any) {
-    if (row.creatorId) {
+    /*if (row.creatorId) {
         row.creator = await usersService.fetchUser(row.creatorId);
     }
     if (row.moduleId) {
         row.module = await modulesService.fetchModule(row.moduleId);
-    }
+    }*/
     return await row as DoelstellingsCategorie;
 }
 
