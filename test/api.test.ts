@@ -28,6 +28,15 @@ describe("GET /api/opleidingen", () => {
 
 });
 
+describe("GET /api/opleidingen/:id/full", () => {
+
+    it("should return 200 OK", () => {
+        return request(app).get("/api/opleidingen/1/full")
+            .expect(200);
+    });
+
+});
+
 describe("GET /api/meldingen/:id", () => {
 
     it("should return 200 OK", () => {
