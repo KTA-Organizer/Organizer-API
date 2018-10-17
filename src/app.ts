@@ -8,6 +8,7 @@ import path from "path";
 import expressValidator from "express-validator";
 import { SESSION_SECRET } from "./util/constants";
 import passport from "passport";
+import cors from "cors";
 
 // Router (route handlers)
 import appRouter from "./routers/app";
@@ -29,12 +30,13 @@ app.use(session({
   saveUninitialized: true,
   secret: SESSION_SECRET,
 }));
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:8081");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
+app.use(cors({
+  credentials: true,
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
+  origin: function (origin, callback) {
+    callback(undefined, true);
+  }
+}));
 // passport
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
