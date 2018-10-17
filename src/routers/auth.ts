@@ -2,6 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator/check";
 import executor from "./executor";
 import passport from "../config/passport";
+import { usersOnly } from "../services/permissionMiddleware";
 
 
 const router = Router({
@@ -17,7 +18,7 @@ router.post("/login", [
     return req.user;
 }));
 
-router.post("/logout", (req, res) => {
+router.post("/logout", usersOnly, (req, res) => {
     req.logout();
     req.session.destroy(() => {});
     res.status(200).send();

@@ -4,7 +4,7 @@ import httpStatus, { HttpError } from "../util/httpStatus";
 import { matchedData } from "express-validator/filter";
 import logger from "../util/logger";
 
-function errorResponse(error: HttpError, res: Response) {
+export function errorResponse(error: HttpError, res: Response) {
   const data = {
     status: "error",
     message: error.message
