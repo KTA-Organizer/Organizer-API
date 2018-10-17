@@ -1,23 +1,17 @@
 import passport from "passport";
 import * as usersService from "../services/users";
-import passportLocal from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
 import * as bcrypt from "bcrypt";
-import { doesNotThrow } from "assert";
 
-const LocalStrategy   = passportLocal.Strategy;
-
-passport.serializeUser<any, any>((user: User, done) => {
+passport.serializeUser<User, number>((user, done) => {
     done(undefined, user.id);
 });
-
-passport.deserializeUser(async (id: number, done) => {
+passport.deserializeUser<User, number>(async (id, done) => {
     try {
         const user = await usersService.fetchUser(id);
-        if (!user) {
-            throw new Error("User doesn't exist");
-        }
+        console.log(user);
         done(undefined, user);
     } catch (err) {
         done(err);
@@ -28,7 +22,13 @@ passport.deserializeUser(async (id: number, done) => {
 /**
  * Sign in using Email and Password.
  */
-passport.use("local-login", new LocalStrategy({ usernameField: "email", passwordField: "password" }, async (email: string, password: string, done) => {
+const strategyOptions = {
+    usernameField: "email",
+    passwordField: "password",
+};
+passport.use("local-login", new LocalStrategy(strategyOptions, login));
+
+async function login(email: string, password: string, done: any) {
     try {
         const user = await usersService.fetchUserByEmail(email.toLowerCase());
         if (!user) {
@@ -36,7 +36,6 @@ passport.use("local-login", new LocalStrategy({ usernameField: "email", password
             return;
         }
 
-        console.log(password, user.password);
         const isEqual = await bcrypt.compare(password, user.password);
         if (isEqual) {
             done(undefined, user);
@@ -46,7 +45,7 @@ passport.use("local-login", new LocalStrategy({ usernameField: "email", password
     } catch (err) {
         done(err);
     }
-}));
+}
 
 export default passport;
 
