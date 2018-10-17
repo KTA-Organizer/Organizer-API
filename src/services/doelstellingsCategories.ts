@@ -5,14 +5,14 @@ import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 import * as usersService from "../services/users";
 import * as modulesService from "../services/modules";
 
-function rowToDoelstellingsCategorie(row: any): DoelstellingsCategorie {
+async function rowToDoelstellingsCategorie(row: any) {
     if (row.creatorId) {
-        row.creator = usersService.fetchUser(row.creatorId);
+        row.creator = await usersService.fetchUser(row.creatorId);
     }
     if (row.moduleId) {
-        row.module = modulesService.fetchModule(row.moduleId);
+        row.module = await modulesService.fetchModule(row.moduleId);
     }
-    return row as DoelstellingsCategorie;
+    return await row as DoelstellingsCategorie;
 }
 
 export async function fetchAllDoelstellingsCategories()  {
@@ -21,7 +21,7 @@ export async function fetchAllDoelstellingsCategories()  {
         .map(rowToDoelstellingsCategorie);
     if (rows.length < 1)
         return;
-    return rows;
+    return await rows;
 }
 
 export async function fetchDoelstellingsCategorie(id: number)  {
@@ -37,5 +37,5 @@ export async function fetchDoelstellingsCategoryForModule(id: number) {
     const rows = await knex("doelstellingscategories")
     .select("*")
     .where({"moduleId": id});
-    return await rows as DoelstellingsCategorie[];
+    return rows as DoelstellingsCategorie[];
 }

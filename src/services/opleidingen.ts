@@ -36,3 +36,5 @@ export async function fetchFullOpleiding(id: number) {
   if (opleiding_rows.length < 1) return;
   return await rowToFullOpleiding(opleiding_rows[0]);
 }
+
+

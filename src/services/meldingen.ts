@@ -4,11 +4,11 @@ const knex = getKnexInstance();
 import { Melding } from "../models/Melding";
 import * as teachersService from "../services/teachers";
 
-function rowToMelding(row: any): Melding {
+async function rowToMelding(row: any) {
     if (row.teacherId) {
-        row.teacher = teachersService.fetchTeacher(row.teacherId);
+        row.teacher = await teachersService.fetchTeacher(row.teacherId);
     }
-    return row as Melding;
+    return await row as Melding;
 }
 
 export async function fetchAllMeldingen()  {
@@ -17,7 +17,7 @@ export async function fetchAllMeldingen()  {
         .map(rowToMelding);
     if (rows.length < 1)
         return;
-    return rows;
+    return await rows;
 }
 
 export async function fetchMelding(id: number)  {
@@ -26,6 +26,6 @@ export async function fetchMelding(id: number)  {
         .where({ id });
     if (rows.length < 1)
         return;
-    return rowToMelding(rows[0]);
+    return await rowToMelding(rows[0]);
 }
 

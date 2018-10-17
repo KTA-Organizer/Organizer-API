@@ -5,14 +5,14 @@ import { Doelstelling } from "../models/Doelstelling";
 import * as usersService from "../services/users";
 import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 
-function rowToDoelstelling(row: any): Doelstelling {
+async function rowToDoelstelling(row: any) {
     if (row.creatorId) {
-        row.creator = usersService.fetchUser(row.creatorId);
+        row.creator = await usersService.fetchUser(row.creatorId);
     }
     if (row.doelstellingscategorieId) {
-        row.doelstellingscategorie = doelstellingsCategoriesService.fetchDoelstellingsCategorie(row.doelstellingscategorieId);
+        row.doelstellingscategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(row.doelstellingscategorieId);
     }
-    return row as Doelstelling;
+    return await row as Doelstelling;
 }
 
 export async function fetchAllDoelstellingen()  {
@@ -21,7 +21,7 @@ export async function fetchAllDoelstellingen()  {
         .map(rowToDoelstelling);
     if (rows.length < 1)
         return;
-    return rows;
+    return await rows;
 }
 
 export async function fetchDoelstelling (id: number)  {
@@ -30,5 +30,5 @@ export async function fetchDoelstelling (id: number)  {
         .where({ id });
     if (rows.length < 1)
         return;
-    return rowToDoelstelling(rows[0]);
+    return await rowToDoelstelling(rows[0]);
 }

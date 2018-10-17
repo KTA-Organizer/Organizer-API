@@ -9,17 +9,17 @@ import * as doelstellingService from "../services/doelstellingen";
 import * as doelstellingCategoryService from "../services/doelstellingsCategories";
 import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 
-function rowToModule(row: any): Module {
-  if (row.teacherId) {
-    row.teacher = teachersService.fetchTeacher(row.teacherId);
-  }
-  if (row.creatorId) {
-    row.creator = usersService.fetchUser(row.creatorId);
-  }
-  if (row.opleidingId) {
-    row.opleiding = opleidingenService.fetchOpleiding(row.opleidingId);
-  }
-  return row as Module;
+async function rowToModule(row: any) {
+    if (row.teacherId) {
+        row.teacher = await teachersService.fetchTeacher(row.teacherId);
+    }
+    if (row.creatorId) {
+        row.creator = await usersService.fetchUser(row.creatorId);
+    }
+    if (row.opleidingId) {
+        row.opleiding = await opleidingenService.fetchOpleiding(row.opleidingId);
+    }
+    return row as Module;
 }
 
 export async function fetchAllModules() {
@@ -42,7 +42,7 @@ async function rowToModules(rows: Module[]) {
   for (const mod of rows) {
     mod.doelstellingCategories = await doelstellingCategoryService.fetchDoelstellingsCategoryForModule(mod.id) as DoelstellingsCategorie[];
   }
-  return await rows as Module[];
+  return rows as Module[];
 }
 
 export async function fetchModulesForOpleiding(id: number) {
