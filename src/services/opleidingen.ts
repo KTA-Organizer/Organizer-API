@@ -3,34 +3,35 @@ import getKnexInstance from "./db";
 const knex = getKnexInstance();
 import { Opleiding } from "../models/Opleiding";
 import * as usersService from "../services/users";
-import { Module } from "../models/Module";
-import { OpleidingVolledig } from "../models/OpleidingVolledig";
+import * as moduleService from "../services/modules";
 
-function rowToOpleiding(row: any): Opleiding {
+async function rowToOpleiding(row: any) {
   if (row.creatorId) {
-    row.creator = usersService.fetchUser(row.creatorId);
+    row.creator = await usersService.fetchUser(row.creatorId);
   }
   return row as Opleiding;
 }
 
-function rowToOpleidingVolledig(opleiding: any) {
-  if (opleiding.creatorId) {
-    opleiding.creator = usersService.fetchUser(opleiding.creatorId);
-  }
-  return opleiding as OpleidingVolledig;
-}
-
 export async function fetchAllOpleidingen() {
-  const rows = await knex("opleidingen")
-    .select("*")
-    .map(rowToOpleiding);
-  if (rows.length < 1) return;
-  return rows;
+  const rows = await knex("opleidingen").select("*");
+  const opleidingenPromises = rows.map(rowToOpleiding);
+  return await Promise.all(opleidingenPromises);
 }
 
 export async function fetchOpleiding(id: number) {
   const opleiding_rows = await knex("opleidingen").where("id", id);
   if (opleiding_rows.length < 1) return;
-  const modules = (await knex("modules").where("opleidingId", id));
-  return new OpleidingVolledig(opleiding_rows[0], modules);
+  return await rowToOpleiding(opleiding_rows[0]);
+}
+
+async function rowToFullOpleiding(row: Opleiding) {
+  const opleiding: Opleiding = await rowToOpleiding(row);
+  opleiding.modules = await moduleService.fetchModulesForOpleiding(row.id);
+  return row;
+}
+
+export async function fetchFullOpleiding(id: number) {
+  const opleiding_rows = await knex("opleidingen").where("id", id);
+  if (opleiding_rows.length < 1) return;
+  return await rowToFullOpleiding(opleiding_rows[0]);
 }

@@ -11,3 +11,7 @@ export class OpleidingVolledig {
     this.modules = modules as Module[];
   }
 }
+
+export interface OpleidingVolledig extends Opleiding {
+    modules: Module[];
+}

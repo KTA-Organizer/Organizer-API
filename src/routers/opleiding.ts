@@ -6,28 +6,46 @@ import * as opleidingenService from "../services/opleidingen";
 import { HttpError } from "../util/httpStatus";
 
 const router = Router({
-    mergeParams: true,
-    strict: true
+  mergeParams: true,
+  strict: true
 });
 
-router.get("/:id", [
-    check("id").isNumeric(),
-    sanitize("id").toInt()
-], executor(async function(req, res, matchedData) {
+router.get(
+  "/:id",
+  [check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, res, matchedData) {
     const opleiding = await opleidingenService.fetchOpleiding(matchedData.id);
     if (!opleiding) {
-        throw new HttpError(404, "Opleiding doesn't exist");
+      throw new HttpError(404, "Opleiding doesn't exist");
     }
     return opleiding;
-}));
+  })
+);
 
-router.get("/", executor(async function(req, res) {
-    const opleidingen = await opleidingenService.fetchAllOpleidingen();
-    if (opleidingen.length < 1) {
-        throw new HttpError(404, "Opleidingen not found");
+router.get(
+  "/:id/full",
+  [check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, res, matchedData) {
+    const opleiding = await opleidingenService.fetchFullOpleiding(
+      matchedData.id
+    );
+    if (!opleiding) {
+      throw new HttpError(404, "Opleiding doesn't exist");
     }
-    return opleidingen;
-}));
+    return opleiding;
+  })
+);
 
+router.get(
+  "/",
+  executor(async function(req, res) {
+      const opleidingen = await opleidingenService.fetchAllOpleidingen();
+      console.log(opleidingen);
+      if (opleidingen.length < 1) {
+        throw new HttpError(404, "Opleidingen not found");
+      }
+      return opleidingen;
+  })
+);
 
 export default router;

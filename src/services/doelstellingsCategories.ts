@@ -32,3 +32,10 @@ export async function fetchDoelstellingsCategorie(id: number)  {
         return;
     return rowToDoelstellingsCategorie(rows[0]);
 }
+
+export async function fetchDoelstellingsCategoryForModule(id: number) {
+    const rows = await knex("doelstellingscategories")
+    .select("*")
+    .where({"moduleId": id});
+    return await rows as DoelstellingsCategorie[];
+}
