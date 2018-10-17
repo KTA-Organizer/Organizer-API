@@ -23,8 +23,8 @@ const router = Router({
 //   }
 // });
 
-router.use("/user", userRouter);
 router.use("/auth", authRouter);
+router.use("/user", userRouter);
 router.use("/opleidingen", opleidingRouter);
 router.use("/teacher", teacherRouter);
 router.use("/meldingen", meldingRouter);

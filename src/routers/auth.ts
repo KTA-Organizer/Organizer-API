@@ -2,7 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator/check";
 import executor from "./executor";
 import passport from "../config/passport";
-import { usersOnly } from "../services/permissionMiddleware";
+import { usersOnly } from "../util/accessMiddleware";
 
 
 const router = Router({

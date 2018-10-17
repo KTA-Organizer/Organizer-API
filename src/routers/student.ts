@@ -4,11 +4,14 @@ import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as studentsService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
+import { usersOnly } from "../util/accessMiddleware";
 
 const router = Router({
     mergeParams: true,
     strict: true
 });
+
+router.use(usersOnly);
 
 router.get("/:id", [
     check("id").isNumeric(),
