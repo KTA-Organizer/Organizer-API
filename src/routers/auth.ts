@@ -17,5 +17,10 @@ router.post("/login", [
     return req.user;
 }));
 
+router.post("/logout", (req, res) => {
+    req.logout();
+    req.session.destroy(() => {});
+    res.status(200).send();
+});
 
 export default router;
