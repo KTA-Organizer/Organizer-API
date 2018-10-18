@@ -33,5 +33,15 @@ router.get("/", executor(async function(req, res) {
     return modules;
 }));
 
+router.get("/:id/student", [
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function(req, res, matchedData) {
+    const module = await modulesService.fetchModulesForStudent(matchedData.id);
+    if (!module) {
+        throw new HttpError(404, "Module doesn't exist");
+    }
+    return module;
+}));
 
 export default router;
