@@ -10,13 +10,13 @@ import * as doelstellingCategoryService from "../services/doelstellingsCategorie
 import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 
 async function rowToModule(row: any) {
-    /*if (row.teacherId) {
+  /*if (row.teacherId) {
         row.teacher = await teachersService.fetchTeacher(row.teacherId);
     }
     if (row.creatorId) {
         row.creator = await usersService.fetchUser(row.creatorId);
     }*/
-    return row as Module;
+  return row as Module;
 }
 
 export async function fetchAllModules() {
@@ -37,7 +37,9 @@ export async function fetchModule(id: number) {
 
 async function rowToModules(rows: Module[]) {
   for (const mod of rows) {
-    mod.doelstellingCategories = await doelstellingCategoryService.fetchDoelstellingsCategoryForModule(mod.id) as DoelstellingsCategorie[];
+    mod.doelstellingCategories = (await doelstellingCategoryService.fetchDoelstellingsCategoryForModule(
+      mod.id
+    )) as DoelstellingsCategorie[];
   }
   return rows as Module[];
 }
@@ -47,4 +49,15 @@ export async function fetchModulesForOpleiding(id: number) {
     .select("*")
     .where({ opleidingId: id });
   return await rowToModules(rows as Module[]);
+}
+
+export async function fetchModulesForStudent(studId: number) {
+  const rows = await knex("studenten_modules")
+    .select("moduleId")
+    .where({ studentId: studId });
+  const module_ids = rows.map((x: any) => x.moduleId);
+  const modules = await knex("modules")
+    .select("*")
+    .whereIn("id", module_ids);
+  return modules as Module[];
 }

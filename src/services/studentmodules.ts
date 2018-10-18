@@ -24,9 +24,10 @@ export async function fetchStudentModulesWithStudentId(id: number) {
         .select("*")
         .where({ studentId: id })
         // tslint:disable
-        .whereNot("opleidingId",null);
+        .whereNot("opleidingId",null)
+        .map(rowToStudentModule);
     if (rows.length < 1) return;
-    return await rows[0];
+    return rows[0];
 }
 
 export async function insertStudentModule(data: {studentId: number, moduleId: number, opleidingId: number}) {
