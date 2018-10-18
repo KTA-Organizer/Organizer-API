@@ -138,6 +138,30 @@ describe("Meldingen API", () => {
   });
 });
 
+describe("Evaluaties API", () => {
+    const agent = request.agent(app);
+
+    beforeAll(authWithTest(agent));
+
+    describe("GET /api/evaluaties/:id", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/evaluaties/1")
+                .expect(200);
+        });
+
+    });
+
+    describe("GET /api/evaluaties", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/evaluaties")
+                .expect(200);
+        });
+
+    });
+});
+
 describe("Doelstellings Categorie API", () => {
   const agent = request.agent(app);
 
