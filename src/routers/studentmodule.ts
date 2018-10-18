@@ -6,23 +6,33 @@ import * as studentmodulesService from "../services/studentmodules";
 import { HttpError } from "../util/httpStatus";
 import { usersOnly } from "../util/accessMiddleware";
 
-
 const router = Router({
-    mergeParams: true,
-    strict: true
+  mergeParams: true,
+  strict: true
 });
 
 router.use(usersOnly);
 
-router.get("/", executor(async function(req, res) {
+router.get(
+  "/",
+  executor(async function(req, res) {
     const studentmodules = await studentmodulesService.fetchAllStudentModules();
     if (studentmodules.length < 1) {
-        throw new HttpError(404, "StudentModules not found");
+      throw new HttpError(404, "StudentModules not found");
     }
     return studentmodules;
-}));
+  })
+);
 
-
-
+router.get(
+  "/:id",
+  [check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, res, matchedData) {
+    const modules = await studentmodulesService.fetchStudentModulesWithStudentId(
+      matchedData.id
+    );
+    return modules;
+  })
+);
 
 export default router;
