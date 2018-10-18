@@ -11,3 +11,17 @@ export async function fetchStudent(id: number)  {
         return;
     return rows[0];
 }
+
+export async function fetchAllStudents()  {
+    const studentIds = await knex("studenten")
+        .select("studentId")
+        .map(dataPacket => dataPacket.studentId);
+
+    const rows = await knex("users")
+        .select("*")
+        .whereIn("id", studentIds);
+    if (rows.length < 1)
+        return;
+    return rows;
+}
+
