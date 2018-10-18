@@ -35,10 +35,13 @@ router.get("/", executor(async function(req, res) {
 router.post("/", async function(req, res) {
     const meldingId = await meldingenService.insertMelding(req.body);
     if (!meldingId) {
-        throw new HttpError(404, "Unable to add Melding, data is missing or incorrect");
+        res.status(404)
+            .send("Unable to add Melding, data is missing or incorrect");
+        return;
     }
-    res.location("/meldingen/" + meldingId);
-    res.sendStatus(201);
+    res.location("/meldingen/" + meldingId)
+        .sendStatus(201);
+    return;
 });
 
 

@@ -3,6 +3,13 @@ import { HttpError } from "../util/httpStatus";
 import { User, UserRole } from "../models/User";
 import { errorResponse } from "../routers/executor";
 
+export function unauthenticatedOnly(req: Request, res: Response, next: NextFunction) {
+  if (req.user) {
+    errorResponse(new HttpError(403, "Please logout first"), res);
+  } else {
+    next();
+  }
+}
 export function usersOnly(req: Request, res: Response, next: NextFunction) {
   if (req.user) {
     next();
@@ -17,7 +24,7 @@ const roleFilterMiddlewareFactory = (requiredRole: UserRole) => (req: Request, r
     if (user.role === requiredRole) {
       next();
     } else {
-      errorResponse(new HttpError(401, `Only users of role: ${requiredRole} are allowed`), res);
+      errorResponse(new HttpError(403, `Only users of role: ${requiredRole} are allowed`), res);
     }
   });
 };

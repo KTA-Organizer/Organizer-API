@@ -23,7 +23,8 @@ export async function fetchStudentModulesWithStudentId(id: number) {
     const rows = await knex("studenten_modules")
         .select("*")
         .where({ studentId: id })
-        .whereNot("opleidingId", null);
+        // tslint:disable
+        .whereNot("opleidingId",null);
     if (rows.length < 1) return;
     return await rows[0];
 }

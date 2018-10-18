@@ -1,8 +1,10 @@
 import request from "supertest";
 import app from "../src/app";
 
+jest.setTimeout(30000);
+
 const TEST_LOGIN_DATA = {
-  email: "test@test.be",
+  email: "student1@hotmail.com",
   password: "test"
 };
 
@@ -10,6 +12,11 @@ const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
   teacherId: 4
+};
+
+const TEST_MELDING_DATA_FAILED = {
+    tekst: "Test Text",
+    titel: "Test"
 };
 
 const authWithTest = (agent) => () => {
@@ -28,24 +35,24 @@ describe("Authentication API", () => {
       .expect(200);
     });
 
-    it("should return 401 on unexisting email", () => {
+    it("should return 403 on unexisting email", () => {
       return agent
       .post("/api/auth/login")
       .send({
         ...TEST_LOGIN_DATA,
         email: "random@email.com",
       })
-      .expect(401);
+      .expect(403);
     });
 
-    it("should return 401 on wrong password", () => {
+    it("should return 403 on wrong password", () => {
       return agent
       .post("/api/auth/login")
       .send({
         ...TEST_LOGIN_DATA,
         password: "wrong password"
       })
-      .expect(401);
+      .expect(403);
     });
 
   });
@@ -56,6 +63,19 @@ describe("Authentication API", () => {
       return agent
       .post("/api/auth/logout")
       .send()
+      .expect(200);
+    });
+
+  });
+
+  describe("POST /api/auth/forgot", () => {
+
+    it("should return 200 OK", () => {
+      return agent
+      .post("/api/auth/forgot")
+      .send({
+        email: TEST_LOGIN_DATA.email
+      })
       .expect(200);
     });
 
@@ -150,6 +170,16 @@ describe("Meldingen API", () => {
                 .post("/api/meldingen")
                 .send(TEST_MELDING_DATA)
                 .expect(201);
+        });
+    });
+
+    describe("POST /api/meldingen", () => {
+
+        it("should return 404 on failed melding post", () => {
+            return agent
+                .post("/api/meldingen")
+                .send(TEST_MELDING_DATA_FAILED)
+                .expect(404);
         });
     });
 });

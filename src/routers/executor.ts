@@ -3,6 +3,7 @@ import { isNumber, isError } from "util";
 import httpStatus, { HttpError } from "../util/httpStatus";
 import { matchedData } from "express-validator/filter";
 import logger from "../util/logger";
+import { validationResult } from "express-validator/check";
 
 export function errorResponse(error: HttpError, res: Response) {
   const data = {
@@ -12,7 +13,13 @@ export function errorResponse(error: HttpError, res: Response) {
   res.status(error.status).send(data);
 }
 
-export default (cb: (req: Request, res: Response, matchedData: any) => Promise<Object>) => (req: Request, res: Response) => {
+type ExecutorFun = (req: Request, res: Response, matchedData: any) => Promise<Object | void>;
+export default (cb: ExecutorFun) => (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    errorResponse(new HttpError(400, "Invalid body please check the documentation for this endpoint."), res);
+    return;
+  }
   const promise = cb(req, res, matchedData(req));
   if (!promise.then) {
     res.status(httpStatus.SERVER_ERROR)
@@ -27,6 +34,11 @@ export default (cb: (req: Request, res: Response, matchedData: any) => Promise<O
       res.send(result);
     })
     .catch(function (error) {
-      errorResponse(error, res);
+      if (error instanceof HttpError) {
+        errorResponse(error, res);
+      } else {
+        errorResponse(new HttpError(500, "Server error"), res);
+        logger.error(error.message);
+      }
     });
 };

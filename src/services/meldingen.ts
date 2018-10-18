@@ -31,9 +31,8 @@ export async function fetchMelding(id: number)  {
 }
 
 export async function insertMelding(meldingToAdd: any) {
-    let meldingId;
     try {
-        meldingId = await knex("meldingen")
+        const meldingId = await knex("meldingen")
             .insert({
                 "tekst": meldingToAdd.tekst,
                 "teacherId": meldingToAdd.teacherId,
@@ -41,13 +40,10 @@ export async function insertMelding(meldingToAdd: any) {
                 "datum": new Date()
             });
         console.log(meldingId);
+        return await meldingId;
     } catch (ex) {
         return;
     }
-    if (!meldingId) {
-        return;
-    }
-    return await meldingId;
 }
 
 
