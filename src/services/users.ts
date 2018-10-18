@@ -51,3 +51,8 @@ export async function updatePassword(userid: number, password: string) {
   const encryptedPass = await bcrypt.hash(password, 10);
   await knex("users").update({ password: encryptedPass }).where("id", userid);
 }
+
+export async function insertUser(userData: { firstname: string, lastname: string, email: string }) {
+  const insertedIds: number[] = await knex("users").insert(userData);
+  return insertedIds[0];
+}

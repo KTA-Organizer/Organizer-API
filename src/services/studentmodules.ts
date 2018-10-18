@@ -28,3 +28,7 @@ export async function fetchStudentModulesWithStudentId(id: number) {
     if (rows.length < 1) return;
     return await rows[0];
 }
+
+export async function insertStudentModule(data: {studentId: number, moduleId: number, opleidingId: number}) {
+    await knex("studenten_modules").insert({ ...data, status: "Volgt" });
+}

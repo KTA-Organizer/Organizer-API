@@ -2,6 +2,8 @@ import logger from "../util/logger";
 import getKnexInstance from "./db";
 const knex = getKnexInstance();
 import * as studentmodulesService from "../services/studentmodules";
+import * as studentInviteService from "./studentInvite";
+import * as usersService from "./users";
 
 async function rowToStudentWithOpleiding(row: any) {
     const studentModule = await studentmodulesService.fetchStudentModulesWithStudentId(row.id);
@@ -39,3 +41,17 @@ export async function fetchAllStudents()  {
     return rows;
 }
 
+async function makeUserStudent(userid: number) {
+    await knex("studenten").insert({ studentid: userid, stillStudent: 1 });
+}
+
+export async function insertStudent(data: { firstname: string, lastname: string, email: string }, opleidingId: number, moduleIds: number[]) {
+    const userid = await usersService.insertUser(data);
+    await makeUserStudent(userid);
+
+    for (const moduleId of moduleIds) {
+        await studentmodulesService.insertStudentModule({ studentId: userid, moduleId, opleidingId });
+    }
+    const user = await usersService.fetchUser(userid);
+    await studentInviteService.inviteUser(user);
+}

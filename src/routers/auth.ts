@@ -3,8 +3,10 @@ import { check } from "express-validator/check";
 import executor from "./executor";
 import passport from "../config/passport";
 import { usersOnly, unauthenticatedOnly } from "../util/accessMiddleware";
+import * as accessTokensService from "../services/accessTokens";
 import * as passwordResetService from "../services/passwordReset";
 import * as usersService from "../services/users";
+import * as studentInviteService from "../services/studentInvite";
 import { HttpError } from "../util/httpStatus";
 
 
@@ -45,11 +47,24 @@ router.post("/reset", [
     check("password").exists(),
     unauthenticatedOnly,
 ], executor(async (req, res, { token, password }) => {
-    const passwordReset = await passwordResetService.fetchPasswordReset(token);
-    if (!passwordReset) {
+    const acccessToken = await accessTokensService.fetchAccessToken(token);
+    if (!acccessToken) {
         throw new HttpError(400, "The password reset token has expired.");
     }
-    await passwordResetService.resetPassword(passwordReset, password);
+    await passwordResetService.resetPassword(acccessToken, password);
 }));
+
+router.post("/invitation", [
+    check("token").exists(),
+    check("password").exists(),
+    unauthenticatedOnly,
+], executor(async (req, res, { token, password }) => {
+    const acccessToken = await accessTokensService.fetchAccessToken(token);
+    if (!acccessToken) {
+        throw new HttpError(400, "The password reset token has expired.");
+    }
+    await studentInviteService.acceptInvitation(acccessToken, password);
+}));
+
 
 export default router;

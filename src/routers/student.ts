@@ -2,10 +2,10 @@ import { Router } from "express";
 import { check } from "express-validator/check";
 import { sanitize } from "express-validator/filter";
 import executor from "./executor";
+import * as usersService from "../services/users";
 import * as studentsService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly } from "../util/accessMiddleware";
-import * as modulesService from "../services/modules";
+import { usersOnly, adminsOnly, unauthenticatedOnly } from "../util/accessMiddleware";
 
 const router = Router({
     mergeParams: true,
@@ -13,6 +13,21 @@ const router = Router({
 });
 
 router.use(usersOnly);
+
+router.post("/", [
+  adminsOnly,
+  check("firstname").exists(),
+  check("lastname").exists(),
+  check("email").isEmail(),
+  check("opleidingId").exists(),
+  check("moduleIds").exists(),
+], executor(async function (req, res, { firstname, lastname, email, opleidingId, moduleIds }) {
+    const existingUser = await usersService.fetchUserByEmail(email);
+    if (existingUser) {
+        throw new HttpError(400, "A user with this email already exists");
+    }
+    await studentsService.insertStudent({ firstname, lastname, email }, opleidingId, moduleIds);
+}));
 
 router.get("/:id", [
     check("id").isNumeric(),

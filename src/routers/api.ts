@@ -16,15 +16,6 @@ const router = Router({
   strict: true
 });
 
-// router.use(function(req, res, next) {
-//   if (req.user) {
-//     next();
-//   } else {
-//     res.status(401);
-//     res.send();
-//   }
-// });
-
 router.use("/auth", authRouter);
 router.use("/users", usersRouter);
 router.use("/opleidingen", opleidingRouter);
