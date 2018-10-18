@@ -6,6 +6,12 @@ const TEST_LOGIN_DATA = {
   password: "test"
 };
 
+const TEST_MELDING_DATA = {
+  tekst: "Test Text",
+  titel: "Test",
+  teacherID: 4
+};
+
 const authWithTest = (agent) => () => {
   return agent.post("/api/auth/login").send(TEST_LOGIN_DATA);
 };
@@ -136,6 +142,16 @@ describe("Meldingen API", () => {
     });
 
   });
+
+  describe("POST /api/meldingen", () => {
+
+    it("should return 200 on succesful melding post", () => {
+            return agent
+                .post("/api/meldingen")
+                .send(TEST_MELDING_DATA)
+                .expect(200);
+        });
+    });
 });
 
 describe("Evaluaties API", () => {
