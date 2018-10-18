@@ -13,8 +13,7 @@ async function rowToOpleiding(row: any) {
 }
 
 export async function fetchAllOpleidingen() {
-  const rows = (await knex("opleidingen").select("*"))
-  .map(rowToOpleiding);
+  const rows = (await knex("opleidingen").select("*")).map(rowToOpleiding);
   const opleidingenPromises = await Promise.all(rows);
   return opleidingenPromises;
 }
@@ -37,4 +36,14 @@ export async function fetchFullOpleiding(id: number) {
   return await rowToFullOpleiding(opleiding_rows[0]);
 }
 
-
+export async function fetchOpleidingForStudent(id: number) {
+  const opleiding_id = await knex("studenten_modules")
+    .select("opleidingId")
+    .where({ studentId: id });
+  if (opleiding_id.length >= 1) {
+    console.log(opleiding_id[0].opleidingId);
+    const opleiding = await fetchOpleiding(opleiding_id[0].opleidingId);
+    return opleiding;
+  }
+  return undefined;
+}

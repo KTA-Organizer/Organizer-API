@@ -50,4 +50,19 @@ router.get(
   })
 );
 
+router.get(
+  "/:id/student",
+  [check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, res, matchedData) {
+    const opleiding = await opleidingenService.fetchOpleidingForStudent(
+      matchedData.id
+    );
+    if (!opleiding) {
+      throw new HttpError(404, "Opleiding doesn't exist");
+    }
+    return opleiding;
+  })
+);
+
+
 export default router;
