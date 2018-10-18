@@ -5,6 +5,7 @@ import executor from "./executor";
 import * as studentsService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
 import { usersOnly } from "../util/accessMiddleware";
+import * as modulesService from "../services/modules";
 
 const router = Router({
     mergeParams: true,
@@ -22,6 +23,14 @@ router.get("/:id", [
         throw new HttpError(404, "Student doesn't exist");
     }
     return student;
+}));
+
+router.get("/", executor(async function(req, res) {
+    const students = await studentsService.fetchAllStudents();
+    if (students.length < 1) {
+        throw new HttpError(404, "Students not found");
+    }
+    return students;
 }));
 
 export default router;

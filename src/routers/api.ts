@@ -31,7 +31,7 @@ router.use("/opleidingen", opleidingRouter);
 router.use("/teacher", teacherRouter);
 router.use("/meldingen", meldingRouter);
 router.use("/modules", moduleRouter);
-router.use("/student", studentRouter);
+router.use("/students", studentRouter);
 router.use("/doelstellingsCategorie", doelstellingsCategorieRouter);
 router.use("/doelstellingen", doelstellingenRouter);
 router.use("/evaluaties", evaluatiesRouter);
