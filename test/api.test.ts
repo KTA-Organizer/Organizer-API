@@ -9,7 +9,7 @@ const TEST_LOGIN_DATA = {
 const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
-  teacherID: 4
+  teacherId: 4
 };
 
 const authWithTest = (agent) => () => {
@@ -149,7 +149,7 @@ describe("Meldingen API", () => {
             return agent
                 .post("/api/meldingen")
                 .send(TEST_MELDING_DATA)
-                .expect(200);
+                .expect(201);
         });
     });
 });
@@ -271,12 +271,21 @@ describe("Student API", () => {
 
   beforeAll(authWithTest(agent));
 
-  describe("GET /api/student/:id", () => {
+  describe("GET /api/students/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/student/6")
+      return agent.get("/api/students/6")
       .expect(200);
     });
+
+  });
+
+  describe("GET /api/students", () => {
+
+      it("should return 200 OK", () => {
+          return agent.get("/api/students")
+              .expect(200);
+      });
 
   });
 });
