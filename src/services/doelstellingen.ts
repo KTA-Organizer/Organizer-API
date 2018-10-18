@@ -32,7 +32,7 @@ export async function fetchDoelstelling(id: number) {
 async function rowsToFullDoelstelling(rows: any[]) {
   const doelstellingen = rows as Doelstelling[];
   for (const doel of doelstellingen) {
-    doel.EvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaForDoelstelling(
+    doel.evaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaForDoelstelling(
       doel.id
     );
   }
