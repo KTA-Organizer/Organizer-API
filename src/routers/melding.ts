@@ -37,9 +37,11 @@ router.post("/", async function(req, res) {
     if (!meldingId) {
         res.status(404)
             .send("Unable to add Melding, data is missing or incorrect");
+        return;
     }
     res.location("/meldingen/" + meldingId)
         .sendStatus(201);
+    return;
 });
 
 
