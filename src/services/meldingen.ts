@@ -29,5 +29,19 @@ export async function fetchMelding(id: number)  {
     return await rowToMelding(rows[0]);
 }
 
+export async function insertMelding(meldingToAdd: any) {
+    const meldingId = await knex("meldingen")
+        .insert({
+            "tekst": meldingToAdd.tekst,
+            "teacherId": meldingToAdd.teacherId,
+            "titel": meldingToAdd.titel,
+            "datum": new Date()
+        });
+    if (!meldingId) {
+        return;
+    }
+    return await meldingId;
+}
+
 
 
