@@ -38,7 +38,7 @@ router.post("/", async function(req, res) {
         throw new HttpError(404, "Unable to add Melding");
     }
     res.location("/meldingen/" + meldingId);
-    res.send(201);
+    res.sendStatus(201);
 });
 
 
