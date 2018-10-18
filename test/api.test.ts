@@ -33,24 +33,24 @@ describe("Authentication API", () => {
       .expect(200);
     });
 
-    it("should return 401 on unexisting email", () => {
+    it("should return 403 on unexisting email", () => {
       return agent
       .post("/api/auth/login")
       .send({
         ...TEST_LOGIN_DATA,
         email: "random@email.com",
       })
-      .expect(401);
+      .expect(403);
     });
 
-    it("should return 401 on wrong password", () => {
+    it("should return 403 on wrong password", () => {
       return agent
       .post("/api/auth/login")
       .send({
         ...TEST_LOGIN_DATA,
         password: "wrong password"
       })
-      .expect(401);
+      .expect(403);
     });
 
   });
@@ -61,6 +61,19 @@ describe("Authentication API", () => {
       return agent
       .post("/api/auth/logout")
       .send()
+      .expect(200);
+    });
+
+  });
+
+  describe("POST /api/auth/forgot", () => {
+
+    it("should return 200 OK", () => {
+      return agent
+      .post("/api/auth/forgot")
+      .send({
+        email: TEST_LOGIN_DATA.email
+      })
       .expect(200);
     });
 
