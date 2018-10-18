@@ -1,6 +1,8 @@
 import request from "supertest";
 import app from "../src/app";
 
+jest.setTimeout(30000);
+
 const TEST_LOGIN_DATA = {
   email: "student1@hotmail.com",
   password: "test"
