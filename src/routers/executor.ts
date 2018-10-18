@@ -3,6 +3,7 @@ import { isNumber, isError } from "util";
 import httpStatus, { HttpError } from "../util/httpStatus";
 import { matchedData } from "express-validator/filter";
 import logger from "../util/logger";
+import { validationResult } from "express-validator/check";
 
 export function errorResponse(error: HttpError, res: Response) {
   const data = {
@@ -14,6 +15,11 @@ export function errorResponse(error: HttpError, res: Response) {
 
 type ExecutorFun = (req: Request, res: Response, matchedData: any) => Promise<Object | void>;
 export default (cb: ExecutorFun) => (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    errorResponse(new HttpError(400, "Invalid body please check the documentation for this endpoint."), res);
+    return;
+  }
   const promise = cb(req, res, matchedData(req));
   if (!promise.then) {
     res.status(httpStatus.SERVER_ERROR)
