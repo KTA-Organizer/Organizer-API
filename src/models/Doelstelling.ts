@@ -1,5 +1,6 @@
 import { DoelstellingsCategorie } from "./DoelstellingsCategorie";
 import { User } from "./User";
+import { EvaluatieCriteria } from "./EvaluatieCriteria";
 
 export interface Doelstelling {
   id: number;
@@ -13,4 +14,5 @@ export interface Doelstelling {
    */
   doelstellingscategorie?: DoelstellingsCategorie;
   creator?: User;
+  evaluatieCriteria?: EvaluatieCriteria[];
 }

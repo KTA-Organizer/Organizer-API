@@ -5,7 +5,7 @@ let instance: Knex;
 export default function getInstance() {
   if (!instance) {
     instance = Knex({
-      client: "mysql2",
+      client: "mysql",
       connection: {
         host: MYSQL_HOST,
         port: MYSQL_PORT,
@@ -13,7 +13,7 @@ export default function getInstance() {
         password: MYSQL_PASSWORD,
         database: MYSQL_DATABASE
       },
-      pool: { min: 2, max: 10 }
+      pool: { min: 1, max: 1 }
     });
   }
   return instance;

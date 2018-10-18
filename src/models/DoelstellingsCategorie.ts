@@ -1,5 +1,6 @@
 import { User } from "./User";
 import { Module } from "./Module";
+import { Doelstelling } from "./Doelstelling";
 
 export interface DoelstellingsCategorie {
   id: number;
@@ -13,4 +14,5 @@ export interface DoelstellingsCategorie {
    */
   module?: Module;
   creator?: User;
+  doelstellingen?: Doelstelling[];
 }
