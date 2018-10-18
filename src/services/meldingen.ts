@@ -29,3 +29,5 @@ export async function fetchMelding(id: number)  {
     return await rowToMelding(rows[0]);
 }
 
+
+
