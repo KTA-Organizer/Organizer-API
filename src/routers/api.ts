@@ -8,7 +8,7 @@ import moduleRouter from "./module";
 import studentRouter from "./student";
 import doelstellingsCategorieRouter from "./doelstellingscategorie";
 import doelstellingenRouter from "./doelstelling";
-import evaluatiesRouter from "./evaluatie";
+import evaluatiesRouter from "./evaluaties";
 import studentmodulesRouter from "./studentmodule";
 
 const router = Router({

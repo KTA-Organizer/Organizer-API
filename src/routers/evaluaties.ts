@@ -24,6 +24,17 @@ router.get("/:id", [
     return evaluatie;
 }));
 
+router.get("/:id/student", [
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function(req, res, matchedData) {
+    const evaluatie = await evaluatiesService.fetchEvaluatiesForStudent(matchedData.id);
+    if (!evaluatie) {
+        throw new HttpError(404, "Evaluatie doesn't exist");
+    }
+    return evaluatie;
+}));
+
 router.get("/", executor(async function(req, res) {
     const evaluaties = await evaluatiesService.fetchAllEvaluaties();
     if (evaluaties.length < 1) {
