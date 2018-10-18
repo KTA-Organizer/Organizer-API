@@ -5,6 +5,7 @@ import { User, UserRole } from "../models/User";
 import * as studentenService from "./studenten";
 import * as teachersService from "./teachers";
 import * as adminsService from "./admins";
+import bcrypt from "bcrypt";
 
 async function rowToUser(row: any) {
   if (row.accountCreatedTimestamp) {
@@ -44,4 +45,9 @@ export async function fetchUserByEmail(email: string)  {
     if (rows.length < 1)
         return;
     return await rowToUser(rows[0]);
+}
+
+export async function updatePassword(userid: number, password: string) {
+  const encryptedPass = await bcrypt.hash(password, 10);
+  await knex("users").update({ password: encryptedPass }).where("id", userid);
 }
