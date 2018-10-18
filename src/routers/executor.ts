@@ -12,7 +12,8 @@ export function errorResponse(error: HttpError, res: Response) {
   res.status(error.status).send(data);
 }
 
-export default (cb: (req: Request, res: Response, matchedData: any) => Promise<Object>) => (req: Request, res: Response) => {
+type ExecutorFun = (req: Request, res: Response, matchedData: any) => Promise<Object | void>;
+export default (cb: ExecutorFun) => (req: Request, res: Response) => {
   const promise = cb(req, res, matchedData(req));
   if (!promise.then) {
     res.status(httpStatus.SERVER_ERROR)
@@ -27,6 +28,11 @@ export default (cb: (req: Request, res: Response, matchedData: any) => Promise<O
       res.send(result);
     })
     .catch(function (error) {
-      errorResponse(error, res);
+      if (error instanceof HttpError) {
+        errorResponse(error, res);
+      } else {
+        errorResponse(new HttpError(500, "Server error"), res);
+        logger.error(error.message);
+      }
     });
 };
