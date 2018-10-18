@@ -32,13 +32,14 @@ router.get("/", executor(async function(req, res) {
     return meldingen;
 }));
 
-router.post("/", executor( async function(req, res) {
+router.post("/", async function(req, res) {
     const meldingId = await meldingenService.insertMelding(req.body);
     if (!meldingId) {
         throw new HttpError(404, "Unable to add Melding");
     }
-    return meldingId;
-}));
+    res.location("/meldingen/" + meldingId);
+    res.send(201);
+});
 
 
 export default router;
