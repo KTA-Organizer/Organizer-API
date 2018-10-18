@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../src/app";
 
 const TEST_LOGIN_DATA = {
-  email: "test@test.be",
+  email: "student1@hotmail.com",
   password: "test"
 };
 
@@ -10,6 +10,11 @@ const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
   teacherId: 4
+};
+
+const TEST_MELDING_DATA_FAILED = {
+    tekst: "Test Text",
+    titel: "Test"
 };
 
 const authWithTest = (agent) => () => {
@@ -150,6 +155,16 @@ describe("Meldingen API", () => {
                 .post("/api/meldingen")
                 .send(TEST_MELDING_DATA)
                 .expect(201);
+        });
+    });
+
+    describe("POST /api/meldingen", () => {
+
+        it("should return 404 on failed melding post", () => {
+            return agent
+                .post("/api/meldingen")
+                .send(TEST_MELDING_DATA_FAILED)
+                .expect(404);
         });
     });
 });
