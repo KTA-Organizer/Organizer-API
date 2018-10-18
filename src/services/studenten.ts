@@ -15,7 +15,7 @@ export async function fetchStudent(id: number)  {
 export async function fetchAllStudents()  {
     const studentIds = await knex("studenten")
         .select("studentId")
-        .map(dataPacket => dataPacket.studentId);
+        .map((dataPacket: any) => dataPacket.studentId);
 
     const rows = await knex("users")
         .select("*")
