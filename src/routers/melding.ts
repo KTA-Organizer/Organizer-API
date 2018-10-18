@@ -35,7 +35,7 @@ router.get("/", executor(async function(req, res) {
 router.post("/", async function(req, res) {
     const meldingId = await meldingenService.insertMelding(req.body);
     if (!meldingId) {
-        throw new HttpError(404, "Unable to add Melding");
+        throw new HttpError(404, "Unable to add Melding, data is missing or incorrect");
     }
     res.location("/meldingen/" + meldingId);
     res.sendStatus(201);

@@ -18,3 +18,12 @@ export async function fetchAllStudentModules() {
     if (rows.length < 1) return;
     return rows;
 }
+
+export async function fetchStudentModulesWithStudentId(id: number) {
+    const rows = await knex("studenten_modules")
+        .select("*")
+        .where({ studentId: id })
+        .whereNot("opleidingId", null);
+    if (rows.length < 1) return;
+    return await rows[0];
+}

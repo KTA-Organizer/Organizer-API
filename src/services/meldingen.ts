@@ -3,6 +3,7 @@ import getKnexInstance from "./db";
 const knex = getKnexInstance();
 import { Melding } from "../models/Melding";
 import * as teachersService from "../services/teachers";
+import { HttpError } from "../util/httpStatus";
 
 async function rowToMelding(row: any) {
     if (row.teacherId) {
@@ -30,13 +31,19 @@ export async function fetchMelding(id: number)  {
 }
 
 export async function insertMelding(meldingToAdd: any) {
-    const meldingId = await knex("meldingen")
-        .insert({
-            "tekst": meldingToAdd.tekst,
-            "teacherId": meldingToAdd.teacherId,
-            "titel": meldingToAdd.titel,
-            "datum": new Date()
-        });
+    let meldingId;
+    try {
+        meldingId = await knex("meldingen")
+            .insert({
+                "tekst": meldingToAdd.tekst,
+                "teacherId": meldingToAdd.teacherId,
+                "titel": meldingToAdd.titel,
+                "datum": new Date()
+            });
+        console.log(meldingId);
+    } catch (ex) {
+        return;
+    }
     if (!meldingId) {
         return;
     }
