@@ -10,17 +10,19 @@ export async function fetchEvaluatieCriteria() {
 
 async function rowsToFullEvaluatieCriteria(rows: any) {
   const criteria = rows as EvaluatieCriteria[];
+  const criteriaIds = criteria.map(c => c.id);
+  const aspecten = await aspectenService.fetchAspectenForEvaluatieCriteria(criteriaIds);
+
   for (const criterium of criteria) {
-    criterium.aspecten = await aspectenService.fetchAspectenForEvaluatieCriteria(
-      criterium.id
-    );
+    criterium.aspecten = aspecten
+      .filter(a => a.evaluatiecriteriumId == criterium.id);
   }
   return criteria;
 }
 
-export async function fetchEvaluatieCriteriaForDoelstelling(id: number) {
+export async function fetchEvaluatieCriteriaForDoelstellingen(doelstellingenIds: number[]) {
   const rows = await knex("evaluatiecriteria")
     .select("*")
-    .where({ doelstellingId: id });
-  return rowsToFullEvaluatieCriteria(rows);
+    .whereIn("doelstellingId", doelstellingenIds);
+  return await rowsToFullEvaluatieCriteria(rows);
 }

@@ -31,17 +31,20 @@ export async function fetchDoelstelling(id: number) {
 
 async function rowsToFullDoelstelling(rows: any[]) {
   const doelstellingen = rows as Doelstelling[];
+  const doelstellingenIds = doelstellingen.map(d => d.id);
+  const evaluatieCriterias = await evaluatieCriteriaService
+    .fetchEvaluatieCriteriaForDoelstellingen(doelstellingenIds);
+
   for (const doel of doelstellingen) {
-    doel.evaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaForDoelstelling(
-      doel.id
-    );
+    doel.evaluatieCriteria = evaluatieCriterias
+      .filter(ec => ec.doelstellingId === doel.id);
   }
   return doelstellingen;
 }
 
-export async function fetchDoelstellingForCategory(id: number) {
+export async function fetchDoelstellingenForCategories(categorieIds: number[]) {
   const rows = await knex("doelstellingen")
     .select("*")
-    .where({ doelstellingscategorieId: id });
+    .whereIn("doelstellingscategorieId", categorieIds);
   return rowsToFullDoelstelling(rows);
 }

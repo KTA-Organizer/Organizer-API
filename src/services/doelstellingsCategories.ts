@@ -33,19 +33,23 @@ export async function fetchDoelstellingsCategorie(id: number) {
   return rowToDoelstellingsCategorie(rows[0]);
 }
 
-export async function rowToFullDoelstellingsCategory(rows: any[]) {
-  const doelstellingsCategories = rows as DoelstellingsCategorie[];
-  for (const doelCat of rows) {
-    doelCat.doelstellingen = await doelstellingService.fetchDoelstellingForCategory(
-      doelCat.id
-    );
+export async function rowsToFullDoelstellingsCategory(rows: any[]) {
+  const doelCats = rows as DoelstellingsCategorie[];
+  const doelCatIds = doelCats.map(dc => dc.id);
+
+  const doelstellingen = await doelstellingService.fetchDoelstellingenForCategories(doelCatIds);
+
+  for (const doelCat of doelCats) {
+    doelCat.doelstellingen = doelstellingen
+      .filter(d => d.doelstellingscategorieId === doelCat.id);
   }
-  return rows;
+
+  return doelCats;
 }
 
-export async function fetchDoelstellingsCategoryForModule(id: number) {
+export async function fetchDoelstellingsCategoryForModules(moduleIds: number[]) {
   const rows = await knex("doelstellingscategories")
     .select("*")
-    .where({ moduleId: id });
-  return rowToFullDoelstellingsCategory(rows);
+    .whereIn("moduleId", moduleIds);
+  return rowsToFullDoelstellingsCategory(rows);
 }

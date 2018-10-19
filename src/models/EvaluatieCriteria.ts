@@ -4,7 +4,7 @@ import { Aspect } from "./Aspect";
 
 export interface EvaluatieCriteria {
   id: number;
-  doestellingId: number;
+  doelstellingId: number;
   name: string;
   gewicht: number;
   inGebruik: boolean;

@@ -35,12 +35,17 @@ export async function fetchModule(id: number) {
   return rowToModule(rows[0]);
 }
 
-async function rowToModules(rows: Module[]) {
-  for (const mod of rows) {
-    mod.doelstellingCategories = (await doelstellingCategoryService.fetchDoelstellingsCategoryForModule(
-      mod.id
-    )) as DoelstellingsCategorie[];
+async function rowsToModules(rows: any) {
+  const modules = rows as Module[];
+  const moduleIds = modules.map(m => m.id);
+
+  const allDoelstellingCategories = await doelstellingCategoryService.fetchDoelstellingsCategoryForModules(moduleIds);
+
+  for (const module of modules) {
+    module.doelstellingCategories = allDoelstellingCategories
+      .filter(dc => dc.moduleId == module.id);
   }
+
   return rows as Module[];
 }
 
@@ -48,7 +53,7 @@ export async function fetchModulesForOpleiding(id: number) {
   const rows = await knex("modules")
     .select("*")
     .where({ opleidingId: id });
-  return await rowToModules(rows as Module[]);
+  return await rowsToModules(rows);
 }
 
 export async function fetchModulesForStudent(studId: number) {
