@@ -13,6 +13,7 @@ async function rowToUser(row: any) {
   }
   const user = row as User;
   user.role = await fetchUserRole(user.id);
+  delete user.password;
   return user;
 }
 
@@ -27,6 +28,15 @@ export async function fetchUserRole(id: number): Promise<UserRole> {
     return UserRole.admin;
   }
   return undefined;
+}
+
+export async function fetchUserPasswordByEmail(email: string)  {
+  const rows = await knex("users")
+    .select("password")
+    .where({ email });
+  if (rows.length < 1)
+    return;
+  return rows[0].password;
 }
 
 export async function fetchUser(id: number)  {

@@ -29,14 +29,15 @@ passport.use("local-login", new LocalStrategy(strategyOptions, login));
 
 async function login(email: string, password: string, done: any) {
     try {
-        const user = await usersService.fetchUserByEmail(email.toLowerCase());
-        if (!user) {
+        const passHash = await usersService.fetchUserPasswordByEmail(email);
+        if (!passHash) {
             done(undefined, false, { message: `Email ${email} not found.` });
             return;
         }
 
-        const isEqual = await bcrypt.compare(password, user.password);
+        const isEqual = await bcrypt.compare(password, passHash);
         if (isEqual) {
+            const user = await usersService.fetchUserByEmail(email.toLowerCase());
             done(undefined, user);
         } else {
             done(undefined, false, { message: `Passwords don't match.` });

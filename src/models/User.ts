@@ -25,7 +25,7 @@ export interface User {
   email: string;
   firstname: string;
   lastname: string;
-  password: string;
+  password?: string;
   gender: Gender;
   language: Language;
   activationKey?: string;
