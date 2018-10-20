@@ -10,6 +10,8 @@ const env = process.env;
 export const ENVIRONMENT = env.NODE_ENV;
 export const PORT = parseInt(env.PORT);
 export const SESSION_SECRET = env.SESSION_SECRET;
+
+export const MYSQL_SOCKET = env.MYSQL_SOCKET;
 export const MYSQL_HOST = env.MYSQL_HOST;
 export const MYSQL_PORT = parseInt(env.MYSQL_PORT);
 export const MYSQL_USER = env.MYSQL_USER;
@@ -27,11 +29,6 @@ export const URL = env.URL;
 const requiredConstants = [
     PORT,
     SESSION_SECRET,
-    MYSQL_HOST,
-    MYSQL_PORT,
-    MYSQL_USER,
-    MYSQL_PASSWORD,
-    MYSQL_DATABASE,
     MAIL_FROM,
     MAIL_SMTP_HOST,
     MAIL_SMTP_PORT,
