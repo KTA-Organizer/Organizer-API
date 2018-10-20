@@ -68,18 +68,18 @@ describe("Authentication API", () => {
 
   });
 
-  describe("POST /api/auth/forgot", () => {
+  // describe("POST /api/auth/forgot", () => {
 
-    it("should return 200 OK", () => {
-      return agent
-      .post("/api/auth/forgot")
-      .send({
-        email: TEST_LOGIN_DATA.email
-      })
-      .expect(200);
-    });
+  //   it("should return 200 OK", () => {
+  //     return agent
+  //     .post("/api/auth/forgot")
+  //     .send({
+  //       email: TEST_LOGIN_DATA.email
+  //     })
+  //     .expect(200);
+  //   });
 
-  });
+  // });
 });
 
 describe("Users API", () => {
