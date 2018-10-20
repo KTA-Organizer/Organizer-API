@@ -163,25 +163,25 @@ describe("Meldingen API", () => {
 
   });
 
-  describe("POST /api/meldingen", () => {
+  // describe("POST /api/meldingen", () => {
 
-    it("should return 200 on succesful melding post", () => {
-            return agent
-                .post("/api/meldingen")
-                .send(TEST_MELDING_DATA)
-                .expect(201);
-        });
-    });
+  //   it("should return 200 on succesful melding post", () => {
+  //           return agent
+  //               .post("/api/meldingen")
+  //               .send(TEST_MELDING_DATA)
+  //               .expect(201);
+  //       });
+  //   });
 
-    describe("POST /api/meldingen", () => {
+  //   describe("POST /api/meldingen", () => {
 
-        it("should return 404 on failed melding post", () => {
-            return agent
-                .post("/api/meldingen")
-                .send(TEST_MELDING_DATA_FAILED)
-                .expect(404);
-        });
-    });
+  //       it("should return 404 on failed melding post", () => {
+  //           return agent
+  //               .post("/api/meldingen")
+  //               .send(TEST_MELDING_DATA_FAILED)
+  //               .expect(404);
+  //       });
+  //   });
 });
 
 describe("Evaluaties API", () => {
