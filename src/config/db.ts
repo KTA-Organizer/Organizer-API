@@ -1,5 +1,5 @@
 import Knex, { Config } from "knex";
-import { MYSQL_INSTANCE, MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE } from "../util/constants";
+import { GCLOUD_SQL_INSTANCE, MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE } from "../util/constants";
 
 let instance: Knex;
 export default function getInstance() {
@@ -9,8 +9,8 @@ export default function getInstance() {
       password: MYSQL_PASSWORD,
       database: MYSQL_DATABASE
     };
-    if (MYSQL_INSTANCE) {
-      connection.socketPath = `/cloudsql/${MYSQL_INSTANCE}`;
+    if (GCLOUD_SQL_INSTANCE) {
+      connection.socketPath = `/cloudsql/${GCLOUD_SQL_INSTANCE}`;
     } else {
       connection.host = MYSQL_HOST;
       connection.port = MYSQL_PORT;
