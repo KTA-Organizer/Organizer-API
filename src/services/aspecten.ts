@@ -13,13 +13,26 @@ export async function fetchAspectenForEvaluatieCriteria(criteriaIds: number[]) {
 }
 
 export async function fetchAllAspecten()  {
-    const rows = await knex("meldingen")
+    const rows = await knex("aspecten")
         .select("*");
     if (rows.length < 1)
         return;
     return await rows;
 }
 
+export async function fetchAspect(id: number)  {
+    const row = await knex("aspecten")
+        .select("*")
+        .where("id", id);
+    if (row.length < 1)
+        return;
+    return await row;
+}
+
 export async function insertAspect(data: { evaluatiecriteriumId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
     await knex("aspecten").insert( data );
+}
+
+export async function updateAspect(data: { id: number, evaluatiecriteriumId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
+    await knex("aspecten").where("id", data.id).update( data );
 }
