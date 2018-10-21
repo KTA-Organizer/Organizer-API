@@ -5,6 +5,7 @@ install:
 script:
 - npm run test
 deploy:
+  skip_cleanup: true
   provider: gae
   keyfile: client-secret.json
   project: ktatje-219919
