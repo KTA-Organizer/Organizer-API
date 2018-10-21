@@ -1,6 +1,6 @@
 import { AccessToken } from "../models/AccessToken";
 import { genRandomHash } from "../util/randomHash";
-import getKnexInstance from "./db";
+import getKnexInstance from "../config/db";
 const knex = getKnexInstance();
 
 export async function createAccessToken(userid: number) {

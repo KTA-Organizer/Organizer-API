@@ -1,4 +1,4 @@
-import getKnexInstance from "./db";
+import getKnexInstance from "../config/db";
 import { Aspect } from "../models/Aspect";
 const knex = getKnexInstance();
 

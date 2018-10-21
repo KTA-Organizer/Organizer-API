@@ -1,5 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "./db";
+import getKnexInstance from "../config/db";
 const knex = getKnexInstance();
 import { Module } from "../models/Module";
 import * as teachersService from "../services/teachers";

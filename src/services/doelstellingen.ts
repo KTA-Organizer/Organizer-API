@@ -1,5 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "./db";
+import getKnexInstance from "../config/db";
 const knex = getKnexInstance();
 import { Doelstelling } from "../models/Doelstelling";
 import * as usersService from "../services/users";

@@ -7,11 +7,11 @@ dotenv.config({ path: `.env.${environment}` });
 
 const env = process.env;
 
-export const INSTANCE_CONNECTION_NAME = env.INSTANCE_CONNECTION_NAME;
 export const ENVIRONMENT = env.NODE_ENV;
 export const PORT = parseInt(env.PORT);
 export const SESSION_SECRET = env.SESSION_SECRET;
 
+export const MYSQL_INSTANCE = env.MYSQL_INSTANCE;
 export const MYSQL_HOST = env.MYSQL_HOST;
 export const MYSQL_PORT = parseInt(env.MYSQL_PORT);
 export const MYSQL_USER = env.MYSQL_USER;
