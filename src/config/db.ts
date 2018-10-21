@@ -9,7 +9,7 @@ export default function getInstance() {
       password: MYSQL_PASSWORD,
       database: MYSQL_DATABASE
     };
-    if (GCLOUD_SQL_INSTANCE) {
+    if (!MYSQL_HOST && GCLOUD_SQL_INSTANCE) {
       connection.socketPath = `/cloudsql/${GCLOUD_SQL_INSTANCE}`;
     } else {
       connection.host = MYSQL_HOST;
