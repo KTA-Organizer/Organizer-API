@@ -22,10 +22,10 @@ router.get("/", executor(async function(req, res) {
 }));
 
 router.post("/", [
-    adminsOnly,
+    usersOnly,
     check("evaluatiecriteriumId").exists(),
     check("name").exists(),
-    check("inGebruik").isEmail(),
+    check("inGebruik").exists(),
     check("gewicht").exists(),
     check("creatorId").exists(),
 ], executor(async function (req, res, { evaluatiecriteriumId, name, inGebruik, gewicht, creatorId }) {
