@@ -3,6 +3,15 @@
 
 This API provides all logic on which to build the client.
 
+## Progress
+You can follow the progress on [Trello](https://trello.com/b/XxmwBDop/kta-organizer-progress).
+
+## Deployment
+We build this uppon Google Cloud. It uses storage buckets, MySQL, Redis and App Engine.
+
+## Continuous integration
+Automatic testing and deployment on Google Cloud is operated by [Travis CI](https://travis-ci.org/KTA-Organizer/Organizer-API).
+
 ## [API Docs](https://ktaorganizer.docs.apiary.io/)
 
 ## Setup
