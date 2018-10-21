@@ -4,6 +4,10 @@ node_js:
 install:
 script:
 - npm run test
+branches:
+  only:
+  - master
+  - dev
 deploy:
   skip_cleanup: true
   provider: gae
