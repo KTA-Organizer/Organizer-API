@@ -36,3 +36,7 @@ export async function insertAspect(data: { evaluatiecriteriumId: number, name: s
 export async function updateAspect(data: { id: number, evaluatiecriteriumId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
     await knex("aspecten").where("id", data.id).update( data );
 }
+
+export async function deleteAspect(id: number) {
+    await knex("aspecten").where("id", id).del();
+}

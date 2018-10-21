@@ -34,7 +34,7 @@ router.post("/", [
 }));
 
 router.put("/:id", [
-    usersOnly,
+    adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
     check("evaluatiecriteriumId").exists(),
@@ -48,6 +48,18 @@ router.put("/:id", [
         throw new HttpError(400, "A aspect with this id doesn't exist");
     }
     await aspectenService.updateAspect({id, evaluatiecriteriumId, name, inGebruik, gewicht, creatorId});
+}));
+
+router.delete("/:id", [
+    usersOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, res, matchedData) {
+    const existingAspect = await aspectenService.fetchAspect(matchedData.id);
+    if (!existingAspect) {
+        throw new HttpError(400, "A aspect with this id doesn't exist");
+    }
+    await aspectenService.deleteAspect(matchedData.id);
 }));
 
 export default router;
