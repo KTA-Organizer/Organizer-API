@@ -2,12 +2,12 @@ import logger from "./logger";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file, where API keys, database connection and passwords are configured
-const environment = process.env.GOOGLE_CLOUD_PROJECT ? "production" : "development";
+const environment = process.env.NODE_ENV === "test" ? "test" : process.env.GOOGLE_CLOUD_PROJECT ? "production" : "development";
 dotenv.config({ path: `.env.${environment}` });
 
 const env = process.env;
 
-export const ENVIRONMENT = env.NODE_ENV;
+export const ENVIRONMENT = environment;
 export const PORT = parseInt(env.PORT);
 export const SESSION_SECRET = env.SESSION_SECRET;
 
