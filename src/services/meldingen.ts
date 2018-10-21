@@ -41,7 +41,6 @@ export async function insertMelding(meldingToAdd: any) {
                 "titel": meldingToAdd.titel,
                 "datum": new Date()
             });
-        console.log(meldingId);
         return await meldingId;
     } catch (ex) {
         return;
