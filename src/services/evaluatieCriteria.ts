@@ -35,3 +35,9 @@ export async function fetchEvaluatieCriteriaForDoelstellingen(doelstellingenIds:
     .whereIn("doelstellingId", doelstellingenIds);
   return await rowsToFullEvaluatieCriteria(rows);
 }
+
+export async function insertEvaluatieCriteria(data: { doelstellingId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
+    await knex("evaluatiecriteria").insert( data );
+}
+
+

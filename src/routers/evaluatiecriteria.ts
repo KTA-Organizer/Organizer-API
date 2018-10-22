@@ -4,7 +4,7 @@ import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly } from "../util/accessMiddleware";
+import { adminsOnly, usersOnly } from "../util/accessMiddleware";
 
 const router = Router({
     mergeParams: true,
@@ -30,6 +30,17 @@ router.get("/", executor(async function(req, res) {
         throw new HttpError(404, "EvaluatieCriteria not found");
     }
     return evaluaties;
+}));
+
+router.post("/", [
+    usersOnly,
+    check("doelstellingId").exists(),
+    check("name").exists(),
+    check("inGebruik").exists(),
+    check("gewicht").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, { doelstellingId, name, inGebruik, gewicht, creatorId }) {
+    await evaluatieCriteriaService.insertEvaluatieCriteria({ doelstellingId, name, inGebruik, gewicht, creatorId});
 }));
 
 
