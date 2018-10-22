@@ -5,6 +5,7 @@ import executor from "./executor";
 import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+import * as aspectenService from "../services/aspecten";
 
 const router = Router({
     mergeParams: true,
@@ -33,7 +34,7 @@ router.get("/", executor(async function(req, res) {
 }));
 
 router.post("/", [
-    usersOnly,
+    adminsOnly,
     check("doelstellingId").exists(),
     check("name").exists(),
     check("inGebruik").exists(),
@@ -41,6 +42,23 @@ router.post("/", [
     check("creatorId").exists()
 ], executor(async function (req, res, { doelstellingId, name, inGebruik, gewicht, creatorId }) {
     await evaluatieCriteriaService.insertEvaluatieCriteria({ doelstellingId, name, inGebruik, gewicht, creatorId});
+}));
+
+router.put("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("doelstellingId").exists(),
+    check("name").exists(),
+    check("inGebruik").exists(),
+    check("gewicht").exists(),
+    check("creatorId").exists(),
+], executor(async function (req, res, {id, doelstellingId, name, inGebruik, gewicht, creatorId }) {
+    const existingAspect = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(id);
+    if (!existingAspect) {
+        throw new HttpError(400, "A evaluatieCriteria with this id doesn't exist");
+    }
+    await evaluatieCriteriaService.updateEvaluatieCriteria({id, doelstellingId, name, inGebruik, gewicht, creatorId});
 }));
 
 
