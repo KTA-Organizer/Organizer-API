@@ -55,3 +55,12 @@ export async function insertStudent(data: { firstname: string, lastname: string,
     const user = await usersService.fetchUser(userid);
     await studentInviteService.inviteUser(user);
 }
+
+export async function updateStudent(data: { id: number, firstname: string, lastname: string, email: string }, opleidingId: number, moduleIds: number[]) {
+    console.log(data, opleidingId, moduleIds);
+    await studentmodulesService.removeStudentModule(data.id);
+    for (const moduleId of moduleIds) {
+        await studentmodulesService.insertStudentModule({ studentId: data.id, moduleId, opleidingId });
+    }
+    await usersService.updateUser(data);
+}

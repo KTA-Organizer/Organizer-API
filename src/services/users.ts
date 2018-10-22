@@ -30,39 +30,53 @@ export async function fetchUserRole(id: number): Promise<UserRole> {
   return undefined;
 }
 
-export async function fetchUserPasswordByEmail(email: string)  {
+export async function fetchUserPasswordByEmail(email: string) {
   const rows = await knex("users")
     .select("password")
     .where({ email });
-  if (rows.length < 1)
-    return;
+  if (rows.length < 1) return;
   return rows[0].password;
 }
 
-export async function fetchUser(id: number)  {
+export async function fetchUser(id: number) {
   const rows = await knex("users")
     .select("*")
     .where({ id });
-  if (rows.length < 1)
-    return;
+  if (rows.length < 1) return;
   return await rowToUser(rows[0]);
 }
 
-export async function fetchUserByEmail(email: string)  {
-    const rows = await knex("users")
-        .select("*")
-        .where({ email });
-    if (rows.length < 1)
-        return;
-    return await rowToUser(rows[0]);
+export async function fetchUserByEmail(email: string) {
+  const rows = await knex("users")
+    .select("*")
+    .where({ email });
+  if (rows.length < 1) return;
+  return await rowToUser(rows[0]);
 }
 
 export async function updatePassword(userid: number, password: string) {
   const encryptedPass = await bcrypt.hash(password, 10);
-  await knex("users").update({ password: encryptedPass }).where("id", userid);
+  await knex("users")
+    .update({ password: encryptedPass })
+    .where("id", userid);
 }
 
-export async function insertUser(userData: { firstname: string, lastname: string, email: string }) {
+export async function insertUser(userData: {
+  firstname: string;
+  lastname: string;
+  email: string;
+}) {
   const insertedIds: number[] = await knex("users").insert(userData);
   return insertedIds[0];
+}
+
+export async function updateUser(userData: {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+}) {
+  await knex("users")
+    .where({ id: userData.id })
+    .update(userData);
 }
