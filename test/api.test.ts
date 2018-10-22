@@ -1,17 +1,43 @@
 import request from "supertest";
 import app from "../src/app";
+import * as usersService from "../src/services/users";
+import { User } from "../src/models/User";
 
 jest.setTimeout(30000);
 
 const TEST_LOGIN_DATA = {
-  email: "student1@hotmail.com",
+  email: "kenny.depecker@student.howest.be",
   password: "test"
+};
+
+const TEST_ASPECT_DATA = {
+    "evaluatiecriteriumId": 36,
+    "name": "test",
+    "inGebruik": 1,
+    "gewicht": 1,
+    "creatorId": 3
 };
 
 const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
   teacherId: 4
+};
+
+const TEST_STUDENT_DATA = {
+    "firstname": "jeanke",
+    "lastname": "bonny",
+    "email": "jeankebonnytje@gmail.com",
+    "opleidingId": 1,
+    "moduleIds": [1, 2]
+};
+
+const TEST_STUDENT_DATA_UPDATE = {
+    "firstname": "jeanke",
+    "lastname": "bonny",
+    "email": "jeankebonnyy@gmail.com",
+    "opleidingId": 1,
+    "moduleIds": [1, 2]
 };
 
 const TEST_MELDING_DATA_FAILED = {
@@ -184,6 +210,31 @@ describe("Meldingen API", () => {
   //   });
 });
 
+describe("Aspecten API", () => {
+    const agent = request.agent(app);
+
+    beforeAll(authWithTest(agent));
+
+    describe("GET /api/aspecten", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/aspecten")
+                .expect(200);
+        });
+
+    });
+
+    // describe("POST /api/aspecten", () => {
+
+    //   it("should return 200 on succesful aspect post", () => {
+    //           return agent
+    //               .post("/api/aspecten")
+    //               .send(TEST_ASPECT_DATA)
+    //               .expect(200);
+    //       });
+    //   });
+});
+
 describe("Evaluaties API", () => {
     const agent = request.agent(app);
 
@@ -202,6 +253,30 @@ describe("Evaluaties API", () => {
 
         it("should return 200 OK", () => {
             return agent.get("/api/evaluaties")
+                .expect(200);
+        });
+
+    });
+});
+
+describe("EvaluatieCriteria API", () => {
+    const agent = request.agent(app);
+
+    beforeAll(authWithTest(agent));
+
+    describe("GET /api/evaluatieCriteria/:id", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/evaluatieCriteria/1")
+                .expect(200);
+        });
+
+    });
+
+    describe("GET /api/evaluatieCriteria", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/evaluatieCriteria")
                 .expect(200);
         });
 
@@ -318,5 +393,22 @@ describe("Student API", () => {
       });
 
   });
-});
+
+  // describe("POST /api/students", () => {
+  //
+  //     afterEach(function(done) {
+  //         const newUser = usersService.fetchUserByEmail(TEST_STUDENT_DATA.email) as any;
+  //         console.log(newUser);
+  //         return agent.del("/api/students/" + newUser.id);
+  //     });
+  //
+  //     it("should return 200 on succesful student post", () => {
+  //                   return agent
+  //                       .post("/api/students")
+  //                       .send(TEST_STUDENT_DATA)
+  //                       .expect(200);
+  //               });
+  //           });
+ });
+
 

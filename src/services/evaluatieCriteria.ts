@@ -8,6 +8,15 @@ export async function fetchEvaluatieCriteria() {
   return rows as EvaluatieCriteria[];
 }
 
+export async function fetchEvaluatieCriteriaById(id: number)  {
+    const rows = await knex("evaluatiecriteria")
+        .select("*")
+        .where({ id });
+    if (rows.length < 1)
+        return;
+    return await rows[0];
+}
+
 async function rowsToFullEvaluatieCriteria(rows: any) {
   const criteria = rows as EvaluatieCriteria[];
   const criteriaIds = criteria.map(c => c.id);
@@ -25,4 +34,16 @@ export async function fetchEvaluatieCriteriaForDoelstellingen(doelstellingenIds:
     .select("*")
     .whereIn("doelstellingId", doelstellingenIds);
   return await rowsToFullEvaluatieCriteria(rows);
+}
+
+export async function insertEvaluatieCriteria(data: { doelstellingId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
+    await knex("evaluatiecriteria").insert( data );
+}
+
+export async function updateEvaluatieCriteria(data: { id: number, doelstellingId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
+    await knex("evaluatiecriteria").where("id", data.id).update( data );
+}
+
+export async function deleteEvaluatieCriteria(id: number) {
+    await knex("evaluatiecriteria").where("id", id).del();
 }
