@@ -76,5 +76,8 @@ Klik<a href=${link}> hier </a>om te openen.
     logger.info("Message sent: %s", info.messageId);
 }
 
-
+export async function removeMelding(id: number) {
+    await knex("meldingen_opleidingen").where({meldingId: id}).del();
+    await knex("meldingen").where({id}).del();
+}
 

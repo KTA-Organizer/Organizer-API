@@ -52,5 +52,16 @@ router.post("/", async function(req, res) {
     return;
 });
 
+router.delete("/:id", [
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function(req, res, matchedData) {
+    const melding = await meldingenService.fetchMelding(matchedData.id);
+    if (!melding) {
+        throw new HttpError(404, "Melding doesn't exist");
+    }
+    await meldingenService.removeMelding(matchedData.id);
+}));
+
 
 export default router;
