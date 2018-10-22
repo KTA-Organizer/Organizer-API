@@ -80,3 +80,9 @@ export async function updateUser(userData: {
     .where({ id: userData.id })
     .update(userData);
 }
+
+export async function removeUser(id: number) {
+  await knex("users")
+    .where({ id })
+    .del();
+}

@@ -39,7 +39,13 @@ export async function insertStudentModule(data: {
 }
 
 export async function removeStudentModule(id: number) {
-  await knex("studenten_modules")
-    .where({ studentId: id })
-    .del();
+  console.log(id);
+  const modules = await knex("studenten_modules")
+    .select("*")
+    .where({ studentId: id });
+  if (modules.length > 0) {
+    await knex("studenten_modules")
+      .where({ studentId: id })
+      .del();
+  }
 }
