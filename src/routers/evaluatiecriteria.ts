@@ -54,11 +54,23 @@ router.put("/:id", [
     check("gewicht").exists(),
     check("creatorId").exists(),
 ], executor(async function (req, res, {id, doelstellingId, name, inGebruik, gewicht, creatorId }) {
-    const existingAspect = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(id);
-    if (!existingAspect) {
+    const existingEvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(id);
+    if (!existingEvaluatieCriteria) {
         throw new HttpError(400, "A evaluatieCriteria with this id doesn't exist");
     }
     await evaluatieCriteriaService.updateEvaluatieCriteria({id, doelstellingId, name, inGebruik, gewicht, creatorId});
+}));
+
+router.delete("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, res, matchedData) {
+    const existingEvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(matchedData.id);
+    if (!existingEvaluatieCriteria) {
+        throw new HttpError(400, "A evaluatieCriteria with this id doesn't exist");
+    }
+    await evaluatieCriteriaService.deleteEvaluatieCriteria(matchedData.id);
 }));
 
 

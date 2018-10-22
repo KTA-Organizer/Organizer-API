@@ -43,3 +43,7 @@ export async function insertEvaluatieCriteria(data: { doelstellingId: number, na
 export async function updateEvaluatieCriteria(data: { id: number, doelstellingId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
     await knex("evaluatiecriteria").where("id", data.id).update( data );
 }
+
+export async function deleteEvaluatieCriteria(id: number) {
+    await knex("evaluatiecriteria").where("id", id).del();
+}
