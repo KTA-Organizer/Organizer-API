@@ -241,6 +241,30 @@ describe("Evaluaties API", () => {
     });
 });
 
+describe("EvaluatieCriteria API", () => {
+    const agent = request.agent(app);
+
+    beforeAll(authWithTest(agent));
+
+    describe("GET /api/evaluatieCriteria/:id", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/evaluatieCriteria/1")
+                .expect(200);
+        });
+
+    });
+
+    describe("GET /api/evaluatieCriteria", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/evaluatieCriteria")
+                .expect(200);
+        });
+
+    });
+});
+
 describe("Doelstellings Categorie API", () => {
   const agent = request.agent(app);
 
