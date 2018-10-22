@@ -8,12 +8,6 @@ branches:
   only:
   - master
   - dev
-deploy:
-  skip_cleanup: true
-  provider: gae
-  keyfile: client-secret.json
-  project: ktatje-219919
-  on: master
 before_install:
 - openssl aes-256-cbc -K $encrypted_195ead8d2d0a_key -iv $encrypted_195ead8d2d0a_iv
   -in client-secret.json.enc -out client-secret.json -d
