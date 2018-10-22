@@ -1,10 +1,12 @@
 import request from "supertest";
 import app from "../src/app";
+import * as usersService from "../src/services/users";
+import { User } from "../src/models/User";
 
 jest.setTimeout(30000);
 
 const TEST_LOGIN_DATA = {
-  email: "student1@hotmail.com",
+  email: "kenny.depecker@student.howest.be",
   password: "test"
 };
 
@@ -20,6 +22,22 @@ const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
   teacherId: 4
+};
+
+const TEST_STUDENT_DATA = {
+    "firstname": "jeanke",
+    "lastname": "bonny",
+    "email": "jeankebonnytje@gmail.com",
+    "opleidingId": 1,
+    "moduleIds": [1, 2]
+};
+
+const TEST_STUDENT_DATA_UPDATE = {
+    "firstname": "jeanke",
+    "lastname": "bonny",
+    "email": "jeankebonnyy@gmail.com",
+    "opleidingId": 1,
+    "moduleIds": [1, 2]
 };
 
 const TEST_MELDING_DATA_FAILED = {
@@ -375,5 +393,22 @@ describe("Student API", () => {
       });
 
   });
-});
+
+  // describe("POST /api/students", () => {
+  //
+  //     afterEach(function(done) {
+  //         const newUser = usersService.fetchUserByEmail(TEST_STUDENT_DATA.email) as any;
+  //         console.log(newUser);
+  //         return agent.del("/api/students/" + newUser.id);
+  //     });
+  //
+  //     it("should return 200 on succesful student post", () => {
+  //                   return agent
+  //                       .post("/api/students")
+  //                       .send(TEST_STUDENT_DATA)
+  //                       .expect(200);
+  //               });
+  //           });
+ });
+
 
