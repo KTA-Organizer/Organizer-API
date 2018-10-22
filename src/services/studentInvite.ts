@@ -1,13 +1,13 @@
 import { sendMail } from "../config/mail";
 import { User } from "../models/User";
-import { URL } from "../util/constants";
+import { config } from "../config/storage";
 import logger from "../util/logger";
 import * as usersService from "../services/users";
 import * as accessTokensService  from "./accessTokens";
 import { AccessToken } from "../models/AccessToken";
 
 function getInviteLink(token: string) {
-  return `${URL}/invitation?token=${token}`;
+  return `${config.url}/invitation?token=${token}`;
 }
 
 async function sendStudentInviteMail(name: string, to: string, token: string) {

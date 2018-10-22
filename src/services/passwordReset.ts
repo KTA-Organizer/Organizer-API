@@ -1,13 +1,13 @@
 import { sendMail } from "../config/mail";
 import logger from "../util/logger";
-import { URL } from "../util/constants";
+import { config } from "../config/storage";
 import { User } from "../models/User";
 import * as usersService from "../services/users";
 import * as accessTokensService  from "./accessTokens";
 import { AccessToken } from "../models/AccessToken";
 
 function getResetLink(resetToken: string) {
-  return `${URL}/reset?token=${resetToken}`;
+  return `${config.url}/reset?token=${resetToken}`;
 }
 
 async function sendResetMail(to: string, resetToken: string) {

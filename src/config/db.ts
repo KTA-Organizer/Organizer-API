@@ -1,19 +1,19 @@
 import Knex, { Config } from "knex";
-import { GCLOUD_SQL_INSTANCE, MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE } from "../util/constants";
+import { config } from "./storage";
 
 let instance: Knex;
 export default function getInstance() {
   if (!instance) {
     const connection: Config["connection"] = {
-      user: MYSQL_USER,
-      password: MYSQL_PASSWORD,
-      database: MYSQL_DATABASE
+      user: config.mysql.user,
+      password: config.mysql.password,
+      database: config.mysql.database
     };
-    if (!MYSQL_HOST && GCLOUD_SQL_INSTANCE) {
-      connection.socketPath = `/cloudsql/${GCLOUD_SQL_INSTANCE}`;
+    if (!config.mysql.host) {
+      connection.socketPath = `/cloudsql/${config.gcloud.sqlInstance}`;
     } else {
-      connection.host = MYSQL_HOST;
-      connection.port = MYSQL_PORT;
+      connection.host = config.mysql.host;
+      connection.port = config.mysql.port;
     }
     instance = Knex({
       client: "mysql2",

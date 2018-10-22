@@ -1,25 +1,30 @@
 import errorHandler from "errorhandler";
-import { ENVIRONMENT } from "./util/constants";
+import { ENVIRONMENT } from "./util/env";
 
-import app from "./app";
+import { loadConfig } from "./config/storage";
 
-/**
- * Error Handler. Provides full stack - remove for production
- */
-if (ENVIRONMENT !== "production") {
-  app.use(errorHandler());
+async function main() {
+  await loadConfig();
+
+  const app = require("./app").default;
+  /**
+   * Error Handler. Provides full stack - remove for production
+   */
+  if (ENVIRONMENT !== "production") {
+    app.use(errorHandler());
+  }
+
+  /**
+   * Start Express server.
+   */
+  const server = app.listen(app.get("port"), () => {
+    console.log(
+      "  App is running at http://localhost:%d in %s mode",
+      app.get("port"),
+      app.get("env")
+    );
+    console.log("  Press CTRL-C to stop\n");
+  });
+
 }
-
-/**
- * Start Express server.
- */
-const server = app.listen(app.get("port"), () => {
-  console.log(
-    "  App is running at http://localhost:%d in %s mode",
-    app.get("port"),
-    app.get("env")
-  );
-  console.log("  Press CTRL-C to stop\n");
-});
-
-export default server;
+main();

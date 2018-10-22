@@ -20,9 +20,7 @@ public/css/main.css
 coverage
 
 # API keys and secrets
-.env
-.env.*
-!.env.example
+config.*.json
 
 # Gcloud key-file
 client-secret.json

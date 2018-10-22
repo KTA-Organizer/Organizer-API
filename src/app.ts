@@ -6,9 +6,9 @@ import lusca from "lusca";
 import morgan from "morgan";
 import path from "path";
 import expressValidator from "express-validator";
-import { SESSION_SECRET } from "./util/constants";
 import passport from "passport";
 import cors from "cors";
+import { config } from "./config/storage";
 
 // Router (route handlers)
 import appRouter from "./routers/app";
@@ -19,7 +19,7 @@ import apiRouter from "./routers/api";
 const app = express();
 
 // Express configuration
-app.set("port", process.env.PORT);
+app.set("port", config.port);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
 app.use(bodyParser.json());
@@ -28,7 +28,7 @@ app.use(expressValidator());
 app.use(session({
   resave: true,
   saveUninitialized: true,
-  secret: SESSION_SECRET,
+  secret: config.sessionSecret,
 }));
 app.use(cors({
   credentials: true,

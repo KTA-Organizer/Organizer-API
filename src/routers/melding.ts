@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
-import { URL } from "../util/constants";
+import { config } from "../config/storage";
 import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as meldingenService from "../services/meldingen";
@@ -46,7 +46,7 @@ router.post("/", async function(req, res) {
     const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
     let users = await studentenService.fetchAllStudents();
     users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);
-    await meldingenService.requestAlertMelding(users, URL + "/meldingen/" + meldingId);
+    await meldingenService.requestAlertMelding(users, config.url + "/meldingen/" + meldingId);
     res.location("/meldingen/" + meldingId)
         .sendStatus(201);
     return;
