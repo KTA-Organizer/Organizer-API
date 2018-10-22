@@ -11,6 +11,7 @@ import doelstellingenRouter from "./doelstelling";
 import evaluatiesRouter from "./evaluaties";
 import studentmodulesRouter from "./studentmodule";
 import aspectenRouter from "./aspect";
+import evaluatieCriteriaRouter from "./evaluatiecriteria";
 
 const router = Router({
   mergeParams: true,
@@ -29,6 +30,7 @@ router.use("/doelstellingen", doelstellingenRouter);
 router.use("/evaluaties", evaluatiesRouter);
 router.use("/studentModules", studentmodulesRouter);
 router.use("/aspecten", aspectenRouter);
+router.use("/evaluatieCriteria", evaluatieCriteriaRouter);
 
 
 export default router;

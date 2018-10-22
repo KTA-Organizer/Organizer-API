@@ -8,6 +8,15 @@ export async function fetchEvaluatieCriteria() {
   return rows as EvaluatieCriteria[];
 }
 
+export async function fetchEvaluatieCriteriaById(id: number)  {
+    const rows = await knex("evaluatiecriteria")
+        .select("*")
+        .where({ id });
+    if (rows.length < 1)
+        return;
+    return await rows[0];
+}
+
 async function rowsToFullEvaluatieCriteria(rows: any) {
   const criteria = rows as EvaluatieCriteria[];
   const criteriaIds = criteria.map(c => c.id);
