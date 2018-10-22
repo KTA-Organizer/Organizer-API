@@ -50,26 +50,26 @@ router.post(
     check("opleidingIds").exists()
   ],
   executor(async function(req, res, matchedData) {
-    const meldingIds: number[] = [];
     const teacherId = req.user.id;
+    const meldingId = await meldingenService.insertMelding({
+      tekst: matchedData.tekst,
+      titel: matchedData.titel,
+      teacherId
+    });
     for (const opleidingId of matchedData.opleidingIds) {
-      console.log("OpleidingId: " + opleidingId);
-      const meldingId = await meldingenService.insertMelding({
-        tekst: matchedData.tekst,
-        titel: matchedData.titel,
-        teacherId
-      });
-      meldingIds.push(meldingId);
       await meldingenService.addMeldingWithOpleiding(meldingId, +opleidingId);
     }
-    // TODO send mails
-    //     /*const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
-    //     let users = await studentenService.fetchAllStudents();
-    //     users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);
-    //     await meldingenService.requestAlertMelding(users, URL + "/meldingen/" + meldingId);*/
-    //     res.location("/meldingen/" + meldingId)
-    //         .sendStatus(201);
-    //     return;
+    const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(
+      meldingId
+    );
+    let users = await studentenService.fetchAllStudents();
+    users = users.filter(user => opleidingenIds.indexOf(user.opleidingId) >= 0);
+    await meldingenService.requestAlertMelding(
+      users,
+      URL + "/meldingen/" + meldingId
+    );
+    res.location("/meldingen/" + meldingId).sendStatus(201);
+    return;
   })
 );
 

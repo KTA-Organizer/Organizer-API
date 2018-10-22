@@ -41,7 +41,6 @@ export async function fetchOpleidingForStudent(id: number) {
     .select("opleidingId")
     .where({ studentId: id });
   if (opleiding_id.length >= 1) {
-    console.log(opleiding_id[0].opleidingId);
     const opleiding = await fetchOpleiding(opleiding_id[0].opleidingId);
     return opleiding;
   }
