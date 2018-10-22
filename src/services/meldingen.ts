@@ -1,5 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "./db";
+import getKnexInstance from "../config/db";
 const knex = getKnexInstance();
 import { Melding } from "../models/Melding";
 import * as teachersService from "../services/teachers";
@@ -41,7 +41,6 @@ export async function insertMelding(meldingToAdd: any) {
                 "titel": meldingToAdd.titel,
                 "datum": new Date()
             });
-        console.log(meldingId);
         return await meldingId;
     } catch (ex) {
         return;

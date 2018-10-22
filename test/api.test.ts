@@ -8,6 +8,14 @@ const TEST_LOGIN_DATA = {
   password: "test"
 };
 
+const TEST_ASPECT_DATA = {
+    "evaluatiecriteriumId": 36,
+    "name": "test",
+    "inGebruik": 1,
+    "gewicht": 1,
+    "creatorId": 3
+};
+
 const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
@@ -182,6 +190,31 @@ describe("Meldingen API", () => {
   //               .expect(404);
   //       });
   //   });
+});
+
+describe("Aspecten API", () => {
+    const agent = request.agent(app);
+
+    beforeAll(authWithTest(agent));
+
+    describe("GET /api/aspecten", () => {
+
+        it("should return 200 OK", () => {
+            return agent.get("/api/aspecten")
+                .expect(200);
+        });
+
+    });
+
+    // describe("POST /api/aspecten", () => {
+
+    //   it("should return 200 on succesful aspect post", () => {
+    //           return agent
+    //               .post("/api/aspecten")
+    //               .send(TEST_ASPECT_DATA)
+    //               .expect(200);
+    //       });
+    //   });
 });
 
 describe("Evaluaties API", () => {

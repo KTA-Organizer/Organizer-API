@@ -1,4 +1,4 @@
-import getKnexInstance from "./db";
+import getKnexInstance from "../config/db";
 import { EvaluatieCriteria } from "../models/EvaluatieCriteria";
 import * as aspectenService from "./aspecten";
 const knex = getKnexInstance();

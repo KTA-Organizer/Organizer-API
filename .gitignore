@@ -24,6 +24,12 @@ coverage
 .env.*
 !.env.example
 
+# Gcloud key-file
+client-secret.json
+
+*.tar
+!*.enc
+
 # Dependency directory
 node_modules
 bower_components

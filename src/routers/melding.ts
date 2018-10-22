@@ -43,10 +43,10 @@ router.post("/", async function(req, res) {
             .send("Unable to add Melding, data is missing or incorrect");
         return;
     }
-    const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
+    /*const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
     let users = await studentenService.fetchAllStudents();
     users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);
-    await meldingenService.requestAlertMelding(users, URL + "/meldingen/" + meldingId);
+    await meldingenService.requestAlertMelding(users, URL + "/meldingen/" + meldingId);*/
     res.location("/meldingen/" + meldingId)
         .sendStatus(201);
     return;

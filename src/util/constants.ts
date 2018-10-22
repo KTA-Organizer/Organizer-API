@@ -2,16 +2,19 @@ import logger from "./logger";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file, where API keys, database connection and passwords are configured
-const environment = process.env.GOOGLE_CLOUD_PROJECT ? "production" : "development";
+const environment = process.env.NODE_ENV === "test" ? "test" : process.env.GOOGLE_CLOUD_PROJECT ? "production" : "development";
 dotenv.config({ path: `.env.${environment}` });
 
 const env = process.env;
 
-export const ENVIRONMENT = env.NODE_ENV;
+export const ENVIRONMENT = environment;
 export const PORT = parseInt(env.PORT);
 export const SESSION_SECRET = env.SESSION_SECRET;
 
-export const MYSQL_SOCKET = env.MYSQL_SOCKET;
+export const GCLOUD_PROJECT = env.GCLOUD_PROJECT;
+export const GCLOUD_FRONTEND_BUCKET = env.GCLOUD_FRONTEND_BUCKET;
+export const GCLOUD_KEYFILE = env.GCLOUD_KEYFILE;
+export const GCLOUD_SQL_INSTANCE = env.GCLOUD_SQL_INSTANCE;
 export const MYSQL_HOST = env.MYSQL_HOST;
 export const MYSQL_PORT = parseInt(env.MYSQL_PORT);
 export const MYSQL_USER = env.MYSQL_USER;
@@ -29,6 +32,12 @@ export const URL = env.URL;
 const requiredConstants = [
     PORT,
     SESSION_SECRET,
+    GCLOUD_PROJECT,
+    GCLOUD_FRONTEND_BUCKET,
+    GCLOUD_KEYFILE,
+    MYSQL_DATABASE,
+    MYSQL_USER,
+    MYSQL_PASSWORD,
     MAIL_FROM,
     MAIL_SMTP_HOST,
     MAIL_SMTP_PORT,
