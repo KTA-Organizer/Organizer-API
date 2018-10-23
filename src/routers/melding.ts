@@ -10,6 +10,7 @@ import { usersOnly, teachersOnly } from "../util/accessMiddleware";
 import * as passwordResetService from "../services/passwordReset";
 import { Opleiding } from "../models/Opleiding";
 import * as userService from "../services/users";
+import { User } from "../models/User";
 
 const router = Router({
   mergeParams: true,
@@ -50,11 +51,11 @@ router.post(
     check("opleidingIds").exists()
   ],
   executor(async function(req, res, matchedData) {
-    const teacherId = req.user.id;
+    const teacher = req.user;
     const meldingId = await meldingenService.insertMelding({
       tekst: matchedData.tekst,
       titel: matchedData.titel,
-      teacherId
+      teacherId: teacher.id
     });
     for (const opleidingId of matchedData.opleidingIds) {
       await meldingenService.addMeldingWithOpleiding(meldingId, +opleidingId);
@@ -66,7 +67,8 @@ router.post(
     users = users.filter(user => opleidingenIds.indexOf(user.opleidingId) >= 0);
     await meldingenService.requestAlertMelding(
       users,
-      URL + "/meldingen/" + meldingId
+      URL + "/meldingen/" + meldingId,
+      {titel: matchedData.titel, teacher: teacher}
     );
     res.location("/meldingen/" + meldingId).sendStatus(201);
     return;

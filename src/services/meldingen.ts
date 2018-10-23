@@ -61,16 +61,18 @@ export async function fetchOpleidingenFromMeldingAsArray(id: number) {
   return await rows;
 }
 
-export async function requestAlertMelding(users: User[], link: string) {
+export async function requestAlertMelding(users: User[], link: string, data: {titel: string, teacher: any}) {
   for (const user of users) {
-    await sendNewMeldingMail(user.email, link);
+    await sendNewMeldingMail(user.email, link, data);
   }
 }
 
-async function sendNewMeldingMail(to: string, link: string) {
+async function sendNewMeldingMail(to: string, link: string, data: {titel: string, teacher: any}) {
   const html = `
 Opgelet! Eén nieuwe melding ontvangen!
 Klik<a href=${link}> hier </a>om te openen.
+<p>Melding toegevoegd door <strong>${data.teacher.firstname} ${data.teacher.lastname}</strong>:</p>
+<p>${data.titel}</p>
   `;
   const info: any = await sendMail({
     to,
