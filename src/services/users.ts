@@ -86,3 +86,7 @@ export async function removeUser(id: number) {
     .where({ id })
     .del();
 }
+
+export async function fetchAll() {
+  return await knex("users").select("*");
+}
