@@ -94,5 +94,6 @@ export async function removeUser(id: number) {
 }
 
 export async function fetchAll() {
+  const knex = await getKnex();
   return await knex("users").select("*");
 }
