@@ -2,13 +2,13 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { Storage } from "@google-cloud/storage";
-import { ENVIRONMENT, GAE_INSTANCE, GCLOUD_KEY_FILE, GCLOUD_CONFIG_BUCKET } from "../util/env";
+import { ENVIRONMENT, GOOGLE_CLOUD_PROJECT, GCLOUD_KEY_FILE, GCLOUD_CONFIG_BUCKET } from "../util/env";
 import { Config } from "../models/Config";
 
 const configFileName = `config.${ENVIRONMENT}.json`;
 
 let storageOptions;
-if (!GAE_INSTANCE) {
+if (!GOOGLE_CLOUD_PROJECT) {
   const keyFilePath = path.join(__dirname, "../../", GCLOUD_KEY_FILE);
   const keyFile = JSON.parse(fs.readFileSync(keyFilePath, "utf8"));
   storageOptions = {

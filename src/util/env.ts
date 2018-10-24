@@ -7,7 +7,7 @@ dotenv.config();
 const env = process.env;
 
 export const ENVIRONMENT = env.NODE_ENV || "development";
-export const GAE_INSTANCE = env.GAE_INSTANCE;
+export const GOOGLE_CLOUD_PROJECT = env.GOOGLE_CLOUD_PROJECT;
 export const GCLOUD_KEY_FILE = env.GCLOUD_KEY_FILE;
 export const GCLOUD_CONFIG_BUCKET = env.GCLOUD_CONFIG_BUCKET;
 
