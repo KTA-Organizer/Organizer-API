@@ -6,7 +6,6 @@ import * as usersService from "./users";
 
 async function rowToStudentWithOpleiding(row: any) {
     const studentModule = await studentmodulesService.fetchStudentModulesWithStudentId(row.id);
-    console.log(studentModule + "        "  + row.id);
     if (studentModule === undefined) {
         return row;
     }

@@ -22,7 +22,10 @@ const storage = new Storage(storageOptions);
 export const configBucket = storage.bucket(GCLOUD_CONFIG_BUCKET);
 
 const fileToJson = (file: any) => new Promise((resolve, reject) => {
-  const tmpFile = path.join(os.tmpdir(), "file.json");
+  const tmpDir = path.resolve(os.tmpdir());
+  const tmpFile = path.join(tmpDir, "file.json");
+  console.log(tmpDir);
+  console.log(tmpFile);
   file.createReadStream()
   .on("error", reject)
   .on("end", () => {
