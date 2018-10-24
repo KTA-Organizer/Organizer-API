@@ -11,6 +11,3 @@ branches:
 before_install:
 - openssl aes-256-cbc -K $encrypted_195ead8d2d0a_key -iv $encrypted_195ead8d2d0a_iv
   -in client-secret.json.enc -out client-secret.json -d
-env:
-  global:
-    - TMPDIR=/tmp
