@@ -1,6 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import * as studentmodulesService from "../services/studentmodules";
 import * as studentInviteService from "./studentInvite";
 import * as usersService from "./users";
@@ -18,6 +17,7 @@ async function rowToStudentWithOpleiding(row: any) {
 }
 
 export async function fetchStudent(id: number)  {
+    const knex = await getKnex();
     const rows = await knex("studenten")
         .select("*")
         .where({studentId: id});
@@ -27,6 +27,7 @@ export async function fetchStudent(id: number)  {
 }
 
 export async function fetchAllStudents()  {
+    const knex = await getKnex();
     const studentIds = await knex("studenten")
         .select("studentId")
         .map((dataPacket: any) => dataPacket.studentId);
@@ -42,6 +43,7 @@ export async function fetchAllStudents()  {
 }
 
 async function makeUserStudent(userid: number) {
+    const knex = await getKnex();
     await knex("studenten").insert({ studentid: userid, stillStudent: 1 });
 }
 
@@ -65,6 +67,7 @@ export async function updateStudent(data: { id: number, firstname: string, lastn
 }
 
 export async function removeStudent(id: number) {
+    const knex = await getKnex();
     await studentmodulesService.removeStudentModule(id);
     await knex("studenten").where({studentId: id}).del();
     await knex("access_tokens").where({userid: id}).del();

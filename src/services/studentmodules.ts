@@ -1,6 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { StudentModule } from "../models/StudentModule";
 import * as opleidingenService from "../services/opleidingen";
 
@@ -12,6 +11,7 @@ async function rowToStudentModule(row: any) {
 }
 
 export async function fetchAllStudentModules() {
+  const knex = await getKnex();
   const rows = await knex("studenten_modules")
     .select("*")
     .map(rowToStudentModule);
@@ -20,6 +20,7 @@ export async function fetchAllStudentModules() {
 }
 
 export async function fetchStudentModulesWithStudentId(id: number) {
+  const knex = await getKnex();
   const rows = await knex("studenten_modules")
     .select("*")
     .where({ studentId: id })
@@ -35,11 +36,12 @@ export async function insertStudentModule(data: {
   moduleId: number;
   opleidingId: number;
 }) {
+  const knex = await getKnex();
   await knex("studenten_modules").insert({ ...data, status: "Volgt" });
 }
 
 export async function removeStudentModule(id: number) {
-  console.log(id);
+  const knex = await getKnex();
   const modules = await knex("studenten_modules")
     .select("*")
     .where({ studentId: id });

@@ -1,9 +1,9 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 
 
 export async function fetchTeacher(id: number)  {
+    const knex = await getKnex();
     const rows = await knex("teachers")
         .select("*")
         .where({teacherId: id});

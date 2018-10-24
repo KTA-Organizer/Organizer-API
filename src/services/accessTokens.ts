@@ -1,15 +1,16 @@
 import { AccessToken } from "../models/AccessToken";
 import { genRandomHash } from "../util/randomHash";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 
 export async function createAccessToken(userid: number) {
   const token = genRandomHash();
+  const knex = await getKnex();
   const ids = await knex("access_tokens").insert({ userid, token });
   return token;
 }
 
 export async function deleteAccessToken(resetToken: string) {
+  const knex = await getKnex();
   await knex("access_tokens").delete().where("token", resetToken);
 }
 
@@ -19,6 +20,7 @@ function rowToAccessToken(row: any) {
 }
 
 export async function fetchAccessToken(token: string) {
+  const knex = await getKnex();
   const rows = await knex("access_tokens").select("*").where("token", token);
   if (rows.length !== 1) {
     return;

@@ -1,12 +1,13 @@
 import { sendMail } from "../config/mail";
 import { User } from "../models/User";
-import { config } from "../config/storage";
+import { loadConfig } from "../config/storage";
 import logger from "../util/logger";
 import * as usersService from "../services/users";
 import * as accessTokensService  from "./accessTokens";
 import { AccessToken } from "../models/AccessToken";
 
-function getInviteLink(token: string) {
+async function getInviteLink(token: string) {
+  const config = await loadConfig();
   return `${config.url}/invitation?token=${token}`;
 }
 
@@ -14,7 +15,7 @@ async function sendStudentInviteMail(name: string, to: string, token: string) {
   const html = `
 Beste ${name},
 U bent uitgenodigd om een gebruiker aan te maken op het KTA platform.
-<a href=${getInviteLink(token)}>Gebruiker aanmaken</a>
+<a href=${await getInviteLink(token)}>Gebruiker aanmaken</a>
   `;
 
   const info: any = await sendMail({

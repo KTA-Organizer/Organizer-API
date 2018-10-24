@@ -1,9 +1,10 @@
 import Knex, { Config } from "knex";
-import { config } from "./storage";
+import { loadConfig } from "./storage";
 
-let instance: Knex;
-export default function getInstance() {
-  if (!instance) {
+let knex: Knex;
+export async function getKnex() {
+  const config = await loadConfig();
+  if (!knex) {
     const connection: Config["connection"] = {
       user: config.mysql.user,
       password: config.mysql.password,
@@ -15,11 +16,11 @@ export default function getInstance() {
       connection.host = config.mysql.host;
       connection.port = config.mysql.port;
     }
-    instance = Knex({
+    knex = Knex({
       client: "mysql2",
       connection,
       pool: { min: 1, max: 10 }
     });
   }
-  return instance;
+  return knex;
 }

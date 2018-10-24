@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
-import { config } from "../config/storage";
+import { loadConfig } from "../config/storage";
 import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as meldingenService from "../services/meldingen";
@@ -63,6 +63,7 @@ router.post(
       await meldingenService.addMeldingWithOpleiding(meldingId, +opleidingId);
     }
     // TODO send mails
+    //     const config = await loadConfig():
     //     /*const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
     //     let users = await studentenService.fetchAllStudents();
     //     users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);

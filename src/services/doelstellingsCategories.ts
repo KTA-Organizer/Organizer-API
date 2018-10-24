@@ -1,6 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 import * as usersService from "../services/users";
 import * as modulesService from "../services/modules";
@@ -18,6 +17,7 @@ async function rowToDoelstellingsCategorie(row: any) {
 }
 
 export async function fetchAllDoelstellingsCategories() {
+  const knex = await getKnex();
   const rows = await knex("doelstellingscategories")
     .select("*")
     .map(rowToDoelstellingsCategorie);
@@ -26,6 +26,7 @@ export async function fetchAllDoelstellingsCategories() {
 }
 
 export async function fetchDoelstellingsCategorie(id: number) {
+  const knex = await getKnex();
   const rows = await knex("doelstellingscategories")
     .select("*")
     .where({ id });
@@ -48,6 +49,7 @@ export async function rowsToFullDoelstellingsCategory(rows: any[]) {
 }
 
 export async function fetchDoelstellingsCategoryForModules(moduleIds: number[]) {
+  const knex = await getKnex();
   const rows = await knex("doelstellingscategories")
     .select("*")
     .whereIn("moduleId", moduleIds);
