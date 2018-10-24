@@ -1,9 +1,5 @@
-import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { Doelstelling } from "../models/Doelstelling";
-import * as usersService from "../services/users";
-import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 import * as evaluatieCriteriaService from "./evaluatieCriteria";
 
 async function rowToDoelstelling(row: any) {
@@ -14,6 +10,7 @@ async function rowToDoelstelling(row: any) {
 }
 
 export async function fetchAllDoelstellingen() {
+  const knex = await getKnex();
   const rows = await knex("doelstellingen")
     .select("*")
     .map(rowToDoelstelling);
@@ -22,6 +19,7 @@ export async function fetchAllDoelstellingen() {
 }
 
 export async function fetchDoelstelling(id: number) {
+  const knex = await getKnex();
   const rows = await knex("doelstellingen")
     .select("*")
     .where({ id });
@@ -43,6 +41,7 @@ async function rowsToFullDoelstelling(rows: any[]) {
 }
 
 export async function fetchDoelstellingenForCategories(categorieIds: number[]) {
+  const knex = await getKnex();
   const rows = await knex("doelstellingen")
     .select("*")
     .whereIn("doelstellingscategorieId", categorieIds);

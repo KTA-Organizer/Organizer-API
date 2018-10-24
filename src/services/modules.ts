@@ -1,13 +1,7 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { Module } from "../models/Module";
-import * as teachersService from "../services/teachers";
-import * as opleidingenService from "../services/opleidingen";
-import * as usersService from "../services/users";
-import * as doelstellingService from "../services/doelstellingen";
 import * as doelstellingCategoryService from "../services/doelstellingsCategories";
-import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
 
 async function rowToModule(row: any) {
   /*if (row.teacherId) {
@@ -20,6 +14,7 @@ async function rowToModule(row: any) {
 }
 
 export async function fetchAllModules() {
+  const knex = await getKnex();
   const rows = await knex("modules")
     .select("*")
     .map(rowToModule);
@@ -28,6 +23,7 @@ export async function fetchAllModules() {
 }
 
 export async function fetchModule(id: number) {
+  const knex = await getKnex();
   const rows = await knex("modules")
     .select("*")
     .where({ id });
@@ -50,6 +46,7 @@ async function rowsToModules(rows: any) {
 }
 
 export async function fetchModulesForOpleiding(id: number) {
+  const knex = await getKnex();
   const rows = await knex("modules")
     .select("*")
     .where({ opleidingId: id });
@@ -57,6 +54,7 @@ export async function fetchModulesForOpleiding(id: number) {
 }
 
 export async function fetchModulesForStudent(studId: number) {
+  const knex = await getKnex();
   const rows = await knex("studenten_modules")
     .select("moduleId")
     .where({ studentId: studId });

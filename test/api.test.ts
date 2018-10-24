@@ -1,7 +1,6 @@
 import request from "supertest";
-import app from "../src/app";
-import * as usersService from "../src/services/users";
-import { User } from "../src/models/User";
+import { loadConfig } from "../src/config/storage";
+import { createApp } from "../src/app";
 
 jest.setTimeout(30000);
 
@@ -45,12 +44,21 @@ const TEST_MELDING_DATA_FAILED = {
     titel: "Test"
 };
 
-const authWithTest = (agent) => () => {
-  return agent.post("/api/auth/login").send(TEST_LOGIN_DATA);
-};
+async function authWithTest (agent) {
+  await agent.post("/api/auth/login").send(TEST_LOGIN_DATA);
+}
+
+async function getAgent() {
+  const config = await loadConfig();
+  const app = createApp(config);
+  return request.agent(app);
+}
 
 describe("Authentication API", () => {
-  const agent = request.agent(app);
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+  });
 
   describe("POST /api/auth/login", () => {
 
@@ -109,9 +117,11 @@ describe("Authentication API", () => {
 });
 
 describe("Users API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/users/current", () => {
 
@@ -134,9 +144,11 @@ describe("Users API", () => {
 });
 
 describe("Opleidingen API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/opleidingen/:id", () => {
 
@@ -167,9 +179,11 @@ describe("Opleidingen API", () => {
 });
 
 describe("Meldingen API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/meldingen/:id", () => {
 
@@ -211,9 +225,11 @@ describe("Meldingen API", () => {
 });
 
 describe("Aspecten API", () => {
-    const agent = request.agent(app);
-
-    beforeAll(authWithTest(agent));
+    let agent: any;
+    beforeAll(async function() {
+      agent = await getAgent();
+      await authWithTest(agent);
+    });
 
     describe("GET /api/aspecten", () => {
 
@@ -236,9 +252,11 @@ describe("Aspecten API", () => {
 });
 
 describe("Evaluaties API", () => {
-    const agent = request.agent(app);
-
-    beforeAll(authWithTest(agent));
+    let agent: any;
+    beforeAll(async function() {
+      agent = await getAgent();
+      await authWithTest(agent);
+    });
 
     describe("GET /api/evaluaties/:id", () => {
 
@@ -260,9 +278,11 @@ describe("Evaluaties API", () => {
 });
 
 describe("EvaluatieCriteria API", () => {
-    const agent = request.agent(app);
-
-    beforeAll(authWithTest(agent));
+    let agent: any;
+    beforeAll(async function() {
+      agent = await getAgent();
+      await authWithTest(agent);
+    });
 
     describe("GET /api/evaluatieCriteria/:id", () => {
 
@@ -284,9 +304,11 @@ describe("EvaluatieCriteria API", () => {
 });
 
 describe("Doelstellings Categorie API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/doelstellingscategorie/:id", () => {
 
@@ -308,9 +330,11 @@ describe("Doelstellings Categorie API", () => {
 });
 
 describe("Doelstelling API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/doelstellingen/:id", () => {
 
@@ -333,9 +357,11 @@ describe("Doelstelling API", () => {
 
 
 describe("Modules API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/modules/:id", () => {
 
@@ -357,9 +383,11 @@ describe("Modules API", () => {
 });
 
 describe("Teacher API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/teacher/:id", () => {
 
@@ -372,9 +400,11 @@ describe("Teacher API", () => {
 });
 
 describe("Student API", () => {
-  const agent = request.agent(app);
-
-  beforeAll(authWithTest(agent));
+  let agent: any;
+  beforeAll(async function() {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
   describe("GET /api/students/:id", () => {
 
@@ -410,5 +440,4 @@ describe("Student API", () => {
   //               });
   //           });
  });
-
 

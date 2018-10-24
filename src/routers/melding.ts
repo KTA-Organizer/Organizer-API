@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
-import { URL } from "../util/constants";
+import { loadConfig } from "../config/storage";
 import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as meldingenService from "../services/meldingen";
@@ -60,18 +60,15 @@ router.post(
     for (const opleidingId of matchedData.opleidingIds) {
       await meldingenService.addMeldingWithOpleiding(meldingId, +opleidingId);
     }
-    const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(
-      meldingId
-    );
-    let users = await studentenService.fetchAllStudents();
-    users = users.filter(user => opleidingenIds.indexOf(user.opleidingId) >= 0);
-    await meldingenService.requestAlertMelding(
-      users,
-      URL + "/meldingen/" + meldingId,
-      {titel: matchedData.titel, teacher: teacher}
-    );
-    res.location("/meldingen/" + meldingId).sendStatus(201);
-    return;
+    // TODO send mails
+    //     const config = await loadConfig():
+    //     /*const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
+    //     let users = await studentenService.fetchAllStudents();
+    //     users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);
+    //     await meldingenService.requestAlertMelding(users, config.url + "/meldingen/" + meldingId);*/
+    //     res.location("/meldingen/" + meldingId)
+    //         .sendStatus(201);
+    //     return;
   })
 );
 

@@ -1,6 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { Melding } from "../models/Melding";
 import * as teachersService from "../services/teachers";
 import { HttpError } from "../util/httpStatus";
@@ -15,6 +14,7 @@ async function rowToMelding(row: any) {
 }
 
 export async function fetchAllMeldingen() {
+  const knex = await getKnex();
   const rows = await knex("meldingen")
     .select("*")
     .map(rowToMelding);
@@ -23,6 +23,7 @@ export async function fetchAllMeldingen() {
 }
 
 export async function fetchMelding(id: number) {
+  const knex = await getKnex();
   const rows = await knex("meldingen")
     .select("*")
     .where({ id });
@@ -31,6 +32,7 @@ export async function fetchMelding(id: number) {
 }
 
 export async function insertMelding(meldingToAdd: any) {
+  const knex = await getKnex();
   try {
     const meldingId = await knex("meldingen").insert({
       tekst: meldingToAdd.tekst,
@@ -49,10 +51,12 @@ export async function addMeldingWithOpleiding(
   meldingId: number,
   opleidingId: number
 ) {
+  const knex = await getKnex();
   await knex("meldingen_opleidingen").insert({ meldingId, opleidingId });
 }
 
 export async function fetchOpleidingenFromMeldingAsArray(id: number) {
+  const knex = await getKnex();
   const rows = await knex("meldingen_opleidingen")
     .select("opleidingId")
     .where("meldingId", id)
@@ -83,6 +87,7 @@ Klik<a href=${link}> hier </a>om te openen.
 }
 
 export async function removeMelding(id: number) {
+  const knex = await getKnex();
   await knex("meldingen_opleidingen")
     .where({ meldingId: id })
     .del();

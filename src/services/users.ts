@@ -1,6 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { User, UserRole } from "../models/User";
 import * as studentenService from "./studenten";
 import * as teachersService from "./teachers";
@@ -31,6 +30,7 @@ export async function fetchUserRole(id: number): Promise<UserRole> {
 }
 
 export async function fetchUserPasswordByEmail(email: string) {
+  const knex = await getKnex();
   const rows = await knex("users")
     .select("password")
     .where({ email });
@@ -39,6 +39,7 @@ export async function fetchUserPasswordByEmail(email: string) {
 }
 
 export async function fetchUser(id: number) {
+  const knex = await getKnex();
   const rows = await knex("users")
     .select("*")
     .where({ id });
@@ -47,6 +48,7 @@ export async function fetchUser(id: number) {
 }
 
 export async function fetchUserByEmail(email: string) {
+  const knex = await getKnex();
   const rows = await knex("users")
     .select("*")
     .where({ email });
@@ -55,6 +57,7 @@ export async function fetchUserByEmail(email: string) {
 }
 
 export async function updatePassword(userid: number, password: string) {
+  const knex = await getKnex();
   const encryptedPass = await bcrypt.hash(password, 10);
   await knex("users")
     .update({ password: encryptedPass })
@@ -66,6 +69,7 @@ export async function insertUser(userData: {
   lastname: string;
   email: string;
 }) {
+  const knex = await getKnex();
   const insertedIds: number[] = await knex("users").insert(userData);
   return insertedIds[0];
 }
@@ -76,12 +80,14 @@ export async function updateUser(userData: {
   lastname: string;
   email: string;
 }) {
+  const knex = await getKnex();
   await knex("users")
     .where({ id: userData.id })
     .update(userData);
 }
 
 export async function removeUser(id: number) {
+  const knex = await getKnex();
   await knex("users")
     .where({ id })
     .del();

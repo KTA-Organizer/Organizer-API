@@ -1,6 +1,5 @@
 import logger from "../util/logger";
-import getKnexInstance from "../config/db";
-const knex = getKnexInstance();
+import { getKnex } from "../config/db";
 import { Evaluatie } from "../models/Evaluatie";
 import * as studentenService from "../services/studenten";
 import * as modulesService from "../services/modules";
@@ -17,6 +16,7 @@ async function rowToEvaluatie(row: any) {
 }
 
 export async function fetchAllEvaluaties() {
+  const knex = await getKnex();
   const rows = await knex("evaluaties")
     .select("*")
     .map(rowToEvaluatie);
@@ -25,6 +25,7 @@ export async function fetchAllEvaluaties() {
 }
 
 export async function fetchEvaluatie(id: number) {
+  const knex = await getKnex();
   const rows = await knex("evaluaties")
     .select("*")
     .where({ id });
@@ -33,6 +34,7 @@ export async function fetchEvaluatie(id: number) {
 }
 
 export async function fetchEvaluatiesForStudent(id: number) {
+  const knex = await getKnex();
   const rows = await knex("evaluaties")
     .select("*")
     .where({ studentId: id });

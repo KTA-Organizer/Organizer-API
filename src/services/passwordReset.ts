@@ -1,19 +1,20 @@
 import { sendMail } from "../config/mail";
 import logger from "../util/logger";
-import { URL } from "../util/constants";
+import { loadConfig } from "../config/storage";
 import { User } from "../models/User";
 import * as usersService from "../services/users";
 import * as accessTokensService  from "./accessTokens";
 import { AccessToken } from "../models/AccessToken";
 
-function getResetLink(resetToken: string) {
-  return `${URL}/reset?token=${resetToken}`;
+async function getResetLink(resetToken: string) {
+  const config = await loadConfig();
+  return `${config.url}/reset?token=${resetToken}`;
 }
 
 async function sendResetMail(to: string, resetToken: string) {
   const html = `
 Wachtwoord vergeten? Geen Paniek!
-<a href=${getResetLink(resetToken)}>Wachtwoord wijzigen</a>
+<a href=${await getResetLink(resetToken)}>Wachtwoord wijzigen</a>
 Als u geen aanvraag heeft gemaakt om u wachtwoord te veranderen hoeft u niets te doen.
   `;
 
