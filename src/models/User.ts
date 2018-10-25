@@ -28,10 +28,8 @@ export interface User {
   password?: string;
   gender: Gender;
   language: Language;
-  activationKey?: string;
   status: UserStatus;
   accountCreatedTimestamp: Date;
-  resetcode?: string;
   creatorId?: number;
 
   /**
