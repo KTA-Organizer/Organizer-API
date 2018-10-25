@@ -72,4 +72,16 @@ router.put("/:id", [
     await modulesService.updateModule({id, opleidingId, name, teacherId, creatorId});
 }));
 
+router.delete("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, res, matchedData) {
+    const existingModule = await modulesService.fetchModule(matchedData.id);
+    if (!existingModule) {
+        throw new HttpError(400, "A module with this id doesn't exist");
+    }
+    await modulesService.removeModule(matchedData.id);
+}));
+
 export default router;

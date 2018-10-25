@@ -74,3 +74,8 @@ export async function updateModule(data: { id: number, teacherId: number, name: 
     const knex = await getKnex();
     await knex("modules").where("id", data.id).update( data );
 }
+
+export async function removeModule(id: number) {
+    const knex = await getKnex();
+    await knex("modules").where("id", id).del();
+}
