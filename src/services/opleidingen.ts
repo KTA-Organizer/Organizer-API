@@ -49,7 +49,12 @@ export async function fetchOpleidingForStudent(id: number) {
   return undefined;
 }
 
-export async function insertOpleiding(data: {name: string, active: number, creatorId: number}){
+export async function insertOpleiding(data: {name: string, active: number, creatorId: number}) {
   const knex = await getKnex();
   await knex("opleidingen").insert( data );
+}
+
+export async function updateOpleiding(data: {id: number, name: string, active: number, creatorId: number}) {
+    const knex = await getKnex();
+    await knex("opleidingen").where("id", data.id).update( data );
 }

@@ -6,6 +6,7 @@ import * as opleidingenService from "../services/opleidingen";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
 import * as modulesService from "../services/modules";
+import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 
 const router = Router({
   mergeParams: true,
@@ -72,6 +73,21 @@ router.post("/", [
     check("creatorId").exists()
 ], executor(async function (req, res, { name, active, creatorId }) {
     await opleidingenService.insertOpleiding({ name, active, creatorId});
+}));
+
+router.put("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("active").exists(),
+    check("name").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, {id, name, active, creatorId }) {
+    const existingOpleiding = await opleidingenService.fetchOpleiding(id);
+    if (!existingOpleiding) {
+        throw new HttpError(400, "A opleiding with this id doesn't exist");
+    }
+    await opleidingenService.updateOpleiding({id, name, active, creatorId});
 }));
 
 
