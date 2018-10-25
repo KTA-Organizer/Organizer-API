@@ -1,63 +1,54 @@
 import logger from "../util/logger";
-import { getKnex } from "../config/db";
 import { Melding } from "../models/Melding";
 import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
 import { sendMail } from "../config/mail";
 import { User } from "../models/User";
+import { Transaction } from "knex";
 
-async function rowToMelding(row: any) {
+async function rowToMelding(trx: Transaction, row: any) {
   if (row.teacherId) {
-    row.teacher = await usersService.fetchUser(row.teacherId);
+    row.teacher = await usersService.fetchUser(trx, row.teacherId);
   }
   return (await row) as Melding;
 }
 
-export async function fetchAllMeldingen() {
-  const knex = await getKnex();
-  const rows = await knex("meldingen")
+export async function fetchAllMeldingen(trx: Transaction) {
+  const rows = await trx.table("meldingen")
     .select("*")
-    .map(rowToMelding);
+    .map(row => rowToMelding(trx, row));
   if (rows.length < 1) return;
   return await rows;
 }
 
-export async function fetchMelding(id: number) {
-  const knex = await getKnex();
-  const rows = await knex("meldingen")
+export async function fetchMelding(trx: Transaction, id: number) {
+  const rows = await trx.table("meldingen")
     .select("*")
     .where({ id });
   if (rows.length < 1) return;
-  return await rowToMelding(rows[0]);
+  return await rowToMelding(trx, rows[0]);
 }
 
-export async function insertMelding(meldingToAdd: any) {
-  const knex = await getKnex();
-  try {
-    const meldingId = await knex("meldingen").insert({
-      tekst: meldingToAdd.tekst,
-      teacherId: meldingToAdd.teacherId,
-      titel: meldingToAdd.titel,
-      datum: new Date()
-    });
-    return meldingId;
-  } catch (ex) {
-    console.log(ex);
-    return;
-  }
+export async function insertMelding(trx: Transaction, meldingToAdd: any) {
+  const meldingId = await trx.table("meldingen").insert({
+    tekst: meldingToAdd.tekst,
+    teacherId: meldingToAdd.teacherId,
+    titel: meldingToAdd.titel,
+    datum: new Date()
+  });
+  return meldingId;
 }
 
 export async function addMeldingWithOpleiding(
+  trx: Transaction,
   meldingId: number,
-  opleidingId: number
+  opleidingId: number,
 ) {
-  const knex = await getKnex();
-  await knex("meldingen_opleidingen").insert({ meldingId, opleidingId });
+  await trx.table("meldingen_opleidingen").insert({ meldingId, opleidingId });
 }
 
-export async function fetchOpleidingenFromMeldingAsArray(id: number) {
-  const knex = await getKnex();
-  const rows = await knex("meldingen_opleidingen")
+export async function fetchOpleidingenFromMeldingAsArray(trx: Transaction, id: number) {
+  const rows = await trx.table("meldingen_opleidingen")
     .select("opleidingId")
     .where("meldingId", id)
     .map((opleiding: any) => opleiding.opleidingId);
@@ -86,12 +77,11 @@ Klik<a href=${link}> hier </a>om te openen.
   logger.info("Message sent: %s", info.messageId);
 }
 
-export async function removeMelding(id: number) {
-  const knex = await getKnex();
-  await knex("meldingen_opleidingen")
+export async function removeMelding(trx: Transaction, id: number) {
+  await trx.table("meldingen_opleidingen")
     .where({ meldingId: id })
     .del();
-  await knex("meldingen")
+  await trx.table("meldingen")
     .where({ id })
     .del();
 }

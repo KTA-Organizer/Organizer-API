@@ -5,6 +5,7 @@ import logger from "../util/logger";
 import * as usersService from "../services/users";
 import * as accessTokensService  from "./accessTokens";
 import { AccessToken } from "../models/AccessToken";
+import { Transaction } from "knex";
 
 async function getInviteLink(token: string) {
   const config = await loadConfig();
@@ -26,15 +27,15 @@ U bent uitgenodigd om een gebruiker aan te maken op het KTA platform.
   logger.info("Message sent: %s", info.messageId);
 }
 
-export async function inviteUser(user: User) {
-  const token = await accessTokensService.createAccessToken(user.id);
+export async function inviteUser(trx: Transaction, user: User) {
+  const token = await accessTokensService.createAccessToken(trx, user.id);
 
   await sendStudentInviteMail(user.firstname, user.email, token);
   console.log("Token:", token);
 }
 
-export async function acceptInvitation(accessToken: AccessToken, password: string) {
-  await accessTokensService.deleteAccessToken(accessToken.token);
-  await usersService.updatePassword(accessToken.userid, password);
-  await usersService.activateUser(accessToken.userid);
+export async function acceptInvitation(trx: Transaction, accessToken: AccessToken, password: string) {
+  await accessTokensService.deleteAccessToken(trx, accessToken.token);
+  await usersService.updatePassword(trx, accessToken.userid, password);
+  await usersService.activateUser(trx, accessToken.userid);
 }

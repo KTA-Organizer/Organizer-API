@@ -1,10 +1,9 @@
 import logger from "../util/logger";
-import { getKnex } from "../config/db";
+import { Transaction } from "knex";
 
 
-export async function isActiveAdmin(id: number)  {
-    const knex = await getKnex();
-    const rows = await knex("admins")
+export async function isActiveAdmin(trx: Transaction, id: number)  {
+    const rows = await trx.table("admins")
         .select("*")
         .where({adminId: id, stillAdmin: 1});
     return rows.length > 0;

@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { isNumber, isError } from "util";
-import httpStatus, { HttpError } from "../util/httpStatus";
+import httpStatus, { HttpError } from "./httpStatus";
 import { matchedData } from "express-validator/filter";
-import logger from "../util/logger";
+import logger from "./logger";
 import { validationResult } from "express-validator/check";
+import { createTrx } from "../config/db";
+import { Transaction } from "knex";
 
 export function errorResponse(error: HttpError, res: Response) {
   const data = {
@@ -13,25 +15,22 @@ export function errorResponse(error: HttpError, res: Response) {
   res.status(error.status).send(data);
 }
 
-type ExecutorFun = (req: Request, res: Response, matchedData: any) => Promise<Object | void>;
+type ExecutorFun = (req: Request, trx: Transaction, matchedData: any, res: Response) => Promise<Object | void>;
 export default (cb: ExecutorFun) => (req: Request, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     errorResponse(new HttpError(400, "Invalid body please check the documentation for this endpoint."), res);
     return;
   }
-  const promise = cb(req, res, matchedData(req));
-  if (!promise.then) {
-    res.status(httpStatus.SERVER_ERROR)
-      .send({
-        status: "error",
-        message: "Could not found a result"
-      });
-    return;
-  }
-  promise
+  let trx: Transaction;
+  createTrx()
+    .then((transaction) => {
+      trx = transaction;
+      return cb(req, trx, matchedData(req), res);
+    })
     .then(function (result) {
       res.send(result);
+      trx.commit();
     })
     .catch(function (error) {
       if (error instanceof HttpError) {
@@ -40,5 +39,6 @@ export default (cb: ExecutorFun) => (req: Request, res: Response) => {
         errorResponse(new HttpError(500, "Server error"), res);
         logger.error(error.message);
       }
+      trx.rollback();
     });
 };

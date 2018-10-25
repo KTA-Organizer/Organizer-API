@@ -1,8 +1,8 @@
-import Knex, { Config } from "knex";
+import Knex, { Config, Transaction } from "knex";
 import { loadConfig } from "./storage";
 
 let knex: Knex;
-export async function getKnex() {
+async function getKnex() {
   const config = await loadConfig();
   if (!knex) {
     const connection: Config["connection"] = {
@@ -24,3 +24,12 @@ export async function getKnex() {
   }
   return knex;
 }
+
+
+export const createTrx = (): Promise<Transaction> => new Promise((resolve, reject) => {
+  getKnex().then(knex => {
+    knex.transaction((trx) => {
+      resolve(trx);
+    });
+  }).catch(reject);
+});

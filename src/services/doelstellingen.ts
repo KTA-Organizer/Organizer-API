@@ -1,6 +1,6 @@
-import { getKnex } from "../config/db";
 import { Doelstelling } from "../models/Doelstelling";
 import * as evaluatieCriteriaService from "./evaluatieCriteria";
+import { Transaction } from "knex";
 
 async function rowToDoelstelling(row: any) {
     /*if (row.creatorId) {
@@ -9,29 +9,27 @@ async function rowToDoelstelling(row: any) {
     return await row as Doelstelling;
 }
 
-export async function fetchAllDoelstellingen() {
-  const knex = await getKnex();
-  const rows = await knex("doelstellingen")
+export async function fetchAllDoelstellingen(trx: Transaction) {
+  const rows = await trx.table("doelstellingen")
     .select("*")
     .map(rowToDoelstelling);
   if (rows.length < 1) return;
   return await rows;
 }
 
-export async function fetchDoelstelling(id: number) {
-  const knex = await getKnex();
-  const rows = await knex("doelstellingen")
+export async function fetchDoelstelling(trx: Transaction, id: number) {
+  const rows = await trx.table("doelstellingen")
     .select("*")
     .where({ id });
   if (rows.length < 1) return;
   return await rowToDoelstelling(rows[0]);
 }
 
-async function rowsToFullDoelstelling(rows: any[]) {
+async function rowsToFullDoelstelling(trx: Transaction, rows: any[]) {
   const doelstellingen = rows as Doelstelling[];
   const doelstellingenIds = doelstellingen.map(d => d.id);
   const evaluatieCriterias = await evaluatieCriteriaService
-    .fetchEvaluatieCriteriaForDoelstellingen(doelstellingenIds);
+    .fetchEvaluatieCriteriaForDoelstellingen(trx, doelstellingenIds);
 
   for (const doel of doelstellingen) {
     doel.evaluatieCriteria = evaluatieCriterias
@@ -40,25 +38,21 @@ async function rowsToFullDoelstelling(rows: any[]) {
   return doelstellingen;
 }
 
-export async function fetchDoelstellingenForCategories(categorieIds: number[]) {
-  const knex = await getKnex();
-  const rows = await knex("doelstellingen")
+export async function fetchDoelstellingenForCategories(trx: Transaction, categorieIds: number[]) {
+  const rows = await trx.table("doelstellingen")
     .select("*")
     .whereIn("doelstellingscategorieId", categorieIds);
-  return rowsToFullDoelstelling(rows);
+  return rowsToFullDoelstelling(trx, rows);
 }
 
-export async function insertDoelstelling(data: { doelstellingscategorieId: number, name: string, inGebruik: number,  creatorId: number }) {
-    const knex = await getKnex();
-    await knex("doelstellingen").insert( data );
+export async function insertDoelstelling(trx: Transaction, data: { doelstellingscategorieId: number, name: string, inGebruik: number,  creatorId: number }) {
+    await trx.table("doelstellingen").insert( data );
 }
 
-export async function updateDoelstelling(data: { id: number, doelstellingscategorieId: number, name: string, inGebruik: number, creatorId: number }) {
-    const knex = await getKnex();
-    await knex("doelstellingen").where("id", data.id).update( data );
+export async function updateDoelstelling(trx: Transaction, data: { id: number, doelstellingscategorieId: number, name: string, inGebruik: number, creatorId: number }) {
+    await trx.table("doelstellingen").where("id", data.id).update( data );
 }
 
-export async function removeDoelstelling(id: number) {
-    const knex = await getKnex();
-    await knex("doelstellingen").where("id", id).del();
+export async function removeDoelstelling(trx: Transaction, id: number) {
+    await trx.table("doelstellingen").where("id", id).del();
 }
