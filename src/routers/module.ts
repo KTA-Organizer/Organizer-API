@@ -4,7 +4,8 @@ import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as modulesService from "../services/modules";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly } from "../util/accessMiddleware";
+import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 
 
 const router = Router({
@@ -42,6 +43,16 @@ router.get("/:id/student", [
         throw new HttpError(404, "Module doesn't exist");
     }
     return module;
+}));
+
+router.post("/", [
+    adminsOnly,
+    check("opleidingId").exists(),
+    check("teacherId").exists(),
+    check("name").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, { opleidingId, teacherId, name, creatorId }) {
+    await modulesService.insertModule({ opleidingId, teacherId, name, creatorId});
 }));
 
 export default router;
