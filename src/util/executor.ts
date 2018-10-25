@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { isNumber, isError } from "util";
 import httpStatus, { HttpError } from "./httpStatus";
 import { matchedData } from "express-validator/filter";
 import logger from "./logger";
 import { validationResult } from "express-validator/check";
 import { createTrx } from "../config/db";
+import { loadConfig } from "../config/storage";
 import { Transaction } from "knex";
 
 export function errorResponse(error: HttpError, res: Response) {
@@ -30,7 +30,15 @@ export default (cb: ExecutorFun) => (req: Request, res: Response) => {
     })
     .then(function (result) {
       res.send(result);
-      trx.commit();
+      return loadConfig();
+    })
+    .then((config) => {
+      if (config.mysql.alwaysRollbackTrx) {
+        logger.info("Rolling back");
+        trx.rollback(new Error("The config option `alwaysRollBackTrx` is on thus the transaction has been rolled back."));
+      } else {
+        trx.commit();
+      }
     })
     .catch(function (error) {
       if (error instanceof HttpError) {
@@ -39,6 +47,6 @@ export default (cb: ExecutorFun) => (req: Request, res: Response) => {
         errorResponse(new HttpError(500, "Server error"), res);
         logger.error(error.message);
       }
-      trx.rollback();
+      trx.rollback(error);
     });
 };

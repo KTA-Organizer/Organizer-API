@@ -30,6 +30,6 @@ export const createTrx = (): Promise<Transaction> => new Promise((resolve, rejec
   getKnex().then(knex => {
     knex.transaction((trx) => {
       resolve(trx);
-    });
+    }).catch(() => {});
   }).catch(reject);
 });
