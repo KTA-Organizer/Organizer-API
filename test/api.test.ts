@@ -1,6 +1,7 @@
 import request from "supertest";
 import { loadConfig } from "../src/config/storage";
 import { createApp } from "../src/app";
+import * as usersService from "../src/services/users";
 
 jest.setTimeout(30000);
 
@@ -426,10 +427,9 @@ describe("Student API", () => {
 
   // describe("POST /api/students", () => {
   //
-  //     afterEach(function(done) {
-  //         const newUser = usersService.fetchUserByEmail(TEST_STUDENT_DATA.email) as any;
-  //         console.log(newUser);
-  //         return agent.del("/api/students/" + newUser.id);
+  //     afterEach(async function() {
+  //         const newUser = await usersService.fetchUserByEmail(TEST_STUDENT_DATA.email) as any;
+  //         return await usersService.removeUser(newUser.id);
   //     });
   //
   //     it("should return 200 on succesful student post", () => {
