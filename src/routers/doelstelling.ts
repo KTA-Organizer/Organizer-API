@@ -5,6 +5,7 @@ import executor from "./executor";
 import * as doelstellingenService from "../services/doelstellingen";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 
 const router = Router({
     mergeParams: true,
@@ -43,7 +44,7 @@ router.post("/", [
 }));
 
 router.put("/:id", [
-    usersOnly,
+    adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
     check("doelstellingscategorieId").exists(),
@@ -51,11 +52,23 @@ router.put("/:id", [
     check("inGebruik").exists(),
     check("creatorId").exists()
 ], executor(async function (req, res, {id, doelstellingscategorieId, name, inGebruik, gewicht, creatorId }) {
-    const existingEvaluatieCriteria = await doelstellingenService.fetchDoelstelling(id);
-    if (!existingEvaluatieCriteria) {
+    const existingDoelstelling = await doelstellingenService.fetchDoelstelling(id);
+    if (!existingDoelstelling) {
         throw new HttpError(400, "A doelstelling with this id doesn't exist");
     }
     await doelstellingenService.updateDoelstelling({id, doelstellingscategorieId, name, inGebruik, creatorId});
+}));
+
+router.delete("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, res, matchedData) {
+    const existingDoelstelling = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(matchedData.id);
+    if (!existingDoelstelling) {
+        throw new HttpError(400, "A doelstelling with this id doesn't exist");
+    }
+    await doelstellingenService.deleteDoelstelling(matchedData.id);
 }));
 
 
