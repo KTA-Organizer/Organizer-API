@@ -70,6 +70,7 @@ export async function insertModule(data: { opleidingId: number, teacherId: numbe
     await knex("modules").insert( data );
 }
 
+export async function updateModule(data: { id: number, teacherId: number, name: string, opleidingId: number, creatorId: number }) {
     const knex = await getKnex();
     await knex("modules").where("id", data.id).update( data );
 }

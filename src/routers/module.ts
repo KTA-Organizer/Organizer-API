@@ -6,6 +6,7 @@ import * as modulesService from "../services/modules";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
 import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
+import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 
 
 const router = Router({
@@ -53,6 +54,22 @@ router.post("/", [
     check("creatorId").exists()
 ], executor(async function (req, res, { opleidingId, teacherId, name, creatorId }) {
     await modulesService.insertModule({ opleidingId, teacherId, name, creatorId});
+}));
+
+router.put("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("opleidingId").exists(),
+    check("name").exists(),
+    check("teacherId").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, {id, opleidingId, name, teacherId, creatorId }) {
+    const existingModule = await modulesService.fetchModule(id);
+    if (!existingModule) {
+        throw new HttpError(400, "A module with this id doesn't exist");
+    }
+    await modulesService.updateModule({id, opleidingId, name, teacherId, creatorId});
 }));
 
 export default router;
