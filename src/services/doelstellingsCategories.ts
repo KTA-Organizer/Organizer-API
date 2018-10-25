@@ -55,3 +55,8 @@ export async function fetchDoelstellingsCategoryForModules(moduleIds: number[]) 
     .whereIn("moduleId", moduleIds);
   return rowsToFullDoelstellingsCategory(rows);
 }
+
+export async function insertDoelstellingsCategorie(data: { moduleId: number, name: string, inGebruik: number,  creatorId: number }) {
+    const knex = await getKnex();
+    await knex("doelstellingscategories").insert( data );
+}

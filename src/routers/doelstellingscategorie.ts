@@ -4,7 +4,8 @@ import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly } from "../util/accessMiddleware";
+import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+
 
 const router = Router({
     mergeParams: true,
@@ -30,6 +31,16 @@ router.get("/", executor(async function(req, res) {
         throw new HttpError(404, "DoelstellingsCategories not found");
     }
     return doelstellingsCategories;
+}));
+
+router.post("/", [
+    usersOnly,
+    check("moduleId").exists(),
+    check("name").exists(),
+    check("inGebruik").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, { moduleId, name, inGebruik, creatorId }) {
+    await doelstellingsCategoriesService.insertDoelstellingsCategorie({ moduleId, name, inGebruik, creatorId});
 }));
 
 
