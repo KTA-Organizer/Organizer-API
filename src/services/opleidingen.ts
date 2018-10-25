@@ -58,3 +58,8 @@ export async function updateOpleiding(data: {id: number, name: string, active: n
     const knex = await getKnex();
     await knex("opleidingen").where("id", data.id).update( data );
 }
+
+export async function removeOpleiding(id: number) {
+    const knex = await getKnex();
+    await knex("opleidingen").where("id", id).del();
+}

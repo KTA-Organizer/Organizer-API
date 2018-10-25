@@ -90,5 +90,17 @@ router.put("/:id", [
     await opleidingenService.updateOpleiding({id, name, active, creatorId});
 }));
 
+router.delete("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, res, matchedData) {
+    const existingOpleiding = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(matchedData.id);
+    if (!existingOpleiding) {
+        throw new HttpError(400, "A opleiding with this id doesn't exist");
+    }
+    await opleidingenService.removeOpleiding(matchedData.id);
+}));
+
 
 export default router;
