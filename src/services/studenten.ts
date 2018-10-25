@@ -25,6 +25,14 @@ export async function fetchStudent(id: number)  {
     return rows[0];
 }
 
+export async function isActiveStudent(id: number)  {
+    const knex = await getKnex();
+    const rows = await knex("studenten")
+        .select("*")
+        .where({studentId: id, stillStudent: 1});
+    return rows.length > 0;
+}
+
 export async function fetchAllStudents()  {
     const knex = await getKnex();
     const studentIds = await knex("studenten")
@@ -65,10 +73,15 @@ export async function updateStudent(data: { id: number, firstname: string, lastn
     await usersService.updateUser(data);
 }
 
-export async function removeStudent(id: number) {
+export async function disableStudent(id: number) {
     const knex = await getKnex();
     await studentmodulesService.removeStudentModule(id);
-    await knex("studenten").where({studentId: id}).del();
+
+    await knex("studenten").update({
+        stillStudent: 0
+    }).where({studentId: id});
+
     await knex("access_tokens").where({userid: id}).del();
-    await usersService.removeUser(id);
+
+    await usersService.disableUser(id);
 }

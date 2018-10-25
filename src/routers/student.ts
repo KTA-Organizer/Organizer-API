@@ -81,19 +81,7 @@ router.delete(
     if (!student) {
       throw new HttpError(404, "Student doesn't exist");
     }
-    await studentsService.removeStudent(matchedData.id);
-  })
-);
-
-router.get(
-  "/:id",
-  [check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function(req, res, matchedData) {
-    const student = await studentsService.fetchStudent(matchedData.id);
-    if (!student) {
-      throw new HttpError(404, "Student doesn't exist");
-    }
-    return student;
+    await studentsService.disableStudent(matchedData.id);
   })
 );
 

@@ -1,6 +1,6 @@
 import logger from "../util/logger";
 import { getKnex } from "../config/db";
-import { User, UserRole } from "../models/User";
+import { User, UserRole, UserStatus } from "../models/User";
 import * as studentenService from "./studenten";
 import * as teachersService from "./teachers";
 import * as adminsService from "./admins";
@@ -17,14 +17,14 @@ async function rowToUser(row: any) {
 }
 
 export async function fetchUserRole(id: number): Promise<UserRole> {
-  if (await studentenService.fetchStudent(id)) {
-    return UserRole.student;
+  if (await adminsService.isActiveAdmin(id)) {
+    return UserRole.admin;
   }
-  if (await teachersService.fetchTeacher(id)) {
+  if (await teachersService.isActiveTeacher(id)) {
     return UserRole.teacher;
   }
-  if (await adminsService.fetchAdmin(id)) {
-    return UserRole.admin;
+  if (await studentenService.isActiveStudent(id)) {
+    return UserRole.student;
   }
   return undefined;
 }
@@ -64,13 +64,23 @@ export async function updatePassword(userid: number, password: string) {
     .where("id", userid);
 }
 
+export async function activateUser(userid: number) {
+  const knex = await getKnex();
+  await knex("users")
+    .update({ status: UserStatus.active })
+    .where("id", userid);
+}
+
 export async function insertUser(userData: {
   firstname: string;
   lastname: string;
   email: string;
 }) {
   const knex = await getKnex();
-  const insertedIds: number[] = await knex("users").insert(userData);
+  const insertedIds: number[] = await knex("users").insert({
+    ...userData,
+    status: UserStatus.waitActivation
+  });
   return insertedIds[0];
 }
 
@@ -86,14 +96,18 @@ export async function updateUser(userData: {
     .update(userData);
 }
 
-export async function removeUser(id: number) {
+export async function disableUser(id: number) {
   const knex = await getKnex();
   await knex("users")
-    .where({ id })
-    .del();
+    .update({ status: UserStatus.disabled })
+    .where({ id });
 }
 
-export async function fetchAll() {
+export async function fetchAll(allowDisabledUsers?: boolean) {
   const knex = await getKnex();
-  return await knex("users").select("*");
+  const filter: any = {};
+  if (!allowDisabledUsers) {
+    filter.status = UserStatus.active;
+  }
+  return await knex("users").select("*").where(filter);
 }

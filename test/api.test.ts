@@ -383,37 +383,11 @@ describe("Modules API", () => {
   });
 });
 
-describe("Teacher API", () => {
-  let agent: any;
-  beforeAll(async function() {
-    agent = await getAgent();
-    await authWithTest(agent);
-  });
-
-  describe("GET /api/teacher/:id", () => {
-
-    it("should return 200 OK", () => {
-      return agent.get("/api/teacher/4")
-      .expect(200);
-    });
-
-  });
-});
-
 describe("Student API", () => {
   let agent: any;
   beforeAll(async function() {
     agent = await getAgent();
     await authWithTest(agent);
-  });
-
-  describe("GET /api/students/:id", () => {
-
-    it("should return 200 OK", () => {
-      return agent.get("/api/students/6")
-      .expect(200);
-    });
-
   });
 
   describe("GET /api/students", () => {

@@ -1,14 +1,14 @@
 import logger from "../util/logger";
 import { getKnex } from "../config/db";
 import { Melding } from "../models/Melding";
-import * as teachersService from "../services/teachers";
+import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
 import { sendMail } from "../config/mail";
 import { User } from "../models/User";
 
 async function rowToMelding(row: any) {
   if (row.teacherId) {
-    row.teacher = await teachersService.fetchTeacher(row.teacherId);
+    row.teacher = await usersService.fetchUser(row.teacherId);
   }
   return (await row) as Melding;
 }

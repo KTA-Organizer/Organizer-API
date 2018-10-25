@@ -36,4 +36,5 @@ export async function inviteUser(user: User) {
 export async function acceptInvitation(accessToken: AccessToken, password: string) {
   await accessTokensService.deleteAccessToken(accessToken.token);
   await usersService.updatePassword(accessToken.userid, password);
+  await usersService.activateUser(accessToken.userid);
 }
