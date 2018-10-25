@@ -4,7 +4,8 @@ import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as doelstellingenService from "../services/doelstellingen";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly } from "../util/accessMiddleware";
+import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 
 const router = Router({
     mergeParams: true,
@@ -30,6 +31,16 @@ router.get("/", executor(async function(req, res) {
         throw new HttpError(404, "Doelstellingen not found");
     }
     return doelstellingen;
+}));
+
+router.post("/", [
+    usersOnly,
+    check("doelstellingscategorieId").exists(),
+    check("name").exists(),
+    check("inGebruik").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, { doelstellingscategorieId, name, inGebruik, creatorId }) {
+    await doelstellingenService.insertDoelstelling({ doelstellingscategorieId, name, inGebruik, creatorId});
 }));
 
 

@@ -47,3 +47,8 @@ export async function fetchDoelstellingenForCategories(categorieIds: number[]) {
     .whereIn("doelstellingscategorieId", categorieIds);
   return rowsToFullDoelstelling(rows);
 }
+
+export async function insertDoelstelling(data: { doelstellingscategorieId: number, name: string, inGebruik: number,  creatorId: number }) {
+    const knex = await getKnex();
+    await knex("doelstellingen").insert( data );
+}
