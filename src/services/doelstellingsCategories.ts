@@ -60,3 +60,8 @@ export async function insertDoelstellingsCategorie(data: { moduleId: number, nam
     const knex = await getKnex();
     await knex("doelstellingscategories").insert( data );
 }
+
+export async function updateDoelstellingsCategorie(data: { id: number, moduleId: number, name: string, inGebruik: number, creatorId: number }) {
+    const knex = await getKnex();
+    await knex("doelstellingscategories").where("id", data.id).update( data );
+}

@@ -5,6 +5,7 @@ import executor from "./executor";
 import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+import * as doelstellingenService from "../services/doelstellingen";
 
 
 const router = Router({
@@ -34,13 +35,29 @@ router.get("/", executor(async function(req, res) {
 }));
 
 router.post("/", [
-    usersOnly,
+    adminsOnly,
     check("moduleId").exists(),
     check("name").exists(),
     check("inGebruik").exists(),
     check("creatorId").exists()
 ], executor(async function (req, res, { moduleId, name, inGebruik, creatorId }) {
     await doelstellingsCategoriesService.insertDoelstellingsCategorie({ moduleId, name, inGebruik, creatorId});
+}));
+
+router.put("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("moduleId").exists(),
+    check("name").exists(),
+    check("inGebruik").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, {id, moduleId, name, inGebruik, gewicht, creatorId }) {
+    const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(id);
+    if (!existingDoelstellingsCategorie) {
+        throw new HttpError(400, "A doelstellingscategorie with this id doesn't exist");
+    }
+    await doelstellingsCategoriesService.updateDoelstellingsCategorie({id, moduleId, name, inGebruik, creatorId});
 }));
 
 
