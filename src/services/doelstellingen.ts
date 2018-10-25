@@ -52,3 +52,8 @@ export async function insertDoelstelling(data: { doelstellingscategorieId: numbe
     const knex = await getKnex();
     await knex("doelstellingen").insert( data );
 }
+
+export async function updateDoelstelling(data: { id: number, doelstellingscategorieId: number, name: string, inGebruik: number, creatorId: number }) {
+    const knex = await getKnex();
+    await knex("doelstellingen").where("id", data.id).update( data );
+}
