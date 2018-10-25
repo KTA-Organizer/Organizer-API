@@ -6,6 +6,7 @@ import * as doelstellingsCategoriesService from "../services/doelstellingsCatego
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
 import * as doelstellingenService from "../services/doelstellingen";
+import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 
 
 const router = Router({
@@ -60,5 +61,16 @@ router.put("/:id", [
     await doelstellingsCategoriesService.updateDoelstellingsCategorie({id, moduleId, name, inGebruik, creatorId});
 }));
 
+router.delete("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, res, matchedData) {
+    const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(matchedData.id);
+    if (!existingDoelstellingsCategorie) {
+        throw new HttpError(400, "A doelstellingscategorie with this id doesn't exist");
+    }
+    await doelstellingsCategoriesService.removeDoelstellingsCategorie(matchedData.id);
+}));
 
 export default router;

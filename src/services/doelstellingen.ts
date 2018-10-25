@@ -58,7 +58,7 @@ export async function updateDoelstelling(data: { id: number, doelstellingscatego
     await knex("doelstellingen").where("id", data.id).update( data );
 }
 
-export async function deleteDoelstelling(id: number) {
+export async function removeDoelstelling(id: number) {
     const knex = await getKnex();
     await knex("doelstellingen").where("id", id).del();
 }

@@ -65,3 +65,8 @@ export async function updateDoelstellingsCategorie(data: { id: number, moduleId:
     const knex = await getKnex();
     await knex("doelstellingscategories").where("id", data.id).update( data );
 }
+
+export async function removeDoelstellingsCategorie(id: number) {
+    const knex = await getKnex();
+    await knex("doelstellingscategories").where("id", id).del();
+}

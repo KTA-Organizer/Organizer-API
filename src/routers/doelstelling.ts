@@ -68,7 +68,7 @@ router.delete("/:id", [
     if (!existingDoelstelling) {
         throw new HttpError(400, "A doelstelling with this id doesn't exist");
     }
-    await doelstellingenService.deleteDoelstelling(matchedData.id);
+    await doelstellingenService.removeDoelstelling(matchedData.id);
 }));
 
 
