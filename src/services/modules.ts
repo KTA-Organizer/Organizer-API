@@ -69,3 +69,7 @@ export async function insertModule(data: { opleidingId: number, teacherId: numbe
     const knex = await getKnex();
     await knex("modules").insert( data );
 }
+
+    const knex = await getKnex();
+    await knex("modules").where("id", data.id).update( data );
+}
