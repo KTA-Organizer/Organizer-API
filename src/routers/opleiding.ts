@@ -4,7 +4,8 @@ import { sanitize } from "express-validator/filter";
 import executor from "./executor";
 import * as opleidingenService from "../services/opleidingen";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly } from "../util/accessMiddleware";
+import { adminsOnly, usersOnly } from "../util/accessMiddleware";
+import * as modulesService from "../services/modules";
 
 const router = Router({
   mergeParams: true,
@@ -63,6 +64,15 @@ router.get(
     return opleiding;
   })
 );
+
+router.post("/", [
+    adminsOnly,
+    check("active").exists(),
+    check("name").exists(),
+    check("creatorId").exists()
+], executor(async function (req, res, { name, active, creatorId }) {
+    await opleidingenService.insertOpleiding({ name, active, creatorId});
+}));
 
 
 export default router;

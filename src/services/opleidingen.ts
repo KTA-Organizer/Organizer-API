@@ -44,8 +44,12 @@ export async function fetchOpleidingForStudent(id: number) {
     .select("opleidingId")
     .where({ studentId: id });
   if (opleiding_id.length >= 1) {
-    const opleiding = await fetchOpleiding(opleiding_id[0].opleidingId);
-    return opleiding;
+    return await fetchOpleiding(opleiding_id[0].opleidingId);
   }
   return undefined;
+}
+
+export async function insertOpleiding(data: {name: string, active: number, creatorId: number}){
+  const knex = await getKnex();
+  await knex("opleidingen").insert( data );
 }
