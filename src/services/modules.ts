@@ -64,3 +64,8 @@ export async function fetchModulesForStudent(studId: number) {
     .whereIn("id", module_ids);
   return modules as Module[];
 }
+
+export async function insertModule(data: { opleidingId: number, teacherId: number, name: string, creatorId: number }) {
+    const knex = await getKnex();
+    await knex("modules").insert( data );
+}
