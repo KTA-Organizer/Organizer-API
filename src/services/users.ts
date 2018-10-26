@@ -75,6 +75,7 @@ export async function insertUser(userData: {
   firstname: string;
   lastname: string;
   email: string;
+  gender: string;
 }) {
   const knex = await getKnex();
   const insertedIds: number[] = await knex("users").insert({
