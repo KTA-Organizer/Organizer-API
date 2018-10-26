@@ -16,10 +16,10 @@ if (!GOOGLE_CLOUD_PROJECT) {
     keyFilename: GCLOUD_KEY_FILE
   };
 }
-const storage = new Storage(storageOptions);
+export const storage = new Storage(storageOptions);
 
 // export const frontEndBucket = storage.bucket(GCLOUD_FRONTEND_BUCKET);
-export const configBucket = storage.bucket(GCLOUD_CONFIG_BUCKET);
+const configBucket = storage.bucket(GCLOUD_CONFIG_BUCKET);
 
 const fileToJson = (file: any) => new Promise((resolve, reject) => {
   const tmpDir = path.resolve(os.tmpdir());
