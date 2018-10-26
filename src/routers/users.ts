@@ -15,11 +15,7 @@ const router = Router({
 router.use(usersOnly);
 
 router.get("/", executor(async function(req, trx) {
-  const users = await usersService.fetchAll(trx);
-  for (const user of users) {
-    user.role = await usersService.fetchUserRole(trx, user.id);
-    delete user.password;
-  }
+  const users = await usersService.fetchAll(trx, true);
   return users;
 }));
 

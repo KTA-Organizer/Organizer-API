@@ -101,5 +101,7 @@ export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
   if (!allowDisabledUsers) {
     filter.status = UserStatus.active;
   }
-  return await trx.table("users").select("*").where(filter);
+  let rows = await trx.table("users").select("*").where(filter);
+  rows = rows.map((row: any) => rowToUser(trx, row));
+  return await Promise.all(rows);
 }
