@@ -54,10 +54,9 @@ async function makeUserStudent(userid: number) {
     await knex("studenten").insert({ studentid: userid, stillStudent: 1 });
 }
 
-export async function insertStudent(data: { firstname: string, lastname: string, email: string }, opleidingId: number, moduleIds: number[]) {
+export async function insertStudent(data: { firstname: string, lastname: string, email: string, gender: string}, opleidingId: number, moduleIds: number[]) {
     const userid = await usersService.insertUser(data);
     await makeUserStudent(userid);
-
     for (const moduleId of moduleIds) {
         await studentmodulesService.insertStudentModule({ studentId: userid, moduleId, opleidingId });
     }

@@ -55,7 +55,11 @@ router.post(
     check("gender").exists()
   ],
   executor(async function(req, res, matchedData) {
-    usersService.insertUser(matchedData);
+    const existingUser = await usersService.fetchUserByEmail(matchedData.email);
+    if (existingUser) {
+      throw new HttpError(400, "A user with this email already exists");
+    }
+    await usersService.insertUser(matchedData);
   })
 );
 

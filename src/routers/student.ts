@@ -25,20 +25,21 @@ router.post(
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
+    check("gender").exists(),
     check("opleidingId").exists(),
     check("moduleIds").exists()
   ],
   executor(async function(
     req,
     res,
-    { firstname, lastname, email, opleidingId, moduleIds }
+    { firstname, lastname, email, gender, opleidingId, moduleIds }
   ) {
     const existingUser = await usersService.fetchUserByEmail(email);
     if (existingUser) {
       throw new HttpError(400, "A user with this email already exists");
     }
     await studentsService.insertStudent(
-      { firstname, lastname, email },
+      { firstname, lastname, email, gender },
       opleidingId,
       moduleIds
     );
@@ -74,7 +75,7 @@ router.put(
 );
 
 router.delete(
-    "/:id",
+  "/:id",
   [check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function(req, res, matchedData) {
     const student = await studentsService.fetchStudent(matchedData.id);
