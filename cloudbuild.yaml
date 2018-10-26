@@ -1,9 +1,5 @@
 steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
-  - name: 'gcr.io/cloud-builders/npm'
-    args: ['test']
-    env:
-    - 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID'
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["app", "deploy"]
