@@ -1,4 +1,3 @@
-service: staging
 runtime: nodejs
 env: flex
 
