@@ -2,7 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator/check";
 import { loadConfig } from "../config/storage";
 import { sanitize } from "express-validator/filter";
-import executor from "./executor";
+import executor from "../util/executor";
 import * as meldingenService from "../services/meldingen";
 import * as studentenService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
@@ -22,8 +22,8 @@ router.use(usersOnly);
 router.get(
   "/:id",
   [check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function(req, res, matchedData) {
-    const melding = await meldingenService.fetchMelding(matchedData.id);
+  executor(async function(req, trx, matchedData) {
+    const melding = await meldingenService.fetchMelding(trx, matchedData.id);
     if (!melding) {
       throw new HttpError(404, "Melding doesn't exist");
     }
@@ -33,8 +33,8 @@ router.get(
 
 router.get(
   "/",
-  executor(async function(req, res) {
-    const meldingen = await meldingenService.fetchAllMeldingen();
+  executor(async function(req, trx) {
+    const meldingen = await meldingenService.fetchAllMeldingen(trx);
     if (meldingen.length < 1) {
       throw new HttpError(404, "Meldingen not found");
     }
@@ -50,15 +50,15 @@ router.post(
     check("tekst").exists(),
     check("opleidingIds").exists()
   ],
-  executor(async function(req, res, matchedData) {
+  executor(async function(req, trx, matchedData) {
     const teacher = req.user;
-    const meldingId = await meldingenService.insertMelding({
+    const meldingId = await meldingenService.insertMelding(trx, {
       tekst: matchedData.tekst,
       titel: matchedData.titel,
       teacherId: teacher.id
     });
     for (const opleidingId of matchedData.opleidingIds) {
-      await meldingenService.addMeldingWithOpleiding(meldingId, +opleidingId);
+      await meldingenService.addMeldingWithOpleiding(trx, meldingId, +opleidingId);
     }
     // TODO send mails
     //     const config = await loadConfig():
@@ -75,12 +75,12 @@ router.post(
 router.delete(
   "/:id",
   [check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function(req, res, matchedData) {
-    const melding = await meldingenService.fetchMelding(matchedData.id);
+  executor(async function(req, trx, matchedData) {
+    const melding = await meldingenService.fetchMelding(trx, matchedData.id);
     if (!melding) {
       throw new HttpError(404, "Melding doesn't exist");
     }
-    await meldingenService.removeMelding(matchedData.id);
+    await meldingenService.removeMelding(trx, matchedData.id);
   })
 );
 

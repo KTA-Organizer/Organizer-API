@@ -1,10 +1,7 @@
 import logger from "../util/logger";
-import { getKnex } from "../config/db";
 import { DoelstellingsCategorie } from "../models/DoelstellingsCategorie";
-import * as usersService from "../services/users";
-import * as modulesService from "../services/modules";
-import { Doelstelling } from "../models/Doelstelling";
 import * as doelstellingService from "../services/doelstellingen";
+import { Transaction } from "knex";
 
 async function rowToDoelstellingsCategorie(row: any) {
     /*if (row.creatorId) {
@@ -16,29 +13,27 @@ async function rowToDoelstellingsCategorie(row: any) {
     return await row as DoelstellingsCategorie;
 }
 
-export async function fetchAllDoelstellingsCategories() {
-  const knex = await getKnex();
-  const rows = await knex("doelstellingscategories")
+export async function fetchAllDoelstellingsCategories(trx: Transaction) {
+  const rows = await trx.table("doelstellingscategories")
     .select("*")
     .map(rowToDoelstellingsCategorie);
   if (rows.length < 1) return;
   return await rows;
 }
 
-export async function fetchDoelstellingsCategorie(id: number) {
-  const knex = await getKnex();
-  const rows = await knex("doelstellingscategories")
+export async function fetchDoelstellingsCategorie(trx: Transaction, id: number) {
+  const rows = await trx.table("doelstellingscategories")
     .select("*")
     .where({ id });
   if (rows.length < 1) return;
   return rowToDoelstellingsCategorie(rows[0]);
 }
 
-export async function rowsToFullDoelstellingsCategory(rows: any[]) {
+export async function rowsToFullDoelstellingsCategory(trx: Transaction, rows: any[]) {
   const doelCats = rows as DoelstellingsCategorie[];
   const doelCatIds = doelCats.map(dc => dc.id);
 
-  const doelstellingen = await doelstellingService.fetchDoelstellingenForCategories(doelCatIds);
+  const doelstellingen = await doelstellingService.fetchDoelstellingenForCategories(trx, doelCatIds);
 
   for (const doelCat of doelCats) {
     doelCat.doelstellingen = doelstellingen
@@ -48,10 +43,21 @@ export async function rowsToFullDoelstellingsCategory(rows: any[]) {
   return doelCats;
 }
 
-export async function fetchDoelstellingsCategoryForModules(moduleIds: number[]) {
-  const knex = await getKnex();
-  const rows = await knex("doelstellingscategories")
+export async function fetchDoelstellingsCategoryForModules(trx: Transaction, moduleIds: number[]) {
+  const rows = await trx.table("doelstellingscategories")
     .select("*")
     .whereIn("moduleId", moduleIds);
-  return rowsToFullDoelstellingsCategory(rows);
+  return rowsToFullDoelstellingsCategory(trx, rows);
+}
+
+export async function insertDoelstellingsCategorie(trx: Transaction, data: { moduleId: number, name: string, inGebruik: number,  creatorId: number }) {
+    await trx.table("doelstellingscategories").insert( data );
+}
+
+export async function updateDoelstellingsCategorie(trx: Transaction, data: { id: number, moduleId: number, name: string, inGebruik: number, creatorId: number }) {
+    await trx.table("doelstellingscategories").where("id", data.id).update( data );
+}
+
+export async function removeDoelstellingsCategorie(trx: Transaction, id: number) {
+    await trx.table("doelstellingscategories").where("id", id).del();
 }

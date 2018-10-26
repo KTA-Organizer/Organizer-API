@@ -1,51 +1,59 @@
 import logger from "../util/logger";
-import { getKnex } from "../config/db";
 import { Opleiding } from "../models/Opleiding";
 import * as usersService from "../services/users";
 import * as moduleService from "../services/modules";
+import { Transaction } from "knex";
 
-async function rowToOpleiding(row: any) {
+async function rowToOpleiding(trx: Transaction, row: any) {
   if (row.creatorId) {
-    row.creator = await usersService.fetchUser(row.creatorId);
+    row.creator = await usersService.fetchUser(trx, row.creatorId);
   }
   return row as Opleiding;
 }
 
-export async function fetchAllOpleidingen() {
-  const knex = await getKnex();
-  const rows = (await knex("opleidingen").select("*")).map(rowToOpleiding);
+export async function fetchAllOpleidingen(trx: Transaction) {
+  const rows = (await trx.table("opleidingen").select("*")).map((row: any) => rowToOpleiding(trx, row));
   const opleidingenPromises = await Promise.all(rows);
   return opleidingenPromises;
 }
 
-export async function fetchOpleiding(id: number) {
-  const knex = await getKnex();
-  const opleiding_rows = await knex("opleidingen").where("id", id);
+export async function fetchOpleiding(trx: Transaction, id: number) {
+  const opleiding_rows = await trx.table("opleidingen").where("id", id);
   if (opleiding_rows.length < 1) return;
-  return await rowToOpleiding(opleiding_rows[0]);
+  return await rowToOpleiding(trx, opleiding_rows[0]);
 }
 
-async function rowToFullOpleiding(row: Opleiding) {
-  const opleiding: Opleiding = await rowToOpleiding(row);
-  opleiding.modules = await moduleService.fetchModulesForOpleiding(row.id);
+async function rowToFullOpleiding(trx: Transaction, row: Opleiding) {
+  const opleiding: Opleiding = await rowToOpleiding(trx, row);
+  opleiding.modules = await moduleService.fetchModulesForOpleiding(trx, row.id);
   return row;
 }
 
-export async function fetchFullOpleiding(id: number) {
-  const knex = await getKnex();
-  const opleiding_rows = await knex("opleidingen").where("id", id);
+export async function fetchFullOpleiding(trx: Transaction, id: number) {
+  const opleiding_rows = await trx.table("opleidingen").where("id", id);
   if (opleiding_rows.length < 1) return;
-  return await rowToFullOpleiding(opleiding_rows[0]);
+  return await rowToFullOpleiding(trx, opleiding_rows[0]);
 }
 
-export async function fetchOpleidingForStudent(id: number) {
-  const knex = await getKnex();
-  const opleiding_id = await knex("studenten_modules")
+export async function fetchOpleidingForStudent(trx: Transaction, id: number) {
+  const opleiding_id = await trx.table("studenten_modules")
     .select("opleidingId")
     .where({ studentId: id });
   if (opleiding_id.length >= 1) {
-    const opleiding = await fetchOpleiding(opleiding_id[0].opleidingId);
+    const opleiding = await fetchOpleiding(trx, opleiding_id[0].opleidingId);
     return opleiding;
   }
   return undefined;
+}
+
+export async function insertOpleiding(trx: Transaction, data: {name: string, active: number, creatorId: number}) {
+  await trx.table("opleidingen").insert( data );
+}
+
+export async function updateOpleiding(trx: Transaction, data: {id: number, name: string, active: number, creatorId: number}) {
+    await trx.table("opleidingen").where("id", data.id).update( data );
+}
+
+export async function removeOpleiding(trx: Transaction, id: number) {
+    await trx.table("opleidingen").where("id", id).del();
 }
