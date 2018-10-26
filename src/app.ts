@@ -19,7 +19,11 @@ import { Config } from "./models/Config";
 export function createApp(config: Config) {
   const app = express();
 
-  app.set("port", config.port);
+  if (process.env.PORT) {
+    app.set("port", process.env.PORT);
+  } else {
+    app.set("port", config.port);
+  }
   app.set("views", path.join(__dirname, "../views"));
   app.set("view engine", "pug");
   app.use(bodyParser.json());
