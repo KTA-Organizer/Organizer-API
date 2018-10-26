@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
 import { sanitize } from "express-validator/filter";
-import executor from "./executor";
+import executor from "../util/executor";
 import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
@@ -17,16 +17,16 @@ router.use(usersOnly);
 router.get("/:id", [
     check("id").isNumeric(),
     sanitize("id").toInt()
-], executor(async function(req, res, matchedData) {
-    const evaluatie = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(matchedData.id);
+], executor(async function(req, trx, matchedData) {
+    const evaluatie = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(trx, matchedData.id);
     if (!evaluatie) {
         throw new HttpError(404, "EvaluatieCriteria doesn't exist");
     }
     return evaluatie;
 }));
 
-router.get("/", executor(async function(req, res) {
-    const evaluaties = await evaluatieCriteriaService.fetchEvaluatieCriteria();
+router.get("/", executor(async function(req, trx) {
+    const evaluaties = await evaluatieCriteriaService.fetchEvaluatieCriteria(trx);
     if (evaluaties.length < 1) {
         throw new HttpError(404, "EvaluatieCriteria not found");
     }
@@ -40,8 +40,8 @@ router.post("/", [
     check("inGebruik").exists(),
     check("gewicht").exists(),
     check("creatorId").exists()
-], executor(async function (req, res, { doelstellingId, name, inGebruik, gewicht, creatorId }) {
-    await evaluatieCriteriaService.insertEvaluatieCriteria({ doelstellingId, name, inGebruik, gewicht, creatorId});
+], executor(async function (req, trx, { doelstellingId, name, inGebruik, gewicht, creatorId }) {
+    await evaluatieCriteriaService.insertEvaluatieCriteria(trx, { doelstellingId, name, inGebruik, gewicht, creatorId});
 }));
 
 router.put("/:id", [
@@ -53,24 +53,24 @@ router.put("/:id", [
     check("inGebruik").exists(),
     check("gewicht").exists(),
     check("creatorId").exists(),
-], executor(async function (req, res, {id, doelstellingId, name, inGebruik, gewicht, creatorId }) {
-    const existingEvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(id);
+], executor(async function (req, trx, {id, doelstellingId, name, inGebruik, gewicht, creatorId }) {
+    const existingEvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(trx, id);
     if (!existingEvaluatieCriteria) {
         throw new HttpError(400, "A evaluatieCriteria with this id doesn't exist");
     }
-    await evaluatieCriteriaService.updateEvaluatieCriteria({id, doelstellingId, name, inGebruik, gewicht, creatorId});
+    await evaluatieCriteriaService.updateEvaluatieCriteria(trx, {id, doelstellingId, name, inGebruik, gewicht, creatorId});
 }));
 
 router.delete("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt()
-], executor(async function (req, res, matchedData) {
-    const existingEvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(matchedData.id);
+], executor(async function (req, trx, matchedData) {
+    const existingEvaluatieCriteria = await evaluatieCriteriaService.fetchEvaluatieCriteriaById(trx, matchedData.id);
     if (!existingEvaluatieCriteria) {
         throw new HttpError(400, "A evaluatieCriteria with this id doesn't exist");
     }
-    await evaluatieCriteriaService.deleteEvaluatieCriteria(matchedData.id);
+    await evaluatieCriteriaService.deleteEvaluatieCriteria(trx, matchedData.id);
 }));
 
 

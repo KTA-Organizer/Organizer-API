@@ -1,7 +1,6 @@
 import request from "supertest";
 import { loadConfig } from "../src/config/storage";
 import { createApp } from "../src/app";
-import * as usersService from "../src/services/users";
 
 jest.setTimeout(30000);
 
@@ -11,11 +10,11 @@ const TEST_LOGIN_DATA = {
 };
 
 const TEST_ASPECT_DATA = {
-    "evaluatiecriteriumId": 36,
-    "name": "test",
-    "inGebruik": 1,
-    "gewicht": 1,
-    "creatorId": 3
+  "evaluatiecriteriumId": 36,
+  "name": "test",
+  "inGebruik": 1,
+  "gewicht": 1,
+  "creatorId": 3
 };
 
 const TEST_MELDING_DATA = {
@@ -25,27 +24,27 @@ const TEST_MELDING_DATA = {
 };
 
 const TEST_STUDENT_DATA = {
-    "firstname": "jeanke",
-    "lastname": "bonny",
-    "email": "jeankebonnytje@gmail.com",
-    "opleidingId": 1,
-    "moduleIds": [1, 2]
+  "firstname": "jeanke",
+  "lastname": "bonny",
+  "email": "jeankebonnytje@gmail.com",
+  "opleidingId": 1,
+  "moduleIds": [1, 2]
 };
 
 const TEST_STUDENT_DATA_UPDATE = {
-    "firstname": "jeanke",
-    "lastname": "bonny",
-    "email": "jeankebonnyy@gmail.com",
-    "opleidingId": 1,
-    "moduleIds": [1, 2]
+  "firstname": "jeanke",
+  "lastname": "bonny",
+  "email": "jeankebonnyy@gmail.com",
+  "opleidingId": 1,
+  "moduleIds": [1, 2]
 };
 
 const TEST_MELDING_DATA_FAILED = {
-    tekst: "Test Text",
-    titel: "Test"
+  tekst: "Test Text",
+  titel: "Test"
 };
 
-async function authWithTest (agent) {
+async function authWithTest(agent) {
   await agent.post("/api/auth/login").send(TEST_LOGIN_DATA);
 }
 
@@ -57,7 +56,7 @@ async function getAgent() {
 
 describe("Authentication API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
   });
 
@@ -65,29 +64,29 @@ describe("Authentication API", () => {
 
     it("should return 200 on succesful login", () => {
       return agent
-      .post("/api/auth/login")
-      .send(TEST_LOGIN_DATA)
-      .expect(200);
+        .post("/api/auth/login")
+        .send(TEST_LOGIN_DATA)
+        .expect(200);
     });
 
     it("should return 403 on unexisting email", () => {
       return agent
-      .post("/api/auth/login")
-      .send({
-        ...TEST_LOGIN_DATA,
-        email: "random@email.com",
-      })
-      .expect(403);
+        .post("/api/auth/login")
+        .send({
+          ...TEST_LOGIN_DATA,
+          email: "random@email.com",
+        })
+        .expect(403);
     });
 
     it("should return 403 on wrong password", () => {
       return agent
-      .post("/api/auth/login")
-      .send({
-        ...TEST_LOGIN_DATA,
-        password: "wrong password"
-      })
-      .expect(403);
+        .post("/api/auth/login")
+        .send({
+          ...TEST_LOGIN_DATA,
+          password: "wrong password"
+        })
+        .expect(403);
     });
 
   });
@@ -96,9 +95,9 @@ describe("Authentication API", () => {
 
     it("should return 200 on succesful logout", () => {
       return agent
-      .post("/api/auth/logout")
-      .send()
-      .expect(200);
+        .post("/api/auth/logout")
+        .send()
+        .expect(200);
     });
 
   });
@@ -119,7 +118,7 @@ describe("Authentication API", () => {
 
 describe("Users API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
@@ -128,7 +127,7 @@ describe("Users API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/users/current")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -137,7 +136,7 @@ describe("Users API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/users/10")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -146,7 +145,7 @@ describe("Users API", () => {
 
 describe("Opleidingen API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
@@ -155,7 +154,7 @@ describe("Opleidingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/opleidingen/10")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -164,7 +163,7 @@ describe("Opleidingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/opleidingen")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -173,7 +172,7 @@ describe("Opleidingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/opleidingen/1/full")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -181,7 +180,7 @@ describe("Opleidingen API", () => {
 
 describe("Meldingen API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
@@ -190,7 +189,7 @@ describe("Meldingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/meldingen/1")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -199,7 +198,7 @@ describe("Meldingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/meldingen")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -226,87 +225,87 @@ describe("Meldingen API", () => {
 });
 
 describe("Aspecten API", () => {
-    let agent: any;
-    beforeAll(async function() {
-      agent = await getAgent();
-      await authWithTest(agent);
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
+  describe("GET /api/aspecten", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/aspecten")
+        .expect(200);
     });
 
-    describe("GET /api/aspecten", () => {
+  });
 
-        it("should return 200 OK", () => {
-            return agent.get("/api/aspecten")
-                .expect(200);
-        });
+  describe("POST /api/aspecten", () => {
 
+    it("should return 200 on succesful aspect post", () => {
+      return agent
+        .post("/api/aspecten")
+        .send(TEST_ASPECT_DATA)
+        .expect(200);
     });
-
-    // describe("POST /api/aspecten", () => {
-
-    //   it("should return 200 on succesful aspect post", () => {
-    //           return agent
-    //               .post("/api/aspecten")
-    //               .send(TEST_ASPECT_DATA)
-    //               .expect(200);
-    //       });
-    //   });
+  });
 });
 
 describe("Evaluaties API", () => {
-    let agent: any;
-    beforeAll(async function() {
-      agent = await getAgent();
-      await authWithTest(agent);
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
+  describe("GET /api/evaluaties/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/evaluaties/1")
+        .expect(200);
     });
 
-    describe("GET /api/evaluaties/:id", () => {
+  });
 
-        it("should return 200 OK", () => {
-            return agent.get("/api/evaluaties/1")
-                .expect(200);
-        });
+  describe("GET /api/evaluaties", () => {
 
+    it("should return 200 OK", () => {
+      return agent.get("/api/evaluaties")
+        .expect(200);
     });
 
-    describe("GET /api/evaluaties", () => {
-
-        it("should return 200 OK", () => {
-            return agent.get("/api/evaluaties")
-                .expect(200);
-        });
-
-    });
+  });
 });
 
 describe("EvaluatieCriteria API", () => {
-    let agent: any;
-    beforeAll(async function() {
-      agent = await getAgent();
-      await authWithTest(agent);
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
+  describe("GET /api/evaluatieCriteria/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/evaluatieCriteria/1")
+        .expect(200);
     });
 
-    describe("GET /api/evaluatieCriteria/:id", () => {
+  });
 
-        it("should return 200 OK", () => {
-            return agent.get("/api/evaluatieCriteria/1")
-                .expect(200);
-        });
+  describe("GET /api/evaluatieCriteria", () => {
 
+    it("should return 200 OK", () => {
+      return agent.get("/api/evaluatieCriteria")
+        .expect(200);
     });
 
-    describe("GET /api/evaluatieCriteria", () => {
-
-        it("should return 200 OK", () => {
-            return agent.get("/api/evaluatieCriteria")
-                .expect(200);
-        });
-
-    });
+  });
 });
 
 describe("Doelstellings Categorie API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
@@ -315,7 +314,7 @@ describe("Doelstellings Categorie API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/doelstellingscategorie/1")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -324,7 +323,7 @@ describe("Doelstellings Categorie API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/doelstellingscategorie")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -332,7 +331,7 @@ describe("Doelstellings Categorie API", () => {
 
 describe("Doelstelling API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
@@ -341,7 +340,7 @@ describe("Doelstelling API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/doelstellingen/1")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -350,7 +349,7 @@ describe("Doelstelling API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/doelstellingen")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -359,7 +358,7 @@ describe("Doelstelling API", () => {
 
 describe("Modules API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
@@ -368,7 +367,7 @@ describe("Modules API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/modules/1")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -377,7 +376,7 @@ describe("Modules API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/modules")
-      .expect(200);
+        .expect(200);
     });
 
   });
@@ -385,33 +384,28 @@ describe("Modules API", () => {
 
 describe("Student API", () => {
   let agent: any;
-  beforeAll(async function() {
+  beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
 
   describe("GET /api/students", () => {
 
-      it("should return 200 OK", () => {
-          return agent.get("/api/students")
-              .expect(200);
-      });
+    it("should return 200 OK", () => {
+      return agent.get("/api/students")
+        .expect(200);
+    });
 
   });
 
   // describe("POST /api/students", () => {
-  //
-  //     afterEach(async function() {
-  //         const newUser = await usersService.fetchUserByEmail(TEST_STUDENT_DATA.email) as any;
-  //         return await usersService.removeUser(newUser.id);
-  //     });
-  //
-  //     it("should return 200 on succesful student post", () => {
-  //                   return agent
-  //                       .post("/api/students")
-  //                       .send(TEST_STUDENT_DATA)
-  //                       .expect(200);
-  //               });
-  //           });
- });
+
+  //   it("should return 200 on succesful student post", () => {
+  //     return agent
+  //       .post("/api/students")
+  //       .send(TEST_STUDENT_DATA)
+  //       .expect(200);
+  //   });
+  // });
+});
 

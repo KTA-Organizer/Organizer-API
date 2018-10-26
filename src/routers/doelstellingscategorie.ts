@@ -1,12 +1,10 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
 import { sanitize } from "express-validator/filter";
-import executor from "./executor";
+import executor from "../util/executor";
 import * as doelstellingsCategoriesService from "../services/doelstellingsCategories";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
-import * as doelstellingenService from "../services/doelstellingen";
-import * as evaluatieCriteriaService from "../services/evaluatieCriteria";
 
 
 const router = Router({
@@ -19,16 +17,16 @@ router.use(usersOnly);
 router.get("/:id", [
     check("id").isNumeric(),
     sanitize("id").toInt()
-], executor(async function(req, res, matchedData) {
-    const doelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(matchedData.id);
+], executor(async function(req, trx, matchedData) {
+    const doelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(trx, matchedData.id);
     if (!doelstellingsCategorie) {
         throw new HttpError(404, "DoelstellingsCategorie doesn't exist");
     }
     return doelstellingsCategorie;
 }));
 
-router.get("/", executor(async function(req, res) {
-    const doelstellingsCategories = await doelstellingsCategoriesService.fetchAllDoelstellingsCategories();
+router.get("/", executor(async function(req, trx) {
+    const doelstellingsCategories = await doelstellingsCategoriesService.fetchAllDoelstellingsCategories(trx);
     if (doelstellingsCategories.length < 1) {
         throw new HttpError(404, "DoelstellingsCategories not found");
     }
@@ -41,8 +39,8 @@ router.post("/", [
     check("name").exists(),
     check("inGebruik").exists(),
     check("creatorId").exists()
-], executor(async function (req, res, { moduleId, name, inGebruik, creatorId }) {
-    await doelstellingsCategoriesService.insertDoelstellingsCategorie({ moduleId, name, inGebruik, creatorId});
+], executor(async function (req, trx, { moduleId, name, inGebruik, creatorId }) {
+    await doelstellingsCategoriesService.insertDoelstellingsCategorie(trx, { moduleId, name, inGebruik, creatorId});
 }));
 
 router.put("/:id", [
@@ -53,24 +51,24 @@ router.put("/:id", [
     check("name").exists(),
     check("inGebruik").exists(),
     check("creatorId").exists()
-], executor(async function (req, res, {id, moduleId, name, inGebruik, gewicht, creatorId }) {
-    const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(id);
+], executor(async function (req, trx, {id, moduleId, name, inGebruik, gewicht, creatorId }) {
+    const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(trx, id);
     if (!existingDoelstellingsCategorie) {
         throw new HttpError(400, "A doelstellingscategorie with this id doesn't exist");
     }
-    await doelstellingsCategoriesService.updateDoelstellingsCategorie({id, moduleId, name, inGebruik, creatorId});
+    await doelstellingsCategoriesService.updateDoelstellingsCategorie(trx, {id, moduleId, name, inGebruik, creatorId});
 }));
 
 router.delete("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt()
-], executor(async function (req, res, matchedData) {
-    const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(matchedData.id);
+], executor(async function (req, trx, matchedData) {
+    const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(trx, matchedData.id);
     if (!existingDoelstellingsCategorie) {
         throw new HttpError(400, "A doelstellingscategorie with this id doesn't exist");
     }
-    await doelstellingsCategoriesService.removeDoelstellingsCategorie(matchedData.id);
+    await doelstellingsCategoriesService.removeDoelstellingsCategorie(trx, matchedData.id);
 }));
 
 export default router;

@@ -7,7 +7,8 @@ export interface Config {
     port?: number,
     user: string,
     password: string,
-    database: string
+    database: string,
+    alwaysRollbackTrx?: boolean
   };
   gcloud: {
     sqlInstance?: string,

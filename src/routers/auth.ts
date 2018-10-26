@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
-import executor from "./executor";
+import executor from "../util/executor";
 import passport from "../config/passport";
 import { usersOnly, unauthenticatedOnly } from "../util/accessMiddleware";
 import * as accessTokensService from "../services/accessTokens";
@@ -32,38 +32,37 @@ router.post("/logout", usersOnly, (req, res) => {
 router.post("/forgot", [
     check("email").isEmail(),
     unauthenticatedOnly,
-], executor(async (req, res, { email }) => {
-    const user = await usersService.fetchUserByEmail(email);
+], executor(async (req, trx, { email }) => {
+    const user = await usersService.fetchUserByEmail(trx, email);
     if (!user) {
         // Dont throw error because hackers shouldnt be able to derrive from this if a user exists
         return;
     }
-
-    await passwordResetService.requestPasswordReset(user);
+    await passwordResetService.requestPasswordReset(trx, user);
 }));
 
 router.post("/reset", [
     check("token").exists(),
     check("password").exists(),
     unauthenticatedOnly,
-], executor(async (req, res, { token, password }) => {
-    const acccessToken = await accessTokensService.fetchAccessToken(token);
+], executor(async (req, trx, { token, password }) => {
+    const acccessToken = await accessTokensService.fetchAccessToken(trx, token);
     if (!acccessToken) {
         throw new HttpError(400, "The password reset token has expired.");
     }
-    await passwordResetService.resetPassword(acccessToken, password);
+    await passwordResetService.resetPassword(trx, acccessToken, password);
 }));
 
 router.post("/invitation", [
     check("token").exists(),
     check("password").exists(),
     unauthenticatedOnly,
-], executor(async (req, res, { token, password }) => {
-    const acccessToken = await accessTokensService.fetchAccessToken(token);
+], executor(async (req, trx, { token, password }) => {
+    const acccessToken = await accessTokensService.fetchAccessToken(trx, token);
     if (!acccessToken) {
         throw new HttpError(400, "The password reset token has expired.");
     }
-    await studentInviteService.acceptInvitation(acccessToken, password);
+    await studentInviteService.acceptInvitation(trx, acccessToken, password);
 }));
 
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../util/httpStatus";
 import { User, UserRole } from "../models/User";
-import { errorResponse } from "../routers/executor";
+import { errorResponse } from "./executor";
 
 export function unauthenticatedOnly(req: Request, res: Response, next: NextFunction) {
   if (req.user) {

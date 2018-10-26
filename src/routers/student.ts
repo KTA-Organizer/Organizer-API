@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator/check";
 import { sanitize, matchedData } from "express-validator/filter";
-import executor from "./executor";
+import executor from "../util/executor";
 import * as usersService from "../services/users";
 import * as studentsService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
@@ -10,6 +10,7 @@ import {
   adminsOnly,
   unauthenticatedOnly
 } from "../util/accessMiddleware";
+import { createTrx } from "../config/db";
 
 const router = Router({
   mergeParams: true,
@@ -29,16 +30,16 @@ router.post(
     check("opleidingId").exists(),
     check("moduleIds").exists()
   ],
-  executor(async function(
+  executor(async function (
     req,
-    res,
+    trx,
     { firstname, lastname, email, gender, opleidingId, moduleIds }
   ) {
-    const existingUser = await usersService.fetchUserByEmail(email);
+    const existingUser = await usersService.fetchUserByEmail(trx, email);
     if (existingUser) {
       throw new HttpError(400, "A user with this email already exists");
     }
-    await studentsService.insertStudent(
+    await studentsService.insertStudent(trx,
       { firstname, lastname, email, gender },
       opleidingId,
       moduleIds
@@ -49,6 +50,7 @@ router.post(
 router.put(
   "/:id",
   [
+    adminsOnly,
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
@@ -59,37 +61,33 @@ router.put(
   ],
   executor(async function(
     req,
-    res,
+    trx,
     { id, firstname, lastname, email, opleidingId, moduleIds }
   ) {
-    const student = await studentsService.fetchStudent(id);
+    const student = await studentsService.fetchStudent(trx, id);
     if (!student) {
       throw new HttpError(404, "Student doesn't exist");
     }
-    studentsService.updateStudent(
-      { id, firstname, lastname, email },
-      opleidingId,
-      moduleIds
-    );
+    studentsService.updateStudent(trx, { id, firstname, lastname, email }, opleidingId, moduleIds);
   })
 );
 
 router.delete(
-  "/:id",
-  [check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function(req, res, matchedData) {
-    const student = await studentsService.fetchStudent(matchedData.id);
+    "/:id",
+  [adminsOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, trx, matchedData) {
+    const student = await studentsService.fetchStudent(trx, matchedData.id);
     if (!student) {
       throw new HttpError(404, "Student doesn't exist");
     }
-    await studentsService.disableStudent(matchedData.id);
+    await studentsService.disableStudent(trx, matchedData.id);
   })
 );
 
 router.get(
   "/",
-  executor(async function(req, res) {
-    const students = await studentsService.fetchAllStudents();
+  executor(async function(req, trx) {
+    const students = await studentsService.fetchAllStudents(trx);
     if (students.length < 1) {
       throw new HttpError(404, "Students not found");
     }
