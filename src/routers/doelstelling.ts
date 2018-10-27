@@ -47,10 +47,7 @@ router.put("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
-    check("doelstellingscategorieId").exists(),
-    check("name").exists(),
-    check("inGebruik").exists(),
-    check("creatorId").exists()
+    check("name").exists()
 ], executor(async function (req, trx, {id, name }) {
     const existingDoelstelling = await doelstellingenService.fetchDoelstelling(trx, id);
     if (!existingDoelstelling) {
