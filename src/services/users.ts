@@ -16,7 +16,10 @@ async function rowToUser(trx: Transaction, row: any) {
   return user;
 }
 
-export async function fetchUserRole(trx: Transaction, id: number): Promise<UserRole> {
+export async function fetchUserRole(
+  trx: Transaction,
+  id: number
+): Promise<UserRole> {
   if (await adminsService.isActiveAdmin(trx, id)) {
     return UserRole.admin;
   }
@@ -29,8 +32,12 @@ export async function fetchUserRole(trx: Transaction, id: number): Promise<UserR
   return undefined;
 }
 
-export async function fetchUserPasswordByEmail(trx: Transaction, email: string) {
-  const rows = await trx.table("users")
+export async function fetchUserPasswordByEmail(
+  trx: Transaction,
+  email: string
+) {
+  const rows = await trx
+    .table("users")
     .select("password")
     .where({ email });
   if (rows.length < 1) return;
@@ -38,7 +45,8 @@ export async function fetchUserPasswordByEmail(trx: Transaction, email: string) 
 }
 
 export async function fetchUser(trx: Transaction, id: number) {
-  const rows = await trx.table("users")
+  const rows = await trx
+    .table("users")
     .select("*")
     .where({ id });
   if (rows.length < 1) return;
@@ -46,52 +54,104 @@ export async function fetchUser(trx: Transaction, id: number) {
 }
 
 export async function fetchUserByEmail(trx: Transaction, email: string) {
-  const rows = await trx.table("users")
+  const rows = await trx
+    .table("users")
     .select("*")
     .where({ email });
   if (rows.length < 1) return;
   return await rowToUser(trx, rows[0]);
 }
 
-export async function updatePassword(trx: Transaction, userid: number, password: string) {
+export async function updatePassword(
+  trx: Transaction,
+  userid: number,
+  password: string
+) {
   const encryptedPass = await bcrypt.hash(password, 10);
-  await trx.table("users")
+  await trx
+    .table("users")
     .update({ password: encryptedPass })
     .where("id", userid);
 }
 
 export async function activateUser(trx: Transaction, userid: number) {
-  await trx.table("users")
+  await trx
+    .table("users")
     .update({ status: UserStatus.active })
     .where("id", userid);
 }
 
-export async function insertUser(trx: Transaction, userData: {
-  firstname: string;
-  lastname: string;
-  email: string;
-  gender: string;
-}) {
+export async function insertUser(
+  trx: Transaction,
+  userData: {
+    firstname: string;
+    lastname: string;
+    email: string;
+    gender: string;
+    role: string;
+  }
+) {
+  const role = userData.role;
+  delete userData.role;
   const insertedIds: number[] = await trx.table("users").insert({
     ...userData,
     status: UserStatus.waitActivation
   });
-  return insertedIds[0];
+  const newId = insertedIds[0];
+  await giveRoleToUser(trx, role, newId);
+  console.log("Role inserted");
+  return newId;
 }
 
-export async function updateUser(trx: Transaction, userData: {
-  id: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-}) {
-  await trx.table("users")
+async function giveRoleToUser(trx: Transaction, role: string, newId: number) {
+  let table = undefined;
+  let idName = undefined;
+  let stillName = undefined;
+  switch (role) {
+    case UserRole.admin:
+      table = "admins";
+      idName = "adminId";
+      stillName = "stillAdmin";
+      break;
+    case UserRole.student:
+      table = "students";
+      idName = "studentId";
+      stillName = "stillStudent";
+      break;
+    case UserRole.teacher:
+      table = "teachers";
+      idName = "teacherId";
+      stillName = "stillTeacher";
+      break;
+    default:
+      throw new Error("This role doesn't exist!");
+  }
+  console.log(table, role, idName, stillName);
+  const roleObject = { [idName]: newId, [stillName]: 1 };
+  console.log(roleObject);
+  if (table && idName && stillName) {
+    await trx.table(table).insert(roleObject);
+  }
+}
+
+export async function updateUser(
+  trx: Transaction,
+  userData: {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+  }
+) {
+  await trx
+    .table("users")
     .where({ id: userData.id })
     .update(userData);
 }
 
 export async function disableUser(trx: Transaction, id: number) {
-  await trx.table("users")
+  await trx
+    .table("users")
     .update({ status: UserStatus.disabled })
     .where({ id });
 }
@@ -101,7 +161,10 @@ export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
   if (!allowDisabledUsers) {
     filter.status = UserStatus.active;
   }
-  let rows = await trx.table("users").select("*").where(filter);
+  let rows = await trx
+    .table("users")
+    .select("*")
+    .where(filter);
   rows = rows.map((row: any) => rowToUser(trx, row));
   return await Promise.all(rows);
 }

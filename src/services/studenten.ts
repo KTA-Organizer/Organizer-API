@@ -51,14 +51,14 @@ async function makeUserStudent(trx: Transaction, userid: number) {
 }
 
 export async function insertStudent(trx: Transaction, data: { firstname: string, lastname: string, email: string, gender: string}, opleidingId: number, moduleIds: number[]) {
-    const userid = await usersService.insertUser(trx, data);
-    await makeUserStudent(trx, userid);
-    for (const moduleId of moduleIds) {
-        await studentmodulesService.insertStudentModule(trx, { studentId: userid, moduleId, opleidingId });
-    }
+    // const userid = await usersService.insertUser(trx, data);
+    // await makeUserStudent(trx, userid);
+    // for (const moduleId of moduleIds) {
+    //     await studentmodulesService.insertStudentModule(trx, { studentId: userid, moduleId, opleidingId });
+    // }
 
-    const user = await usersService.fetchUser(trx, userid);
-    await studentInviteService.inviteUser(trx, user);
+    // const user = await usersService.fetchUser(trx, userid);
+    // await studentInviteService.inviteUser(trx, user);
 }
 
 export async function updateStudent(trx: Transaction, data: { id: number, firstname: string, lastname: string, email: string }, opleidingId: number, moduleIds: number[]) {

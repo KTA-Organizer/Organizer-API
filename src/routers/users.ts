@@ -14,10 +14,13 @@ const router = Router({
 
 router.use(usersOnly);
 
-router.get("/", executor(async function(req, trx) {
-  const users = await usersService.fetchAll(trx, true);
-  return users;
-}));
+router.get(
+  "/",
+  executor(async function(req, trx) {
+    const users = await usersService.fetchAll(trx, true);
+    return users;
+  })
+);
 
 router.get(
   "/current",
@@ -26,16 +29,17 @@ router.get(
   })
 );
 
-router.get("/:id", [
-  check("id").isNumeric(),
-  sanitize("id").toInt()
-], executor(async function(req, trx, matchedData) {
-  const user = await usersService.fetchUser(trx, matchedData.id);
-  if (!user) {
-    throw new HttpError(404, "User doesn't exist");
-  }
-  return user;
-}));
+router.get(
+  "/:id",
+  [check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, trx, matchedData) {
+    const user = await usersService.fetchUser(trx, matchedData.id);
+    if (!user) {
+      throw new HttpError(404, "User doesn't exist");
+    }
+    return user;
+  })
+);
 
 router.post(
   "/",
@@ -44,14 +48,20 @@ router.post(
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
-    check("gender").exists()
+    check("gender").exists(),
+    check("role").exists()
   ],
   executor(async function(req, trx, matchedData) {
-    const existingUser = await usersService.fetchUserByEmail(trx, matchedData.email);
+    const existingUser = await usersService.fetchUserByEmail(
+      trx,
+      matchedData.email
+    );
     if (existingUser) {
       throw new HttpError(400, "A user with this email already exists");
     }
-    await usersService.insertUser(trx, matchedData);
+    const newUserId = await usersService.insertUser(trx, matchedData);
+    console.log("newUserId", newUserId);
+    return { newId: newUserId };
   })
 );
 
