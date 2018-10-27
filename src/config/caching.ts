@@ -1,3 +1,4 @@
+import { cloneDeep } from "lodash";
 
 export class CacheMap<K, V> {
 
@@ -12,6 +13,7 @@ export class CacheMap<K, V> {
     return this.map.get(key);
   }
   public async cache(key: K, value: V) {
+    value = cloneDeep(value);
     this.map.set(key, value);
   }
   public async wrap(key: K, fun: () => Promise<V>) {
