@@ -1,20 +1,23 @@
 import { EvaluatieCriteria } from "../models/EvaluatieCriteria";
 import * as aspectenService from "./aspecten";
 import { Transaction } from "knex";
+import { CacheMap } from "../config/caching";
+
+const evalutatieCriteriaCache = new CacheMap<number, EvaluatieCriteria>("evaluatieCriteria");
 
 export async function fetchEvaluatieCriteria(trx: Transaction) {
   const rows = await trx.table("evaluatiecriteria").select("*");
   return rows as EvaluatieCriteria[];
 }
 
-export async function fetchEvaluatieCriteriaById(trx: Transaction, id: number)  {
+export const fetchEvaluatieCriteriaById = (trx: Transaction, id: number) => evalutatieCriteriaCache.wrap(id, async () => {
     const rows = await trx.table("evaluatiecriteria")
         .select("*")
         .where({ id });
     if (rows.length < 1)
         return;
     return await rows[0];
-}
+});
 
 async function rowsToFullEvaluatieCriteria(trx: Transaction, rows: any) {
   const criteria = rows as EvaluatieCriteria[];
@@ -40,9 +43,11 @@ export async function insertEvaluatieCriteria(trx: Transaction, data: { doelstel
 }
 
 export async function updateEvaluatieCriteria(trx: Transaction, data: { id: number, name: string }) {
+    evalutatieCriteriaCache.changed(data.id);
     await trx.table("evaluatiecriteria").where("id", data.id).update( data );
 }
 
 export async function deleteEvaluatieCriteria(trx: Transaction, id: number) {
+    evalutatieCriteriaCache.changed(id);
     await trx.table("evaluatiecriteria").where("id", id).del();
 }
