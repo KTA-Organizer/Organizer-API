@@ -60,16 +60,13 @@ router.put("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
-    check("opleidingId").exists(),
-    check("name").exists(),
-    check("teacherId").exists(),
-    check("creatorId").exists()
-], executor(async function (req, trx, {id, opleidingId, name, teacherId, creatorId }) {
+    check("name").exists()
+], executor(async function (req, trx, {id, name}) {
     const existingModule = await modulesService.fetchModule(trx, id);
     if (!existingModule) {
         throw new HttpError(400, "A module with this id doesn't exist");
     }
-    await modulesService.updateModule(trx, {id, opleidingId, name, teacherId, creatorId});
+    await modulesService.updateModule(trx, {id, name});
 }));
 
 router.delete("/:id", [
