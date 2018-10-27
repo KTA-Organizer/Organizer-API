@@ -51,12 +51,12 @@ router.put("/:id", [
     check("name").exists(),
     check("inGebruik").exists(),
     check("creatorId").exists()
-], executor(async function (req, trx, {id, doelstellingscategorieId, name, inGebruik, gewicht, creatorId }) {
+], executor(async function (req, trx, {id, name }) {
     const existingDoelstelling = await doelstellingenService.fetchDoelstelling(trx, id);
     if (!existingDoelstelling) {
         throw new HttpError(400, "A doelstelling with this id doesn't exist");
     }
-    await doelstellingenService.updateDoelstelling(trx, {id, doelstellingscategorieId, name, inGebruik, creatorId});
+    await doelstellingenService.updateDoelstelling(trx, {id, name});
 }));
 
 router.delete("/:id", [

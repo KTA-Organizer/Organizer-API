@@ -49,7 +49,7 @@ export async function insertDoelstelling(trx: Transaction, data: { doelstellings
     await trx.table("doelstellingen").insert( data );
 }
 
-export async function updateDoelstelling(trx: Transaction, data: { id: number, doelstellingscategorieId: number, name: string, inGebruik: number, creatorId: number }) {
+export async function updateDoelstelling(trx: Transaction, data: { id: number, name: string}) {
     await trx.table("doelstellingen").where("id", data.id).update( data );
 }
 

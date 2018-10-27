@@ -47,16 +47,13 @@ router.put("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
-    check("moduleId").exists(),
-    check("name").exists(),
-    check("inGebruik").exists(),
-    check("creatorId").exists()
-], executor(async function (req, trx, {id, moduleId, name, inGebruik, gewicht, creatorId }) {
+    check("name").exists()
+], executor(async function (req, trx, {id, name}) {
     const existingDoelstellingsCategorie = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(trx, id);
     if (!existingDoelstellingsCategorie) {
         throw new HttpError(400, "A doelstellingscategorie with this id doesn't exist");
     }
-    await doelstellingsCategoriesService.updateDoelstellingsCategorie(trx, {id, moduleId, name, inGebruik, creatorId});
+    await doelstellingsCategoriesService.updateDoelstellingsCategorie(trx, {id, name});
 }));
 
 router.delete("/:id", [

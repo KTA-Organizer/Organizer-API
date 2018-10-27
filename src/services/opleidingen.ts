@@ -50,7 +50,7 @@ export async function insertOpleiding(trx: Transaction, data: {name: string, act
   await trx.table("opleidingen").insert( data );
 }
 
-export async function updateOpleiding(trx: Transaction, data: {id: number, name: string, active: number, creatorId: number}) {
+export async function updateOpleiding(trx: Transaction, data: {id: number, name: string}) {
     await trx.table("opleidingen").where("id", data.id).update( data );
 }
 
