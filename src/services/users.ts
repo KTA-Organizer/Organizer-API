@@ -55,13 +55,13 @@ export const fetchUser = (trx: Transaction, id: number) => usersCache.wrap(id, a
   return await rowToUser(trx, rows[0]);
 });
 
-export const fetchUserByEmail = (trx: Transaction, email: number) => usersCache.wrap(email, async () => {
+export async function fetchUserByEmail (trx: Transaction, email: string) {
   const rows = await trx.table("users")
     .select("*")
     .where({ email });
   if (rows.length < 1) return;
   return await rowToUser(trx, rows[0]);
-});
+}
 
 export async function updatePassword(trx: Transaction, userid: number, password: string) {
   usersCache.changed(userid);
