@@ -5,6 +5,9 @@ import * as teachersService from "./teachers";
 import * as adminsService from "./admins";
 import bcrypt from "bcrypt";
 import { Transaction } from "knex";
+import { CacheMap } from "../config/caching";
+
+const usersCache = new CacheMap<number, User>("users");
 
 async function rowToUser(trx: Transaction, row: any) {
   if (row.accountCreatedTimestamp) {
@@ -37,23 +40,24 @@ export async function fetchUserPasswordByEmail(trx: Transaction, email: string) 
   return rows[0].password;
 }
 
-export async function fetchUser(trx: Transaction, id: number) {
+export const fetchUser = (trx: Transaction, id: number) => usersCache.wrap(id, async () => {
   const rows = await trx.table("users")
     .select("*")
     .where({ id });
   if (rows.length < 1) return;
   return await rowToUser(trx, rows[0]);
-}
+});
 
-export async function fetchUserByEmail(trx: Transaction, email: string) {
+export const fetchUserByEmail = (trx: Transaction, email: number) => usersCache.wrap(email, async () => {
   const rows = await trx.table("users")
     .select("*")
     .where({ email });
   if (rows.length < 1) return;
   return await rowToUser(trx, rows[0]);
-}
+});
 
 export async function updatePassword(trx: Transaction, userid: number, password: string) {
+  usersCache.delete(userid);
   const encryptedPass = await bcrypt.hash(password, 10);
   await trx.table("users")
     .update({ password: encryptedPass })
@@ -61,6 +65,7 @@ export async function updatePassword(trx: Transaction, userid: number, password:
 }
 
 export async function activateUser(trx: Transaction, userid: number) {
+  usersCache.delete(userid);
   await trx.table("users")
     .update({ status: UserStatus.active })
     .where("id", userid);
@@ -85,12 +90,14 @@ export async function updateUser(trx: Transaction, userData: {
   lastname: string;
   email: string;
 }) {
+  usersCache.delete(userData.id);
   await trx.table("users")
     .where({ id: userData.id })
     .update(userData);
 }
 
 export async function disableUser(trx: Transaction, id: number) {
+  usersCache.delete(id);
   await trx.table("users")
     .update({ status: UserStatus.disabled })
     .where({ id });
