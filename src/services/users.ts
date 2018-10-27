@@ -64,7 +64,7 @@ export const fetchUserByEmail = (trx: Transaction, email: number) => usersCache.
 });
 
 export async function updatePassword(trx: Transaction, userid: number, password: string) {
-  usersCache.delete(userid);
+  usersCache.changed(userid);
   const encryptedPass = await bcrypt.hash(password, 10);
   await trx
     .table("users")
@@ -73,7 +73,7 @@ export async function updatePassword(trx: Transaction, userid: number, password:
 }
 
 export async function activateUser(trx: Transaction, userid: number) {
-  usersCache.delete(userid);
+  usersCache.changed(userid);
   await trx.table("users")
     .update({ status: UserStatus.active })
     .where("id", userid);
@@ -141,7 +141,7 @@ export async function updateUser(
     email: string;
   }
 ) {
-  usersCache.delete(userData.id);
+  usersCache.changed(userData.id);
   await trx
     .table("users")
     .where({ id: userData.id })
@@ -149,7 +149,7 @@ export async function updateUser(
 }
 
 export async function disableUser(trx: Transaction, id: number) {
-  usersCache.delete(id);
+  usersCache.changed(id);
   await trx.table("users")
     .update({ status: UserStatus.disabled })
     .where({ id });

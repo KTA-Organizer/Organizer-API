@@ -23,7 +23,7 @@ export class CacheMap<K, V> {
     this.cache(key, val);
     return val;
   }
-  public async delete(key: K) {
+  public async changed(key: K) {
     this.map.delete(key);
   }
 }
