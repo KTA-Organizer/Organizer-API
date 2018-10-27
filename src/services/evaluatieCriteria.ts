@@ -39,7 +39,7 @@ export async function insertEvaluatieCriteria(trx: Transaction, data: { doelstel
     await trx.table("evaluatiecriteria").insert( data );
 }
 
-export async function updateEvaluatieCriteria(trx: Transaction, data: { id: number, doelstellingId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
+export async function updateEvaluatieCriteria(trx: Transaction, data: { id: number, name: string }) {
     await trx.table("evaluatiecriteria").where("id", data.id).update( data );
 }
 
