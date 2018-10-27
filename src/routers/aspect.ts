@@ -38,17 +38,13 @@ router.put("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
-    check("evaluatiecriteriumId").exists(),
-    check("name").exists(),
-    check("inGebruik").exists(),
-    check("gewicht").exists(),
-    check("creatorId").exists(),
-], executor(async function (req, trx, {id, evaluatiecriteriumId, name, inGebruik, gewicht, creatorId }) {
+    check("name").exists()
+], executor(async function (req, trx, {id, name}) {
     const existingAspect = await aspectenService.fetchAspect(trx, id);
     if (!existingAspect) {
         throw new HttpError(400, "A aspect with this id doesn't exist");
     }
-    await aspectenService.updateAspect(trx, {id, evaluatiecriteriumId, name, inGebruik, gewicht, creatorId});
+    await aspectenService.updateAspect(trx, {id, name});
 }));
 
 router.delete("/:id", [
