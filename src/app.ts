@@ -57,22 +57,20 @@ export function createApp(config: Config) {
   // Loging
   app.use(morgan("dev"));
 
-  // server secret
-  const SERVER_SECRET = "gertjesamson";
-
   // Static files
   app.use(
     express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
   );
 
   /**
-   * App client routes.
-   */
-  app.get("/", appRouter);
-
-  /**
    * API routes.
    */
   app.use("/api", apiRouter);
+
+  /**
+   * App client routes.
+   */
+  app.use("/", appRouter);
+
   return app;
 }
