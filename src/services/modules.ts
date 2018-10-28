@@ -65,7 +65,7 @@ export async function insertModule(trx: Transaction, data: { opleidingId: number
     await trx.table("modules").insert( data );
 }
 
-export async function updateModule(trx: Transaction, data: { id: number, teacherId: number, name: string, opleidingId: number, creatorId: number }) {
+export async function updateModule(trx: Transaction, data: { id: number, name: string }) {
     await trx.table("modules").where("id", data.id).update( data );
 }
 

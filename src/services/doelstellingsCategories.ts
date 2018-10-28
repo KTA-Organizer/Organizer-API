@@ -54,7 +54,7 @@ export async function insertDoelstellingsCategorie(trx: Transaction, data: { mod
     await trx.table("doelstellingscategories").insert( data );
 }
 
-export async function updateDoelstellingsCategorie(trx: Transaction, data: { id: number, moduleId: number, name: string, inGebruik: number, creatorId: number }) {
+export async function updateDoelstellingsCategorie(trx: Transaction, data: { id: number, name: string}) {
     await trx.table("doelstellingscategories").where("id", data.id).update( data );
 }
 

@@ -29,7 +29,7 @@ export async function insertAspect(trx: Transaction, data: { evaluatiecriteriumI
     await trx.table("aspecten").insert( data );
 }
 
-export async function updateAspect(trx: Transaction, data: { id: number, evaluatiecriteriumId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
+export async function updateAspect(trx: Transaction, data: { id: number, name: string}) {
     await trx.table("aspecten").where("id", data.id).update( data );
 }
 

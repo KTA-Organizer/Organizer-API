@@ -69,15 +69,13 @@ router.put("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
-    check("active").exists(),
-    check("name").exists(),
-    check("creatorId").exists()
-], executor(async function (req, trx, {id, name, active, creatorId }) {
+    check("name").exists()
+], executor(async function (req, trx, {id, name}) {
     const existingOpleiding = await opleidingenService.fetchOpleiding(trx, id);
     if (!existingOpleiding) {
         throw new HttpError(400, "A opleiding with this id doesn't exist");
     }
-    await opleidingenService.updateOpleiding(trx, {id, name, active, creatorId});
+    await opleidingenService.updateOpleiding(trx, {id, name});
 }));
 
 router.delete("/:id", [
