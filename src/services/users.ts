@@ -114,7 +114,7 @@ async function giveRoleToUser(trx: Transaction, role: string, newId: number) {
       stillName = "stillAdmin";
       break;
     case UserRole.student:
-      table = "students";
+      table = "studenten";
       idName = "studentId";
       stillName = "stillStudent";
       break;
