@@ -15,25 +15,22 @@ async function rowToUser(trx: Transaction, row: any) {
     row.accountCreatedTimestamp = new Date(row.accountCreatedTimestamp);
   }
   const user = row as User;
-  user.role = await fetchUserRole(trx, user.id);
+  user.roles = await fetchUserRoles(trx, user.id);
+  user.role = user.roles[0];
   delete user.password;
   return user;
 }
 
-export async function fetchUserRole(
-  trx: Transaction,
-  id: number
-): Promise<UserRole> {
-  if (await adminsService.isActiveAdmin(trx, id)) {
-    return UserRole.admin;
-  }
-  if (await teachersService.isActiveTeacher(trx, id)) {
-    return UserRole.teacher;
-  }
-  if (await studentenService.isActiveStudent(trx, id)) {
-    return UserRole.student;
-  }
-  return undefined;
+export async function fetchUserRoles(trx: Transaction, id: number) {
+  const roles: UserRole[] = [];
+  const roleOptions = [UserRole.admin, UserRole.teacher, UserRole.student];
+  const results = await Promise.all([
+    adminsService.isActiveAdmin(trx, id),
+    teachersService.isActiveTeacher(trx, id),
+    studentenService.isActiveStudent(trx, id),
+  ]);
+  results.forEach((x, i) => roles.push(roleOptions[i]));
+  return roles;
 }
 
 export async function fetchUserPasswordByEmail(
