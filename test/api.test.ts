@@ -4,8 +4,13 @@ import { createApp } from "../src/app";
 
 jest.setTimeout(30000);
 
-const TEST_LOGIN_DATA = {
+const TEST_LOGIN_ADMIN_DATA = {
   email: "kenny.depecker@student.howest.be",
+  password: "test"
+};
+
+const TEST_LOGIN_TEACHER_DATA = {
+  email: "teacher1@hotmail.com",
   password: "test"
 };
 
@@ -20,7 +25,7 @@ const TEST_ASPECT_DATA = {
 const TEST_MELDING_DATA = {
   tekst: "Test Text",
   titel: "Test",
-  teacherId: 4
+  opleidingIds: [1]
 };
 
 const TEST_STUDENT_DATA = {
@@ -39,13 +44,12 @@ const TEST_STUDENT_DATA_UPDATE = {
   "moduleIds": [1, 2]
 };
 
-const TEST_MELDING_DATA_FAILED = {
-  tekst: "Test Text",
-  titel: "Test"
-};
-
 async function authWithTest(agent) {
-  await agent.post("/api/auth/login").send(TEST_LOGIN_DATA);
+  await agent.post("/api/auth/login").send(TEST_LOGIN_ADMIN_DATA);
+}
+
+async function authTeacherWithTest(agent) {
+  await agent.post("/api/auth/login").send(TEST_LOGIN_TEACHER_DATA);
 }
 
 async function getAgent() {
@@ -65,7 +69,7 @@ describe("Authentication API", () => {
     it("should return 200 on succesful login", () => {
       return agent
         .post("/api/auth/login")
-        .send(TEST_LOGIN_DATA)
+        .send(TEST_LOGIN_ADMIN_DATA)
         .expect(200);
     });
 
@@ -73,7 +77,7 @@ describe("Authentication API", () => {
       return agent
         .post("/api/auth/login")
         .send({
-          ...TEST_LOGIN_DATA,
+          ...TEST_LOGIN_ADMIN_DATA,
           email: "random@email.com",
         })
         .expect(403);
@@ -83,7 +87,7 @@ describe("Authentication API", () => {
       return agent
         .post("/api/auth/login")
         .send({
-          ...TEST_LOGIN_DATA,
+          ...TEST_LOGIN_ADMIN_DATA,
           password: "wrong password"
         })
         .expect(403);
@@ -182,46 +186,44 @@ describe("Meldingen API", () => {
   let agent: any;
   beforeAll(async function () {
     agent = await getAgent();
-    await authWithTest(agent);
-  });
-
-  describe("GET /api/meldingen/:id", () => {
-
-    it("should return 200 OK", () => {
-      return agent.get("/api/meldingen/1")
-        .expect(200);
-    });
-
+    await authTeacherWithTest(agent);
   });
 
   describe("GET /api/meldingen", () => {
-
     it("should return 200 OK", () => {
-      return agent.get("/api/meldingen")
-        .expect(200);
+      return agent.get("/api/meldingen").expect(200);
     });
-
   });
 
-  // describe("POST /api/meldingen", () => {
+  describe("GET /api/meldingen/:id", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/meldingen/1").expect(200);
+    });
+  });
 
-  //   it("should return 200 on succesful melding post", () => {
-  //           return agent
-  //               .post("/api/meldingen")
-  //               .send(TEST_MELDING_DATA)
-  //               .expect(201);
-  //       });
-  //   });
+  describe("POST /api/meldingen", () => {
+    it("should return 200 on succesful melding post", () => {
+      return agent
+        .post("/api/meldingen")
+        .send(TEST_MELDING_DATA)
+        .expect(201);
+    });
+    it("should return 404 on failed melding post", () => {
+      return agent
+        .post("/api/meldingen")
+        .send({})
+        .expect(400);
+    });
+  });
 
-  //   describe("POST /api/meldingen", () => {
-
-  //       it("should return 404 on failed melding post", () => {
-  //           return agent
-  //               .post("/api/meldingen")
-  //               .send(TEST_MELDING_DATA_FAILED)
-  //               .expect(404);
-  //       });
-  //   });
+  describe("POST /api/meldingen/:id", () => {
+    it("should return 200 on succesfull melding update", () => {
+      return agent
+        .post(`/api/meldingen/${1}`)
+        .send(TEST_MELDING_DATA)
+        .expect(200);
+    });
+  });
 });
 
 describe("Aspecten API", () => {
