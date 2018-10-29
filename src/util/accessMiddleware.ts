@@ -21,7 +21,7 @@ export function usersOnly(req: Request, res: Response, next: NextFunction) {
 const roleFilterMiddlewareFactory = (requiredRole: UserRole) => (req: Request, res: Response, next: NextFunction) => {
   usersOnly(req, res, (err) => {
     const user = req.user as User;
-    if (user.role === requiredRole) {
+    if (user.roles.indexOf(requiredRole) > -1) {
       next();
     } else {
       errorResponse(new HttpError(403, `Only users of role: ${requiredRole} are allowed`), res);
