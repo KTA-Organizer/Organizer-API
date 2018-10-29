@@ -1,5 +1,7 @@
-import Knex, { Config, Transaction } from "knex";
+import Knex, { Config, Transaction, QueryBuilder } from "knex";
 import { loadConfig } from "./storage";
+import setupPaginator from "knex-paginator";
+
 
 let knex: Knex;
 async function getKnex() {
@@ -21,6 +23,7 @@ async function getKnex() {
       connection,
       pool: { min: 1, max: 10 }
     });
+    setupPaginator(knex);
   }
   return knex;
 }
@@ -33,3 +36,23 @@ export const createTrx = (): Promise<Transaction> => new Promise((resolve, rejec
     }).catch(() => {});
   }).catch(reject);
 });
+
+export interface PaginateResult<T> {
+    page: number;
+    perPage: number;
+    total: number;
+    lastPage: number;
+    rows: T[];
+}
+
+export const paginate = <T>(query: QueryBuilder) => async (page: number, perPage: number) => {
+  const totalAware = true;
+  const paginator = await query.paginate(perPage, page, totalAware);
+  return {
+    rows: paginator.data,
+    page,
+    perPage,
+    total: paginator.total,
+    lastPage: paginator.last_page,
+  } as PaginateResult<T>;
+};

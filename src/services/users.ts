@@ -1,11 +1,12 @@
 import logger from "../util/logger";
-import { User, UserRole, UserStatus } from "../models/User";
+import { User, UserRole, UserStatus, Gender } from "../models/User";
 import * as studentenService from "./studenten";
 import * as teachersService from "./teachers";
 import * as adminsService from "./admins";
 import bcrypt from "bcrypt";
 import { Transaction } from "knex";
 import { CacheMap } from "../config/caching";
+import { paginate } from "../config/db";
 
 const usersCache = new CacheMap<number, User>("users");
 
@@ -166,4 +167,34 @@ export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
     .where(filter);
   rows = rows.map((row: any) => rowToUser(trx, row));
   return await Promise.all(rows);
+}
+
+export type FetchUsersOptions = {
+  allowDisabledUsers?: boolean,
+  page: number,
+  perPage: number,
+  gender?: Gender,
+  role?: UserRole
+};
+
+export async function paginateAllUsers(trx: Transaction, options: FetchUsersOptions) {
+  const filter: any = {};
+  if (!options.allowDisabledUsers) {
+    filter.status = UserStatus.active;
+  }
+  if (!options.gender) {
+    filter.gender = options.gender;
+  }
+  const paginator = await paginate<User>(trx
+    .table("users")
+    .select("*")
+    .where(filter))(options.page, options.perPage);
+  const promises = paginator.rows
+    .map((row: any) => rowToUser(trx, row));
+  paginator.rows = await Promise.all(promises);
+  if (!options.role) {
+    paginator.rows = paginator.rows
+      .filter((row) => row.role === options.role);
+  }
+  return paginator;
 }
