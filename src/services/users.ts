@@ -29,7 +29,8 @@ export async function fetchUserRoles(trx: Transaction, id: number) {
     teachersService.isActiveTeacher(trx, id),
     studentenService.isActiveStudent(trx, id),
   ]);
-  results.forEach((x, i) => roles.push(roleOptions[i]));
+  results.forEach((isRole, i) =>
+    isRole && roles.push(roleOptions[i]));
   return roles;
 }
 
