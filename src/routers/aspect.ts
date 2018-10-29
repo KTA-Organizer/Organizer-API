@@ -48,7 +48,7 @@ router.put("/:id", [
 }));
 
 router.delete("/:id", [
-    usersOnly,
+    adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt()
 ], executor(async function (req, trx, matchedData) {
