@@ -9,7 +9,7 @@ import { Transaction } from "knex";
 
 async function getResetLink(resetToken: string) {
   const config = await loadConfig();
-  return `${config.url}/reset?token=${resetToken}`;
+  return `${config.url}/#/reset?token=${resetToken}`;
 }
 
 async function sendResetMail(to: string, resetToken: string) {

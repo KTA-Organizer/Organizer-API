@@ -9,7 +9,7 @@ import { Transaction } from "knex";
 
 async function getInviteLink(token: string) {
   const config = await loadConfig();
-  return `${config.url}/invitation?token=${token}`;
+  return `${config.url}/#/invitation?token=${token}`;
 }
 
 async function sendStudentInviteMail(name: string, to: string, token: string) {
