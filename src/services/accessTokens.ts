@@ -1,6 +1,8 @@
-import { AccessToken } from "../models/AccessToken";
+import { AccessToken, AccessTokenType } from "../models/AccessToken";
 import { genRandomHash } from "../util/randomHash";
 import { Transaction } from "knex";
+import { fetchUser } from "./users";
+import { User, UserStatus } from "../models/User";
 
 export async function createAccessToken(trx: Transaction, userid: number) {
   const token = genRandomHash();
@@ -12,9 +14,15 @@ export async function deleteAccessToken(trx: Transaction, resetToken: string) {
   await trx.table("access_tokens").delete().where("token", resetToken);
 }
 
-function rowToAccessToken(row: any) {
-  row.tokenTimestamp = new Date(row.tokenTimestamp);
-  return row as AccessToken;
+const deduceAccessTokenType = (user: User) =>
+  user.status === UserStatus.waitActivation ? AccessTokenType.invitation : AccessTokenType.passwordReset;
+
+async function rowToAccessToken(trx: Transaction, row: any) {
+  const at = row as AccessToken;
+  at.tokenTimestamp = new Date(row.tokenTimestamp);
+  at.user = await fetchUser(trx, row.userid);
+  at.type = deduceAccessTokenType(at.user);
+  return at;
 }
 
 export async function fetchAccessToken(trx: Transaction, token: string) {
@@ -22,14 +30,13 @@ export async function fetchAccessToken(trx: Transaction, token: string) {
   if (rows.length !== 1) {
     return;
   }
-  const passReset = await rowToAccessToken(rows[0]);
-  const timeDiffMs = Date.now() - passReset.tokenTimestamp.getTime();
+  return await rowToAccessToken(trx, rows[0]);
+}
+
+export function hasResetTokenExpired(token: AccessToken) {
+  const timeDiffMs = Date.now() - token.tokenTimestamp.getTime();
   // 2 weeks in miliseconds
   const weeksInMs = 14 * 24 * 60 * 60 * 1000;
-  if (timeDiffMs > weeksInMs) {
-    return;
-  }
-
-  return passReset;
+  return timeDiffMs > weeksInMs;
 }
 

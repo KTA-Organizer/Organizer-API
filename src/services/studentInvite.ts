@@ -19,12 +19,11 @@ U bent uitgenodigd om een gebruiker aan te maken op het KTA platform.
 <a href=${await getInviteLink(token)}>Gebruiker aanmaken</a>
   `;
 
-  const info: any = await sendMail({
+  await sendMail({
     to,
     subject: "Uitnodiging KTA platform",
     html
   });
-  logger.info("Message sent: %s", info.messageId);
 }
 
 export async function inviteUser(trx: Transaction, user: User) {

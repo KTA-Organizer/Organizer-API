@@ -19,12 +19,11 @@ Wachtwoord vergeten? Geen Paniek!
 Als u geen aanvraag heeft gemaakt om u wachtwoord te veranderen hoeft u niets te doen.
   `;
 
-  const info: any = await sendMail({
+  await sendMail({
     to,
     subject: "Wachtwoord vergeten",
     html
   });
-  logger.info("Message sent: %s", info.messageId);
 }
 export async function requestPasswordReset(trx: Transaction, user: User) {
   const token = await accessTokensService.createAccessToken(trx, user.id);

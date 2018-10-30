@@ -14,6 +14,8 @@ const TEST_LOGIN_TEACHER_DATA = {
   password: "test"
 };
 
+const TEST_ACCESS_TOKEN = "0a9ab7dac8f4f330a201de9f067b8312208ecad512039ae920740427654146c0";
+
 const TEST_ASPECT_DATA = {
   "evaluatiecriteriumId": 36,
   "name": "test",
@@ -106,18 +108,42 @@ describe("Authentication API", () => {
 
   });
 
-  // describe("POST /api/auth/forgot", () => {
+  describe("POST /api/auth/forgot", () => {
 
-  //   it("should return 200 OK", () => {
-  //     return agent
-  //     .post("/api/auth/forgot")
-  //     .send({
-  //       email: TEST_LOGIN_DATA.email
-  //     })
-  //     .expect(200);
-  //   });
+    it("should return 200 OK", () => {
+      return agent
+        .post("/api/auth/forgot")
+        .send({
+          email: TEST_LOGIN_TEACHER_DATA.email
+        })
+        .expect(200);
+    });
 
-  // });
+  });
+
+  describe("GET /api/auth/token/:token", () => {
+
+    it("should return 200 OK", () => {
+      return agent
+      .get(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
+      .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/auth/token/:token", () => {
+
+    it("should return 200 OK", () => {
+      return agent
+      .put(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
+      .send({
+        password: "new password"
+      })
+      .expect(200);
+    });
+
+  });
+
 });
 
 describe("Users API", () => {
