@@ -65,4 +65,34 @@ router.post(
   })
 );
 
+router.put(
+  "/:id",
+  [
+    adminsOnly,
+    check("firstname").exists(),
+    check("lastname").exists(),
+    check("email").isEmail(),
+    check("role").exists(),
+    check("gender").exists(),
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+  ],
+  executor(async function(
+    req,
+    trx,
+    user
+  ) {
+    console.log(user);
+  })
+);
+
+router.delete(
+  "/:id",
+  [adminsOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, trx, matchedData) {
+    console.log("deleting user => " + matchedData.id);
+    await usersService.disableUser(trx, matchedData.id);
+  })
+);
+
 export default router;
