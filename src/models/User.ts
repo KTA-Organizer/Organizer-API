@@ -37,4 +37,5 @@ export interface User {
    */
   creator?: User;
   role?: UserRole;
+  roles?: UserRole[];
 }

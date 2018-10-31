@@ -8,6 +8,7 @@ import * as passwordResetService from "../services/passwordReset";
 import * as usersService from "../services/users";
 import * as studentInviteService from "../services/studentInvite";
 import { HttpError } from "../util/httpStatus";
+import { AccessTokenType } from "../models/AccessToken";
 
 
 const router = Router({
@@ -41,29 +42,36 @@ router.post("/forgot", [
     await passwordResetService.requestPasswordReset(trx, user);
 }));
 
-router.post("/reset", [
+router.get("/token/:token", [
+    check("token").exists(),
+    unauthenticatedOnly,
+], executor(async (req, trx, { token }) => {
+    const acccessToken = await accessTokensService.fetchAccessToken(trx, token);
+    if (!acccessToken) {
+        throw new HttpError(404, "The token has expired.");
+    }
+    return acccessToken;
+}));
+
+router.put("/token/:token", [
     check("token").exists(),
     check("password").exists(),
     unauthenticatedOnly,
 ], executor(async (req, trx, { token, password }) => {
     const acccessToken = await accessTokensService.fetchAccessToken(trx, token);
     if (!acccessToken) {
-        throw new HttpError(400, "The password reset token has expired.");
+        throw new HttpError(400, "The token has expired.");
     }
-    await passwordResetService.resetPassword(trx, acccessToken, password);
-}));
 
-router.post("/invitation", [
-    check("token").exists(),
-    check("password").exists(),
-    unauthenticatedOnly,
-], executor(async (req, trx, { token, password }) => {
-    const acccessToken = await accessTokensService.fetchAccessToken(trx, token);
-    if (!acccessToken) {
-        throw new HttpError(400, "The password reset token has expired.");
+    if (acccessToken.type === AccessTokenType.passwordReset) {
+        if (accessTokensService.hasResetTokenExpired(acccessToken)) {
+            throw new HttpError(400, "The password reset has expired.");
+        }
+        await passwordResetService.resetPassword(trx, acccessToken, password);
     }
-    await studentInviteService.acceptInvitation(trx, acccessToken, password);
+    if (acccessToken.type === AccessTokenType.invitation) {
+        await studentInviteService.acceptInvitation(trx, acccessToken, password);
+    }
 }));
-
 
 export default router;

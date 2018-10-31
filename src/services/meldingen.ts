@@ -5,6 +5,7 @@ import { HttpError } from "../util/httpStatus";
 import { sendMail } from "../config/mail";
 import { User } from "../models/User";
 import { Transaction } from "knex";
+import { paginate } from "../config/db";
 
 async function rowToMelding(trx: Transaction, row: any) {
   if (row.teacherId) {
@@ -21,6 +22,16 @@ export async function fetchAllMeldingen(trx: Transaction) {
   return await rows;
 }
 
+export async function paginateAllMeldingen(trx: Transaction, options: { page: number, perPage: number }) {
+  const paginator = await paginate<Melding>(trx
+    .table("users")
+    .select("*"))(options.page, options.perPage);
+  const promises = paginator.rows
+    .map((row) => rowToMelding(trx, row));
+  paginator.rows = await Promise.all(promises);
+  return paginator;
+}
+
 export async function fetchMelding(trx: Transaction, id: number) {
   const rows = await trx.table("meldingen")
     .select("*")
@@ -29,14 +40,16 @@ export async function fetchMelding(trx: Transaction, id: number) {
   return await rowToMelding(trx, rows[0]);
 }
 
-export async function insertMelding(trx: Transaction, meldingToAdd: any) {
+export async function insertMelding(trx: Transaction, data: { tekst: string, teacherId: number, titel: string }) {
   const meldingId = await trx.table("meldingen").insert({
-    tekst: meldingToAdd.tekst,
-    teacherId: meldingToAdd.teacherId,
-    titel: meldingToAdd.titel,
+    ...data,
     datum: new Date()
   });
   return meldingId;
+}
+
+export async function updateMelding(trx: Transaction, id: number, data: { tekst: string, teacherId: number, titel: string }) {
+  await trx.table("meldingen").where("id", id).update(data);
 }
 
 export async function addMeldingWithOpleiding(

@@ -2,6 +2,7 @@ import * as mailer from "nodemailer";
 import { Options } from "nodemailer/lib/mailer";
 import logger from "../util/logger";
 import { loadConfig } from "./storage";
+import { ENVIRONMENT } from "../util/env";
 
 let transporter: mailer.Transporter;
 async function getTransporter() {
@@ -22,6 +23,9 @@ async function getTransporter() {
 
 // Just a wrapper to make it a Promise
 export const sendMail = (mailOptions: Options) => new Promise(async (resolve, reject) => {
+  if (ENVIRONMENT === "test") {
+    return resolve();
+  }
   const config = await loadConfig();
   const transporter = await getTransporter();
 

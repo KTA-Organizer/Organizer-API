@@ -4,7 +4,7 @@ import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly, adminsOnly } from "../util/accessMiddleware";
+import { usersOnly, adminsOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
 import { User } from "../models/User";
 
 const router = Router({
@@ -16,6 +16,7 @@ router.use(usersOnly);
 
 router.get(
   "/",
+  [teacherOrAdminOnly],
   executor(async function(req, trx) {
     const users = await usersService.fetchAll(trx, true);
     return users;
@@ -31,7 +32,7 @@ router.get(
 
 router.get(
   "/:id",
-  [check("id").isNumeric(), sanitize("id").toInt()],
+  [teacherOrAdminOnly, check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function(req, trx, matchedData) {
     const user = await usersService.fetchUser(trx, matchedData.id);
     if (!user) {

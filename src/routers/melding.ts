@@ -50,14 +50,13 @@ router.post(
     check("tekst").exists(),
     check("opleidingIds").exists()
   ],
-  executor(async function(req, trx, matchedData) {
+  executor(async function(req, trx, { opleidingIds, ...data }, res) {
     const teacher = req.user;
     const meldingId = await meldingenService.insertMelding(trx, {
-      tekst: matchedData.tekst,
-      titel: matchedData.titel,
+      ...data,
       teacherId: teacher.id
     });
-    for (const opleidingId of matchedData.opleidingIds) {
+    for (const opleidingId of opleidingIds) {
       await meldingenService.addMeldingWithOpleiding(trx, meldingId, +opleidingId);
     }
     // TODO send mails
@@ -69,18 +68,46 @@ router.post(
     //     res.location("/meldingen/" + meldingId)
     //         .sendStatus(201);
     //     return;
+    res.header("Location", `/api/meldingen/${meldingId}`);
+    res.status(201);
+  })
+);
+
+router.post(
+  "/:id",
+  [
+    teachersOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("titel").exists(),
+    check("tekst").exists(),
+  ],
+  executor(async function(req, trx, { id, ...data }) {
+    const teacher = req.user as User;
+    const existingMelding = await meldingenService.fetchMelding(trx, id);
+    if (!existingMelding) {
+      throw new HttpError(404, "Melding doesn't exist");
+    }
+    if (existingMelding.teacherId != teacher.id) {
+      throw new HttpError(403, "Melding is niet geplaatst door u.");
+    }
+    await meldingenService.updateMelding(trx, id, data);
   })
 );
 
 router.delete(
   "/:id",
-  [check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function(req, trx, matchedData) {
-    const melding = await meldingenService.fetchMelding(trx, matchedData.id);
-    if (!melding) {
+  [teachersOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, trx, { id }) {
+    const teacher = req.user as User;
+    const existingMelding = await meldingenService.fetchMelding(trx, id);
+    if (!existingMelding) {
       throw new HttpError(404, "Melding doesn't exist");
     }
-    await meldingenService.removeMelding(trx, matchedData.id);
+    if (existingMelding.teacherId != teacher.id) {
+      throw new HttpError(403, "Melding is niet geplaatst door u.");
+    }
+    await meldingenService.removeMelding(trx, id);
   })
 );
 
