@@ -1,7 +1,7 @@
 import passport from "passport";
 import * as usersService from "../services/users";
 import { Strategy as LocalStrategy } from "passport-local";
-import { User } from "../models/User";
+import { User, UserStatus } from "../models/User";
 import { HttpError } from "../util/httpStatus";
 import * as bcrypt from "bcrypt";
 import { createTrx } from "./db";
@@ -47,12 +47,14 @@ async function login(email: string, password: string, done: any) {
         }
 
         const isEqual = await bcrypt.compare(password, passHash);
-        if (isEqual) {
-            const user = await usersService.fetchUserByEmail(trx, email.toLowerCase());
-            cb(undefined, user);
-        } else {
-            cb(undefined, false, { message: `Passwords don't match.` });
+        if (!isEqual) {
+            return cb(undefined, false, { message: `Passwords don't match.` });
         }
+        const user = await usersService.fetchUserByEmail(trx, email.toLowerCase());
+        if (user.status !== UserStatus.active) {
+            return cb(undefined, false, { message: "Your account has been deactivated" });
+        }
+        cb(undefined, user);
     } catch (err) {
         cb(err);
     }

@@ -6,7 +6,7 @@ import { usersOnly, unauthenticatedOnly } from "../util/accessMiddleware";
 import * as accessTokensService from "../services/accessTokens";
 import * as passwordResetService from "../services/passwordReset";
 import * as usersService from "../services/users";
-import * as studentInviteService from "../services/studentInvite";
+import * as invitesService from "../services/invites";
 import { HttpError } from "../util/httpStatus";
 import { AccessTokenType } from "../models/AccessToken";
 
@@ -63,15 +63,11 @@ router.put("/token/:token", [
         throw new HttpError(400, "The token has expired.");
     }
 
-    if (acccessToken.type === AccessTokenType.passwordReset) {
-        if (accessTokensService.hasResetTokenExpired(acccessToken)) {
-            throw new HttpError(400, "The password reset has expired.");
-        }
-        await passwordResetService.resetPassword(trx, acccessToken, password);
+    if (acccessToken.type === AccessTokenType.passwordReset
+        && accessTokensService.hasResetTokenExpired(acccessToken)) {
+        throw new HttpError(400, "The password reset has expired.");
     }
-    if (acccessToken.type === AccessTokenType.invitation) {
-        await studentInviteService.acceptInvitation(trx, acccessToken, password);
-    }
+    await accessTokensService.redeemToken(trx, acccessToken, password);
 }));
 
 export default router;
