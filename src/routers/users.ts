@@ -4,7 +4,11 @@ import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly, adminsOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
+import {
+  usersOnly,
+  adminsOnly,
+  teacherOrAdminOnly
+} from "../util/accessMiddleware";
 import { User, UserRole, Gender, genders } from "../models/User";
 import logger from "../util/logger";
 
@@ -71,21 +75,27 @@ router.put(
   [
     check("id").isNumeric(),
     sanitize("id").toInt(),
-
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
     check("gender").isIn(genders),
-    check("roles").exists(),
+    check("roles").exists()
   ],
-  executor(async function (req, trx, { id, ...userData }) {
+  executor(async function(req, trx, { id, ...userData }) {
     const currentUser = req.user as User;
     const isAdmin = usersService.hasRole(currentUser, UserRole.admin);
     if (!isAdmin && currentUser.id !== id) {
       throw new HttpError(403, "You are not authorized to edit this user.");
     }
     await usersService.updateUser(trx, id, userData, isAdmin);
+  })
+);
 
+router.put(
+  "/:id/activate",
+  [adminsOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, trx, { id }) {
+    await usersService.activateUser(trx, id);
   })
 );
 
