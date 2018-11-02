@@ -83,7 +83,9 @@ router.put(
     trx,
     user
   ) {
-    console.log(user);
+    const role = user.role;
+    delete user.role;
+    await usersService.updateUser(trx, user);
   })
 );
 
