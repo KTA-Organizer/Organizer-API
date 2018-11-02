@@ -1,5 +1,5 @@
 import logger from "../util/logger";
-import { User, UserRole, UserStatus, Gender } from "../models/User";
+import { User, UserRole, UserStatus, Gender, userRoles } from "../models/User";
 import * as studentenService from "./studenten";
 import * as teachersService from "./teachers";
 import * as adminsService from "./admins";
@@ -7,6 +7,9 @@ import bcrypt from "bcrypt";
 import { Transaction } from "knex";
 import { CacheMap } from "../config/caching";
 import { paginate } from "../config/db";
+import * as invitesService from "./invites";
+import * as accessTokenService from "./accessTokens";
+import _ from "lodash";
 
 const usersCache = new CacheMap<number, User>("users");
 
@@ -80,71 +83,68 @@ export async function activateUser(trx: Transaction, userid: number) {
 
 export async function insertUser(
   trx: Transaction,
-  userData: {
+  { roles, ...userData }: {
     firstname: string;
     lastname: string;
     email: string;
-    gender: string;
-    role: string;
+    gender: Gender;
+    roles: UserRole[];
   }
 ) {
-  const role = userData.role;
-  delete userData.role;
   const insertedIds: number[] = await trx.table("users").insert({
     ...userData,
     status: UserStatus.waitActivation
   });
-  const newId = insertedIds[0];
-  await giveRoleToUser(trx, role, newId);
-  console.log("Role inserted");
-  return newId;
+  const userid = insertedIds[0];
+  await updateUserRoles(trx, userid, roles);
+
+  const newUser = await fetchUser(trx, userid);
+
+  await invitesService.inviteUser(trx, newUser);
+
+  return newUser;
 }
 
-async function giveRoleToUser(trx: Transaction, role: string, newId: number) {
-  let table = undefined;
-  let idName = undefined;
-  let stillName = undefined;
-  switch (role) {
-    case UserRole.admin:
-      table = "admins";
-      idName = "adminId";
-      stillName = "stillAdmin";
-      break;
-    case UserRole.student:
-      table = "studenten";
-      idName = "studentId";
-      stillName = "stillStudent";
-      break;
-    case UserRole.teacher:
-      table = "teachers";
-      idName = "teacherId";
-      stillName = "stillTeacher";
-      break;
-    default:
-      throw new Error("This role doesn't exist!");
-  }
-  console.log(table, role, idName, stillName);
-  const roleObject = { [idName]: newId, [stillName]: 1 };
-  console.log(roleObject);
-  if (table && idName && stillName) {
-    await trx.table(table).insert(roleObject);
+async function updateUserRoles(trx: Transaction, userid: number, roles: UserRole[]) {
+  const addRoleFuns = {
+    [UserRole.admin]: adminsService.makeUserAdmin,
+    [UserRole.teacher]: teachersService.makeUserTeacher,
+    [UserRole.student]: studentenService.makeUserStudent,
+  };
+  const removeRoleFuns = {
+    [UserRole.admin]: adminsService.makeUserNotAdmin,
+    [UserRole.teacher]: teachersService.makeUserNotTeacher,
+    [UserRole.student]: studentenService.makeUserNotStudent,
+  };
+  for (const role of userRoles) {
+    if (_.includes(roles, role)) {
+      await addRoleFuns[role](trx, userid);
+    } else {
+      await removeRoleFuns[role](trx, userid);
+    }
   }
 }
 
 export async function updateUser(
   trx: Transaction,
-  userData: {
-    id: number;
+  id: number,
+  {roles, ...userData}: {
     firstname: string;
     lastname: string;
     email: string;
-  }
+    gender: Gender,
+    roles?: UserRole[]
+  },
+  shouldUpdateRoles?: boolean
 ) {
-  usersCache.changed(userData.id);
   await trx
     .table("users")
-    .where({ id: userData.id })
+    .where("id", id)
     .update(userData);
+  if (shouldUpdateRoles) {
+    await updateUserRoles(trx, id, roles);
+  }
+  usersCache.changed(id);
 }
 
 export async function disableUser(trx: Transaction, id: number) {
@@ -152,6 +152,7 @@ export async function disableUser(trx: Transaction, id: number) {
   await trx.table("users")
     .update({ status: UserStatus.disabled })
     .where({ id });
+  await accessTokenService.deleteAccessTokensForUser(trx, id);
 }
 
 export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
@@ -159,12 +160,12 @@ export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
   if (!allowDisabledUsers) {
     filter.status = UserStatus.active;
   }
-  let rows = await trx
+  const rows = await trx
     .table("users")
     .select("*")
     .where(filter);
-  rows = rows.map((row: any) => rowToUser(trx, row));
-  return await Promise.all(rows);
+  const promises: Promise<User>[] = rows.map((row: any) => rowToUser(trx, row));
+  return await Promise.all(promises);
 }
 
 export type FetchUsersOptions = {
@@ -195,4 +196,8 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
       .filter((row) => row.role === options.role);
   }
   return paginator;
+}
+
+export function hasRole(user: User, role: UserRole) {
+  return user.roles.indexOf(role) > -1;
 }

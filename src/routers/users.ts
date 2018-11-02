@@ -5,7 +5,8 @@ import executor from "../util/executor";
 import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
 import { usersOnly, adminsOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
-import { User } from "../models/User";
+import { User, UserRole, Gender, genders } from "../models/User";
+import logger from "../util/logger";
 
 const router = Router({
   mergeParams: true,
@@ -49,8 +50,8 @@ router.post(
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
-    check("gender").exists(),
-    check("role").exists()
+    check("gender").isIn(genders),
+    check("roles").exists()
   ],
   executor(async function(req, trx, matchedData) {
     const existingUser = await usersService.fetchUserByEmail(
@@ -60,32 +61,31 @@ router.post(
     if (existingUser) {
       throw new HttpError(400, "A user with this email already exists");
     }
-    const newUserId = await usersService.insertUser(trx, matchedData);
-    console.log("newUserId", newUserId);
-    return { newId: newUserId };
+    const newUser = await usersService.insertUser(trx, matchedData);
+    return newUser;
   })
 );
 
 router.put(
   "/:id",
   [
-    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
-    check("role").exists(),
-    check("gender").exists(),
-    check("id").isNumeric(),
-    sanitize("id").toInt()
+    check("gender").isIn(genders),
+    check("roles").exists(),
   ],
-  executor(async function(
-    req,
-    trx,
-    user
-  ) {
-    const role = user.role;
-    delete user.role;
-    await usersService.updateUser(trx, user);
+  executor(async function (req, trx, { id, ...userData }) {
+    const currentUser = req.user as User;
+    const isAdmin = usersService.hasRole(currentUser, UserRole.admin);
+    if (!isAdmin && currentUser.id !== id) {
+      throw new HttpError(403, "You are not authorized to edit this user.");
+    }
+    await usersService.updateUser(trx, id, userData, isAdmin);
+
   })
 );
 
@@ -93,7 +93,7 @@ router.delete(
   "/:id",
   [adminsOnly, check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function(req, trx, matchedData) {
-    console.log("deleting user => " + matchedData.id);
+    logger.info("deleting user => " + matchedData.id);
     await usersService.disableUser(trx, matchedData.id);
   })
 );

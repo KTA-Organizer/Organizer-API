@@ -1,7 +1,7 @@
 import { AccessToken, AccessTokenType } from "../models/AccessToken";
 import { genRandomHash } from "../util/randomHash";
 import { Transaction } from "knex";
-import { fetchUser } from "./users";
+import { fetchUser, updatePassword, activateUser } from "./users";
 import { User, UserStatus } from "../models/User";
 
 export async function createAccessToken(trx: Transaction, userid: number) {
@@ -12,6 +12,10 @@ export async function createAccessToken(trx: Transaction, userid: number) {
 
 export async function deleteAccessToken(trx: Transaction, resetToken: string) {
   await trx.table("access_tokens").delete().where("token", resetToken);
+}
+
+export async function deleteAccessTokensForUser(trx: Transaction, userid: number) {
+  await trx.table("access_tokens").where({ userid }).delete();
 }
 
 const deduceAccessTokenType = (user: User) =>
@@ -40,3 +44,8 @@ export function hasResetTokenExpired(token: AccessToken) {
   return timeDiffMs > weeksInMs;
 }
 
+export async function redeemToken(trx: Transaction, accessToken: AccessToken, password: string) {
+  await deleteAccessToken(trx, accessToken.token);
+  await updatePassword(trx, accessToken.userid, password);
+  await activateUser(trx, accessToken.userid);
+}

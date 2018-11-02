@@ -3,6 +3,8 @@ export enum Gender {
   female = "F",
 }
 
+export const genders = [Gender.male, Gender.female];
+
 export enum Language {
   dutch = "NL",
   english = "EN"
@@ -19,6 +21,8 @@ export enum UserRole {
   teacher = "TEACHER",
   admin = "ADMIN"
 }
+
+export const userRoles = [UserRole.admin, UserRole.teacher, UserRole.student];
 
 export interface User {
   id: number;

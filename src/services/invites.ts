@@ -2,7 +2,7 @@ import { sendMail } from "../config/mail";
 import { User } from "../models/User";
 import { loadConfig } from "../config/storage";
 import logger from "../util/logger";
-import * as usersService from "../services/users";
+import * as usersService from "./users";
 import * as accessTokensService  from "./accessTokens";
 import { AccessToken } from "../models/AccessToken";
 import { Transaction } from "knex";
@@ -12,7 +12,7 @@ async function getInviteLink(token: string) {
   return `${config.url}/#/invitation?token=${token}`;
 }
 
-async function sendStudentInviteMail(name: string, to: string, token: string) {
+async function sendInviteMail(name: string, to: string, token: string) {
   const html = `
 Beste ${name},
 U bent uitgenodigd om een gebruiker aan te maken op het KTA platform.
@@ -29,12 +29,6 @@ U bent uitgenodigd om een gebruiker aan te maken op het KTA platform.
 export async function inviteUser(trx: Transaction, user: User) {
   const token = await accessTokensService.createAccessToken(trx, user.id);
 
-  await sendStudentInviteMail(user.firstname, user.email, token);
+  await sendInviteMail(user.firstname, user.email, token);
   console.log("Token:", token);
-}
-
-export async function acceptInvitation(trx: Transaction, accessToken: AccessToken, password: string) {
-  await accessTokensService.deleteAccessToken(trx, accessToken.token);
-  await usersService.updatePassword(trx, accessToken.userid, password);
-  await usersService.activateUser(trx, accessToken.userid);
 }

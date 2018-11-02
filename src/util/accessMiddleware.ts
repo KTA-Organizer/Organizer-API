@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../util/httpStatus";
-import { User, UserRole } from "../models/User";
+import { User, UserRole, UserStatus } from "../models/User";
 import { errorResponse } from "./executor";
 import _ from "lodash";
 
@@ -12,7 +12,8 @@ export function unauthenticatedOnly(req: Request, res: Response, next: NextFunct
   }
 }
 export function usersOnly(req: Request, res: Response, next: NextFunction) {
-  if (req.user) {
+  const currentUser = req.user as User;
+  if (currentUser && currentUser.status === UserStatus.active) {
     next();
   } else {
     errorResponse(new HttpError(401, "Only users are allowed"), res);

@@ -14,7 +14,7 @@ const TEST_LOGIN_TEACHER_DATA = {
   password: "test"
 };
 
-const TEST_ACCESS_TOKEN = "0a9ab7dac8f4f330a201de9f067b8312208ecad512039ae920740427654146c0";
+const TEST_ACCESS_TOKEN = "8f5d98c8a5b9feb88fc971d3ea4e21e448b6045adf6b1983f90f05cbe2c4d969";
 
 const TEST_ASPECT_DATA = {
   "evaluatiecriteriumId": 36,
@@ -30,18 +30,23 @@ const TEST_MELDING_DATA = {
   opleidingIds: [1]
 };
 
-const TEST_STUDENT_DATA = {
+const TEST_USER_INSERT_DATA = {
   "firstname": "jeanke",
   "lastname": "bonny",
-  "email": "jeankebonnytje@gmail.com",
-  "opleidingId": 1,
-  "moduleIds": [1, 2]
+  "email": "testemail@gmail.com",
+  "gender": "F",
+  "roles": ["ADMIN", "TEACHER"]
 };
 
-const TEST_STUDENT_DATA_UPDATE = {
+const TEST_USER_UPDATE_DATA = {
   "firstname": "jeanke",
   "lastname": "bonny",
-  "email": "jeankebonnyy@gmail.com",
+  "email": "testemail@gmail.com",
+  "gender": "F",
+  "roles": ["ADMIN", "TEACHER"]
+};
+
+const TEST_STUDENT_UPDATE_DATA = {
   "opleidingId": 1,
   "moduleIds": [1, 2]
 };
@@ -153,6 +158,15 @@ describe("Users API", () => {
     await authWithTest(agent);
   });
 
+  describe("GET /api/users", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/users")
+        .expect(200);
+    });
+
+  });
+
   describe("GET /api/users/current", () => {
 
     it("should return 200 OK", () => {
@@ -166,6 +180,35 @@ describe("Users API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/users/10")
+        .expect(200);
+    });
+
+  });
+
+  describe("POST /api/users", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/users")
+        .send(TEST_USER_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/users/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/users/10")
+        .send(TEST_USER_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("DELETE /api/users/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.delete("/api/users/10")
         .expect(200);
     });
 
@@ -417,23 +460,15 @@ describe("Student API", () => {
     await authWithTest(agent);
   });
 
-  describe("GET /api/students", () => {
+  describe("PUT /api/students/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/students")
+      return agent.put("/api/students/10")
+        .send(TEST_STUDENT_UPDATE_DATA)
         .expect(200);
     });
 
   });
 
-  // describe("POST /api/students", () => {
-
-  //   it("should return 200 on succesful student post", () => {
-  //     return agent
-  //       .post("/api/students")
-  //       .send(TEST_STUDENT_DATA)
-  //       .expect(200);
-  //   });
-  // });
 });
 
