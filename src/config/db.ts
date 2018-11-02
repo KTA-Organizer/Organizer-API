@@ -47,7 +47,7 @@ export interface PaginateResult<T> {
 
 export const paginate = <T>(query: QueryBuilder) => async (page: number, perPage: number) => {
   const totalAware = true;
-  const paginator = await query.paginate(perPage, page, totalAware);
+  const paginator = await (query as any).paginate(perPage, page, totalAware);
   return {
     rows: paginator.data,
     page,
