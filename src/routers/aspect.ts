@@ -31,7 +31,7 @@ router.post("/", [
     check("gewicht").exists(),
     check("creatorId").exists(),
 ], executor(async function (req, trx, { evaluatiecriteriumId, name, inGebruik, gewicht, creatorId }) {
-    await aspectenService.insertAspect(trx, { evaluatiecriteriumId, name, inGebruik, gewicht, creatorId});
+    return await aspectenService.insertAspect(trx, { evaluatiecriteriumId, name, inGebruik, gewicht, creatorId});
 }));
 
 router.put("/:id", [
