@@ -23,14 +23,16 @@ router.get(
   "/",
   [
     teacherOrAdminOnly,
+    check("search").optional(),
     check("status").isIn(userStatuses).optional(),
     check("gender").isIn(genders).optional(),
     check("role").isIn(userRoles).optional(),
     check("page").isNumeric().optional(),
     check("perpage").isNumeric().optional()
   ],
-  executor(async function(req, trx, { status, gender, role, page = 1, perpage = 50 }) {
+  executor(async function(req, trx, { search, status, gender, role, page = 1, perpage = 50 }) {
     const users = await usersService.paginateAllUsers(trx, {
+      search,
       status,
       gender,
       role,

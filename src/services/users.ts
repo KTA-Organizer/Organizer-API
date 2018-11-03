@@ -176,6 +176,7 @@ export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
 export type FetchUsersOptions = {
   page: number,
   perPage: number,
+  search?: string;
   status?: UserStatus,
   gender?: Gender,
   role?: UserRole
@@ -197,6 +198,10 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
       [UserRole.student]: "stillStudent",
     }[options.role];
     query.where(key, 1);
+  }
+
+  if (options.search) {
+    query.whereRaw("CONCAT(firstname, ' ', lastname) LIKE CONCAT('%', ?, '%')", [options.search]);
   }
 
   const paginator: PaginateResult<User> = await paginate(query)(options.page, options.perPage);
