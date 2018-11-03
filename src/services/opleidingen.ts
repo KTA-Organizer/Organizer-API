@@ -47,7 +47,7 @@ export async function fetchOpleidingForStudent(trx: Transaction, id: number) {
 }
 
 export async function insertOpleiding(trx: Transaction, data: {name: string, active: number, creatorId: number}) {
-  await trx.table("opleidingen").insert( data );
+   return await trx.table("opleidingen").insert( data );
 }
 
 export async function updateOpleiding(trx: Transaction, data: {id: number, name: string}) {
