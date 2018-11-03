@@ -41,7 +41,7 @@ router.post("/", [
     check("gewicht").exists(),
     check("creatorId").exists()
 ], executor(async function (req, trx, { doelstellingId, name, inGebruik, gewicht, creatorId }) {
-    await evaluatieCriteriaService.insertEvaluatieCriteria(trx, { doelstellingId, name, inGebruik, gewicht, creatorId});
+    return await evaluatieCriteriaService.insertEvaluatieCriteria(trx, { doelstellingId, name, inGebruik, gewicht, creatorId});
 }));
 
 router.put("/:id", [

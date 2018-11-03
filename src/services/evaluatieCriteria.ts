@@ -39,7 +39,7 @@ export async function fetchEvaluatieCriteriaForDoelstellingen(trx: Transaction, 
 }
 
 export async function insertEvaluatieCriteria(trx: Transaction, data: { doelstellingId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
-    await trx.table("evaluatiecriteria").insert( data );
+    return await trx.table("evaluatiecriteria").insert( data );
 }
 
 export async function updateEvaluatieCriteria(trx: Transaction, data: { id: number, name: string }) {
