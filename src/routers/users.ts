@@ -17,12 +17,12 @@ const router = Router({
   strict: true
 });
 
-// router.use(usersOnly);
+router.use(usersOnly);
 
 router.get(
   "/",
   [
-    // teacherOrAdminOnly,
+    teacherOrAdminOnly,
     check("status").isIn(userStatuses).optional(),
     check("gender").isIn(genders).optional(),
     check("role").isIn(userRoles).optional(),
@@ -50,9 +50,9 @@ router.get(
 
 router.get(
   "/:id",
-  [// teacherOrAdminOnly,
-     check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function(req, trx, matchedData) {
+  [teacherOrAdminOnly,
+    check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function (req, trx, matchedData) {
     const user = await usersService.fetchUser(trx, matchedData.id);
     if (!user) {
       throw new HttpError(404, "User doesn't exist");
