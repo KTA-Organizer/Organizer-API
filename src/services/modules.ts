@@ -62,7 +62,7 @@ export async function fetchModulesForStudent(trx: Transaction, studId: number) {
 }
 
 export async function insertModule(trx: Transaction, data: { opleidingId: number, teacherId: number, name: string, creatorId: number }) {
-    await trx.table("modules").insert( data );
+    return await trx.table("modules").insert( data );
 }
 
 export async function updateModule(trx: Transaction, data: { id: number, name: string }) {

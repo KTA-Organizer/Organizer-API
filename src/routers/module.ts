@@ -53,7 +53,7 @@ router.post("/", [
     check("name").exists(),
     check("creatorId").exists()
 ], executor(async function (req, trx, { opleidingId, teacherId, name, creatorId }) {
-    await modulesService.insertModule(trx, { opleidingId, teacherId, name, creatorId});
+    return await modulesService.insertModule(trx, { opleidingId, teacherId, name, creatorId});
 }));
 
 router.put("/:id", [
