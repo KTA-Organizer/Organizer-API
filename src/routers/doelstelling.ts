@@ -40,7 +40,7 @@ router.post("/", [
     check("inGebruik").exists(),
     check("creatorId").exists()
 ], executor(async function (req, trx, { doelstellingscategorieId, name, inGebruik, creatorId }) {
-    await doelstellingenService.insertDoelstelling(trx, { doelstellingscategorieId, name, inGebruik, creatorId});
+    return await doelstellingenService.insertDoelstelling(trx, { doelstellingscategorieId, name, inGebruik, creatorId});
 }));
 
 router.put("/:id", [

@@ -26,7 +26,7 @@ export async function fetchAspect(trx: Transaction, id: number)  {
 }
 
 export async function insertAspect(trx: Transaction, data: { evaluatiecriteriumId: number, name: string, inGebruik: number, gewicht: number, creatorId: number }) {
-    await trx.table("aspecten").insert( data );
+    return await trx.table("aspecten").insert( data );
 }
 
 export async function updateAspect(trx: Transaction, data: { id: number, name: string}) {

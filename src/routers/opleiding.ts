@@ -62,7 +62,7 @@ router.post("/", [
     check("name").exists(),
     check("creatorId").exists()
 ], executor(async function (req, trx, { name, active, creatorId }) {
-    await opleidingenService.insertOpleiding(trx, { name, active, creatorId});
+    return await opleidingenService.insertOpleiding(trx, { name, active, creatorId});
 }));
 
 router.put("/:id", [
