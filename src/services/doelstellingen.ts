@@ -46,7 +46,7 @@ export async function fetchDoelstellingenForCategories(trx: Transaction, categor
 }
 
 export async function insertDoelstelling(trx: Transaction, data: { doelstellingscategorieId: number, name: string, inGebruik: number,  creatorId: number }) {
-    await trx.table("doelstellingen").insert( data );
+    return await trx.table("doelstellingen").insert( data );
 }
 
 export async function updateDoelstelling(trx: Transaction, data: { id: number, name: string}) {
