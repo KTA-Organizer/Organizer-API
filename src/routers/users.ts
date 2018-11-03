@@ -28,7 +28,9 @@ router.get(
     check("gender").isIn(genders).optional(),
     check("role").isIn(userRoles).optional(),
     check("page").isNumeric().optional(),
-    check("perpage").isNumeric().optional()
+    check("perpage").isNumeric().optional(),
+    sanitize("page").toInt(),
+    sanitize("perpage").toInt(),
   ],
   executor(async function(req, trx, { search, status, gender, role, page = 1, perpage = 50 }) {
     const users = await usersService.paginateAllUsers(trx, {
