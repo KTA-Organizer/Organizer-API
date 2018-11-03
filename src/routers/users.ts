@@ -9,7 +9,7 @@ import {
   adminsOnly,
   teacherOrAdminOnly
 } from "../util/accessMiddleware";
-import { User, UserRole, Gender, genders } from "../models/User";
+import { User, UserRole, Gender, genders, userRoles, userStatuses } from "../models/User";
 import logger from "../util/logger";
 
 const router = Router({
@@ -17,13 +17,26 @@ const router = Router({
   strict: true
 });
 
-router.use(usersOnly);
+// router.use(usersOnly);
 
 router.get(
   "/",
-  [teacherOrAdminOnly],
-  executor(async function(req, trx) {
-    const users = await usersService.fetchAll(trx, true);
+  [
+    // teacherOrAdminOnly,
+    check("status").isIn(userStatuses).optional(),
+    check("gender").isIn(genders).optional(),
+    check("role").isIn(userRoles).optional(),
+    check("page").isNumeric().optional(),
+    check("perpage").isNumeric().optional()
+  ],
+  executor(async function(req, trx, { status, gender, role, page = 1, perpage = 50 }) {
+    const users = await usersService.paginateAllUsers(trx, {
+      status,
+      gender,
+      role,
+      page,
+      perPage: perpage
+    });
     return users;
   })
 );
@@ -37,7 +50,8 @@ router.get(
 
 router.get(
   "/:id",
-  [teacherOrAdminOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  [// teacherOrAdminOnly,
+     check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function(req, trx, matchedData) {
     const user = await usersService.fetchUser(trx, matchedData.id);
     if (!user) {

@@ -1,6 +1,5 @@
-import Knex, { Config, Transaction, QueryBuilder } from "knex";
+import Knex, { Config, Transaction, QueryBuilder, QueryInterface } from "knex";
 import { loadConfig } from "./storage";
-import setupPaginator from "knex-paginator";
 
 
 let knex: Knex;
@@ -23,7 +22,7 @@ async function getKnex() {
       connection,
       pool: { min: 1, max: 10 }
     });
-    setupPaginator(knex);
+
   }
   return knex;
 }
@@ -42,17 +41,22 @@ export interface PaginateResult<T> {
     perPage: number;
     total: number;
     lastPage: number;
-    rows: T[];
+    items: T[];
 }
 
-export const paginate = <T>(query: QueryBuilder) => async (page: number, perPage: number) => {
-  const totalAware = true;
-  const paginator = await (query as any).paginate(perPage, page, totalAware);
+export const paginate = (query: QueryInterface) => async (page: number, perPage: number): Promise<PaginateResult<any>> => {
+  if (page < 1) page = 1;
+  const offset = (page - 1) * perPage;
+  const [total, items] = await Promise.all([
+    query.clone().clearSelect().count("* as count").first(),
+    query.offset(offset).limit(perPage)
+  ]);
+  const count = total.count;
   return {
-    rows: paginator.data,
-    page,
+    total: count,
     perPage,
-    total: paginator.total,
-    lastPage: paginator.last_page,
-  } as PaginateResult<T>;
+    lastPage: Math.ceil(count / perPage),
+    page,
+    items
+  };
 };

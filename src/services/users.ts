@@ -6,35 +6,36 @@ import * as adminsService from "./admins";
 import bcrypt from "bcrypt";
 import { Transaction } from "knex";
 import { CacheMap } from "../config/caching";
-import { paginate } from "../config/db";
+import { paginate, PaginateResult } from "../config/db";
 import * as invitesService from "./invites";
 import * as accessTokenService from "./accessTokens";
 import _ from "lodash";
 
 const usersCache = new CacheMap<number, User>("users");
 
-async function rowToUser(trx: Transaction, row: any) {
+function rowToUser(row: any) {
   if (row.accountCreatedTimestamp) {
     row.accountCreatedTimestamp = new Date(row.accountCreatedTimestamp);
   }
   const user = row as User;
-  user.roles = await fetchUserRoles(trx, user.id);
+  user.roles = [];
+
+  if (row.stillStudent) {
+    user.roles.push(UserRole.student);
+  }
+  if (row.stillAdmin) {
+    user.roles.push(UserRole.admin);
+  }
+  if (row.stillTeacher) {
+    user.roles.push(UserRole.teacher);
+  }
+  delete row.stillStudent;
+  delete row.stillAdmin;
+  delete row.stillTeacher;
+
   user.role = user.roles[0];
   delete user.password;
   return user;
-}
-
-export async function fetchUserRoles(trx: Transaction, id: number) {
-  const roles: UserRole[] = [];
-  const roleOptions = [UserRole.admin, UserRole.teacher, UserRole.student];
-  const results = await Promise.all([
-    adminsService.isActiveAdmin(trx, id),
-    teachersService.isActiveTeacher(trx, id),
-    studentenService.isActiveStudent(trx, id),
-  ]);
-  results.forEach((isRole, i) =>
-    isRole && roles.push(roleOptions[i]));
-  return roles;
 }
 
 export async function fetchUserPasswordByEmail(
@@ -49,20 +50,27 @@ export async function fetchUserPasswordByEmail(
   return rows[0].password;
 }
 
+const getUserQuery = (trx: Transaction) => trx
+  .table("users")
+  .select("users.*", "teachers.stillTeacher", "studenten.stillStudent", "admins.stillAdmin")
+  .leftJoin("teachers", "users.id", "teachers.teacherId")
+  .leftJoin("studenten", "users.id", "studenten.studentId")
+  .leftJoin("admins", "users.id", "admins.adminId");
+
 export const fetchUser = (trx: Transaction, id: number) => usersCache.wrap(id, async () => {
-  const rows = await trx.table("users")
-    .select("*")
-    .where({ id });
-  if (rows.length < 1) return;
-  return await rowToUser(trx, rows[0]);
+  const row = await getUserQuery(trx)
+    .where({ id })
+    .first();
+  if (!row) return;
+  return rowToUser(row);
 });
 
 export async function fetchUserByEmail (trx: Transaction, email: string) {
-  const rows = await trx.table("users")
-    .select("*")
-    .where({ email });
-  if (rows.length < 1) return;
-  return await rowToUser(trx, rows[0]);
+  const row = await getUserQuery(trx)
+    .where({ email })
+    .first();
+  if (!row) return;
+  return rowToUser(row);
 }
 
 export async function updatePassword(trx: Transaction, userid: number, password: string) {
@@ -160,41 +168,40 @@ export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
   if (!allowDisabledUsers) {
     filter.status = UserStatus.active;
   }
-  const rows = await trx
-    .table("users")
-    .select("*")
+  const rows = await getUserQuery(trx)
     .where(filter);
-  const promises: Promise<User>[] = rows.map((row: any) => rowToUser(trx, row));
-  return await Promise.all(promises);
+  return rows.map(rowToUser);
 }
 
 export type FetchUsersOptions = {
-  allowDisabledUsers?: boolean,
   page: number,
   perPage: number,
+  status?: UserStatus,
   gender?: Gender,
   role?: UserRole
 };
 
 export async function paginateAllUsers(trx: Transaction, options: FetchUsersOptions) {
-  const filter: any = {};
-  if (!options.allowDisabledUsers) {
-    filter.status = UserStatus.active;
+  const query = getUserQuery(trx);
+
+  if (options.gender) {
+    query.where("gender", options.gender);
   }
-  if (!options.gender) {
-    filter.gender = options.gender;
+  if (options.status) {
+    query.where("status", options.status);
   }
-  const paginator = await paginate<User>(trx
-    .table("users")
-    .select("*")
-    .where(filter))(options.page, options.perPage);
-  const promises = paginator.rows
-    .map((row: any) => rowToUser(trx, row));
-  paginator.rows = await Promise.all(promises);
-  if (!options.role) {
-    paginator.rows = paginator.rows
-      .filter((row) => row.role === options.role);
+  if (options.role) {
+    const key = {
+      [UserRole.admin]: "stillAdmin",
+      [UserRole.teacher]: "stillTeacher",
+      [UserRole.student]: "stillStudent",
+    }[options.role];
+    query.where(key, 1);
   }
+
+  const paginator: PaginateResult<User> = await paginate(query)(options.page, options.perPage);
+  paginator.items = paginator.items
+    .map(rowToUser);
   return paginator;
 }
 

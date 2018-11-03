@@ -16,6 +16,8 @@ export enum UserStatus {
   disabled = "DISABLED",
 }
 
+export const userStatuses = [UserStatus.waitActivation, UserStatus.active, UserStatus.disabled];
+
 export enum UserRole {
   student = "STUDENT",
   teacher = "TEACHER",
