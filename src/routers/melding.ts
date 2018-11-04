@@ -6,7 +6,7 @@ import executor from "../util/executor";
 import * as meldingenService from "../services/meldingen";
 import * as studentenService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly, teachersOnly } from "../util/accessMiddleware";
+import { usersOnly, teachersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
 import * as passwordResetService from "../services/passwordReset";
 import { Opleiding } from "../models/Opleiding";
 import * as userService from "../services/users";
@@ -76,7 +76,7 @@ router.post(
 router.post(
   "/:id",
   [
-    teachersOnly,
+    teacherOrAdminOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
     check("titel").exists(),
