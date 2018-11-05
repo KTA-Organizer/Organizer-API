@@ -50,6 +50,13 @@ export async function fetchModulesForOpleiding(trx: Transaction, id: number) {
   return await rowsToModules(trx, rows);
 }
 
+export async function fetchModuleIdsForOpleiding(trx: Transaction, id: number) {
+  const rows = await trx.table("modules")
+    .select("id")
+    .where({ opleidingId: id });
+  return rows;
+}
+
 export async function fetchModulesForStudent(trx: Transaction, studId: number) {
   const rows = await trx.table("studenten_modules")
     .select("moduleId")
