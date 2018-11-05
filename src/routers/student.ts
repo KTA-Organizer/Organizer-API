@@ -25,19 +25,18 @@ router.put(
     check("id").isNumeric(),
     sanitize("id").toInt(),
 
-    check("opleidingId").exists(),
-    check("moduleIds").exists(),
+    check("opleidingId").exists()
   ],
   executor(async function(
     req,
     trx,
-    { id, opleidingId, moduleIds }
+    { id, opleidingId }
   ) {
     const student = await studentsService.fetchStudent(trx, id);
     if (!student) {
       throw new HttpError(404, "Student doesn't exist");
     }
-    await studentsService.updateStudent(trx, id, opleidingId, moduleIds);
+    await studentsService.updateStudent(trx, id, opleidingId);
   })
 );
 
