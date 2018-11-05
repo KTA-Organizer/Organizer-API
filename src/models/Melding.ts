@@ -1,8 +1,9 @@
-import { Teacher } from "./Teacher";
+import { User } from "./User";
+import { Opleiding } from "./Opleiding";
 
 export interface Melding {
   id: number;
-  teacherId: number;
+  creatorId: number;
   titel?: string;
   tekst: string;
   datum: Date;
@@ -10,5 +11,6 @@ export interface Melding {
   /**
    * Optional properties which are not columns
    */
-  teacher?: Teacher;
+  creator?: User;
+  opleidingen?: Opleiding[];
 }

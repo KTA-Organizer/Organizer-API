@@ -4,13 +4,14 @@ import { loadConfig } from "../config/storage";
 import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as meldingenService from "../services/meldingen";
+import * as opleidingenService from "../services/opleidingen";
 import * as studentenService from "../services/studenten";
 import { HttpError } from "../util/httpStatus";
 import { usersOnly, teachersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
 import * as passwordResetService from "../services/passwordReset";
 import { Opleiding } from "../models/Opleiding";
 import * as userService from "../services/users";
-import { User } from "../models/User";
+import { User, UserRole } from "../models/User";
 
 const router = Router({
   mergeParams: true,
@@ -34,40 +35,41 @@ router.get(
 router.get(
   "/",
   executor(async function(req, trx) {
-    const meldingen = await meldingenService.fetchAllMeldingen(trx);
-    if (meldingen.length < 1) {
-      throw new HttpError(404, "Meldingen not found");
+    const user = req.user as User;
+    const options: any = { page: 1, perPage: 10000 };
+    if (userService.hasRole(user, UserRole.student)) {
+      const opleiding = await opleidingenService.fetchOpleidingForStudent(trx, user.id);
+      if (!opleiding) {
+        return [];
+      }
+      options.opleidingId  = opleiding.id;
     }
-    return meldingen;
+    const meldingen = await meldingenService.paginateAllMeldingen(trx, options);
+    return meldingen.items;
   })
 );
 
 router.post(
   "/",
   [
-    teachersOnly,
+    teacherOrAdminOnly,
     check("titel").exists(),
     check("tekst").exists(),
     check("opleidingIds").exists()
   ],
   executor(async function(req, trx, { opleidingIds, ...data }, res) {
-    const teacher = req.user;
+    const user = req.user as User;
     const meldingId = await meldingenService.insertMelding(trx, {
       ...data,
-      teacherId: teacher.id
+      creatorId: user.id
     });
     for (const opleidingId of opleidingIds) {
       await meldingenService.addMeldingWithOpleiding(trx, meldingId, +opleidingId);
     }
-    // TODO send mails
-    //     const config = await loadConfig():
-    //     /*const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
-    //     let users = await studentenService.fetchAllStudents();
-    //     users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);
-    //     await meldingenService.requestAlertMelding(users, config.url + "/meldingen/" + meldingId);*/
-    //     res.location("/meldingen/" + meldingId)
-    //         .sendStatus(201);
-    //     return;
+    // const opleidingenIds = await meldingenService.fetchOpleidingenFromMeldingAsArray(meldingId);
+    // let users = await studentenService.fetchAllStudents();
+    // users =  users.filter(user => opleidingenIds.indexOf(user.opleidingId) < 0);
+    // await meldingenService.requestAlertMelding(users, config.url + "/meldingen/" + meldingId);
     res.header("Location", `/api/meldingen/${meldingId}`);
     res.status(201);
   })
@@ -83,12 +85,12 @@ router.post(
     check("tekst").exists(),
   ],
   executor(async function(req, trx, { id, ...data }) {
-    const teacher = req.user as User;
+    const user = req.user as User;
     const existingMelding = await meldingenService.fetchMelding(trx, id);
     if (!existingMelding) {
       throw new HttpError(404, "Melding doesn't exist");
     }
-    if (existingMelding.teacherId != teacher.id) {
+    if (existingMelding.creatorId != user.id) {
       throw new HttpError(403, "Melding is niet geplaatst door u.");
     }
     await meldingenService.updateMelding(trx, id, data);
@@ -97,14 +99,14 @@ router.post(
 
 router.delete(
   "/:id",
-  [teachersOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  [teacherOrAdminOnly, check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function(req, trx, { id }) {
-    const teacher = req.user as User;
+    const user = req.user as User;
     const existingMelding = await meldingenService.fetchMelding(trx, id);
     if (!existingMelding) {
       throw new HttpError(404, "Melding doesn't exist");
     }
-    if (existingMelding.teacherId != teacher.id) {
+    if (existingMelding.creatorId != user.id) {
       throw new HttpError(403, "Melding is niet geplaatst door u.");
     }
     await meldingenService.removeMelding(trx, id);

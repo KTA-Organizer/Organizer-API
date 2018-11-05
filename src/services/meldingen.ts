@@ -1,34 +1,47 @@
 import logger from "../util/logger";
 import { Melding } from "../models/Melding";
 import * as usersService from "../services/users";
+import * as opleidingService from "../services/opleidingen";
 import { HttpError } from "../util/httpStatus";
 import { sendMail } from "../config/mail";
 import { User } from "../models/User";
-import { Transaction } from "knex";
-import { paginate } from "../config/db";
+import { Transaction, QueryBuilder } from "knex";
+import { paginate, PaginateResult } from "../config/db";
 
 async function rowToMelding(trx: Transaction, row: any) {
-  if (row.teacherId) {
-    row.teacher = await usersService.fetchUser(trx, row.teacherId);
-  }
+  row.creator = await usersService.fetchUser(trx, row.creatorId);
+  row.opleidingen = await fetchOpleidingenForMelding(trx, row.id);
   return (await row) as Melding;
 }
 
-export async function fetchAllMeldingen(trx: Transaction) {
-  const rows = await trx.table("meldingen")
-    .select("*")
-    .map(row => rowToMelding(trx, row));
-  if (rows.length < 1) return;
-  return await rows;
+export async function fetchOpleidingenForMelding(trx: Transaction, meldingId: number) {
+    const rows = await trx
+      .table("meldingen_opleidingen")
+      .select("*")
+      .where("meldingId", meldingId);
+    const ids = rows.map((r: any) => r.opleidingId);
+    if (ids.length < 1) {
+      return [];
+    }
+    return opleidingService.fetchOpleidingen(trx, ids);
 }
 
-export async function paginateAllMeldingen(trx: Transaction, options: { page: number, perPage: number }) {
-  const paginator = await paginate<Melding>(trx
-    .table("users")
-    .select("*"))(options.page, options.perPage);
-  const promises = paginator.rows
-    .map((row) => rowToMelding(trx, row));
-  paginator.rows = await Promise.all(promises);
+export async function paginateAllMeldingen(trx: Transaction, options: { page: number, perPage: number, opleidingId?: number }) {
+  let query: QueryBuilder;
+  if (options.opleidingId) {
+    query = trx
+      .table("meldingen_opleidingen")
+      .leftJoin("meldingen", "meldingId", "id")
+      .where("opleidingId", options.opleidingId);
+  } else {
+    query = trx
+      .table("meldingen");
+  }
+  query.select("*");
+  const paginator: PaginateResult<Melding> = await paginate(query)(options.page, options.perPage);
+  const promises = paginator.items
+    .map(row => rowToMelding(trx, row));
+  paginator.items = await Promise.all(promises);
   return paginator;
 }
 

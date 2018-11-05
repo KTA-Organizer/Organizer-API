@@ -17,6 +17,12 @@ export async function fetchAllOpleidingen(trx: Transaction) {
   return opleidingenPromises;
 }
 
+export async function fetchOpleidingen(trx: Transaction, ids: number[]): Promise<Opleiding[]> {
+  const rows = (await trx.table("opleidingen").select("*").whereIn("id", ids)).map((row: any) => rowToOpleiding(trx, row));
+  const opleidingenPromises: any = await Promise.all(rows);
+  return opleidingenPromises;
+}
+
 export async function fetchOpleiding(trx: Transaction, id: number) {
   const opleiding_rows = await trx.table("opleidingen").where("id", id);
   if (opleiding_rows.length < 1) return;
@@ -39,11 +45,11 @@ export async function fetchOpleidingForStudent(trx: Transaction, id: number) {
   const opleiding_id = await trx.table("studenten_modules")
     .select("opleidingId")
     .where({ studentId: id });
-  if (opleiding_id.length >= 1) {
-    const opleiding = await fetchOpleiding(trx, opleiding_id[0].opleidingId);
-    return opleiding;
+  if (opleiding_id.length < 1) {
+    return;
   }
-  return undefined;
+  const opleiding = await fetchOpleiding(trx, opleiding_id[0].opleidingId);
+  return opleiding;
 }
 
 export async function insertOpleiding(trx: Transaction, data: {name: string, active: number, creatorId: number}) {
