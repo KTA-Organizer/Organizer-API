@@ -78,6 +78,20 @@ router.put("/:id", [
     await opleidingenService.updateOpleiding(trx, {id, name});
 }));
 
+router.put("/:id/status", [
+  adminsOnly,
+  check("id").isNumeric(),
+  sanitize("id").toInt(),
+  check("active").isNumeric(),
+  sanitize("active").toInt(),
+], executor(async function (req, trx, {id, active}) {
+  const existingOpleiding = await opleidingenService.fetchOpleiding(trx, id);
+  if (!existingOpleiding) {
+      throw new HttpError(400, "A opleiding with this id doesn't exist");
+  }
+  await opleidingenService.updateOpleidingStatus(trx, {id, active});
+}));
+
 router.delete("/:id", [
     adminsOnly,
     check("id").isNumeric(),

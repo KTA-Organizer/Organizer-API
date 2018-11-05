@@ -60,6 +60,10 @@ export async function updateOpleiding(trx: Transaction, data: {id: number, name:
     await trx.table("opleidingen").where("id", data.id).update( data );
 }
 
+export async function updateOpleidingStatus(trx: Transaction, data: {id: number, active: number}) {
+  await trx.table("opleidingen").where("id", data.id).update( data );
+}
+
 export async function removeOpleiding(trx: Transaction, id: number) {
     await trx.table("opleidingen").where("id", id).del();
 }
