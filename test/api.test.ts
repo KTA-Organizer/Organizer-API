@@ -44,6 +44,13 @@ const TEST_OPLEIDING_INSERT_DATA = {
   "creatorId": 3
 };
 
+const TEST_MODULE_INSERT_DATA = {
+  "name": "Module Test",
+  "opleidingId": 1,
+  "teacherId": 4,
+  "creatorId": 3
+};
+
 const TEST_OPLEIDING_UPDATE_DATA = {
   "name": "Opleiding Test Updated"
 };
@@ -284,6 +291,7 @@ describe("Opleidingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.put("/api/opleidingen/1/status")
+        .send({active: 0})
         .expect(200);
     });
 
@@ -488,6 +496,16 @@ describe("Modules API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/modules")
+        .expect(200);
+    });
+
+  });
+
+  describe("POST /api/modules", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/modules")
+        .send(TEST_MODULE_INSERT_DATA)
         .expect(200);
     });
 
