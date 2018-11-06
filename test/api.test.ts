@@ -44,6 +44,13 @@ const TEST_OPLEIDING_INSERT_DATA = {
   "creatorId": 3
 };
 
+const TEST_DOELSTELLING_INSERT_DATA = {
+  "name": "Doelstelling Test",
+  "doelstellingscategorieId": 1,
+  "inGebruik": 1,
+  "creatorId": 3
+};
+
 const TEST_MODULE_INSERT_DATA = {
   "name": "Module Test",
   "opleidingId": 1,
@@ -473,6 +480,16 @@ describe("Doelstelling API", () => {
     });
 
   });
+
+  describe("POST /api/doelstellingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/doelstellingen")
+        .send(TEST_DOELSTELLING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
 });
 
 
@@ -520,6 +537,9 @@ describe("Modules API", () => {
     });
 
   });
+
+  
+
 });
 
 describe("Student API", () => {
