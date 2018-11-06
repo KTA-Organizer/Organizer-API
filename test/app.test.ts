@@ -8,9 +8,9 @@ beforeAll(async function () {
   app = createApp(config);
 });
 
-describe("GET /random-url", () => {
+describe("GET /", () => {
   it("should return 200 OK", (done) => {
-    request(app).get("/random-url")
+    request(app).get("/")
       .expect(200, done);
   });
 });

@@ -1,39 +1,26 @@
 import logger from "../util/logger";
 import { User, UserRole, UserStatus, Gender, userRoles } from "../models/User";
-import * as studentenService from "./studenten";
-import * as teachersService from "./teachers";
-import * as adminsService from "./admins";
+import * as userRolesService from "./userRoles";
 import bcrypt from "bcrypt";
 import { Transaction } from "knex";
-import { CacheMap } from "../config/caching";
 import { paginate, PaginateResult } from "../config/db";
 import * as invitesService from "./invites";
 import * as accessTokenService from "./accessTokens";
 import _ from "lodash";
 
-const usersCache = new CacheMap<number, User>("users");
-
 function rowToUser(row: any) {
-  if (row.accountCreatedTimestamp) {
-    row.accountCreatedTimestamp = new Date(row.accountCreatedTimestamp);
+  if (!row) {
+    return;
   }
   const user = row as User;
-  user.roles = [];
-
-  if (row.stillStudent) {
-    user.roles.push(UserRole.student);
-  }
-  if (row.stillAdmin) {
-    user.roles.push(UserRole.admin);
-  }
-  if (row.stillTeacher) {
-    user.roles.push(UserRole.teacher);
-  }
-  delete row.stillStudent;
-  delete row.stillAdmin;
-  delete row.stillTeacher;
-
+  user.roles = userRoles
+    .filter(role => row[role.toLowerCase()]);
   user.role = user.roles[0];
+
+  for (const role of user.roles) {
+    delete row[role.toLowerCase()];
+  }
+
   delete user.password;
   return user;
 }
@@ -52,29 +39,27 @@ export async function fetchUserPasswordByEmail(
 
 const getUserQuery = (trx: Transaction) => trx
   .table("users")
-  .select("users.*", "teachers.stillTeacher", "studenten.stillStudent", "admins.stillAdmin")
-  .leftJoin("teachers", "users.id", "teachers.teacherId")
-  .leftJoin("studenten", "users.id", "studenten.studentId")
-  .leftJoin("admins", "users.id", "admins.adminId");
+  .select("users.*", "teachers.active as teacher", "students.active as student", "admins.active as admin", "staff.active as staff")
+  .leftJoin("teachers", "users.id", "teachers.userid")
+  .leftJoin("students", "users.id", "students.userid")
+  .leftJoin("admins", "users.id", "admins.userid")
+  .leftJoin("staff", "users.id", "staff.userid");
 
-export const fetchUser = (trx: Transaction, id: number) => usersCache.wrap(id, async () => {
+export async function fetchUser (trx: Transaction, id: number) {
   const row = await getUserQuery(trx)
     .where({ id })
     .first();
-  if (!row) return;
   return rowToUser(row);
-});
+}
 
 export async function fetchUserByEmail (trx: Transaction, email: string) {
   const row = await getUserQuery(trx)
     .where({ email })
     .first();
-  if (!row) return;
   return rowToUser(row);
 }
 
 export async function updatePassword(trx: Transaction, userid: number, password: string) {
-  usersCache.changed(userid);
   const encryptedPass = await bcrypt.hash(password, 10);
   await trx
     .table("users")
@@ -83,28 +68,31 @@ export async function updatePassword(trx: Transaction, userid: number, password:
 }
 
 export async function activateUser(trx: Transaction, userid: number) {
-  usersCache.changed(userid);
   await trx.table("users")
     .update({ status: UserStatus.active })
     .where("id", userid);
 }
 
+export interface InsertUser {
+  firstname: string;
+  lastname: string;
+  email: string;
+  gender: Gender;
+  roles: UserRole[];
+  creatorId: number;
+  nationalRegisterNumber: string;
+}
+
 export async function insertUser(
   trx: Transaction,
-  { roles, ...userData }: {
-    firstname: string;
-    lastname: string;
-    email: string;
-    gender: Gender;
-    roles: UserRole[];
-  }
+  { roles, ...userData }: InsertUser
 ) {
   const insertedIds: number[] = await trx.table("users").insert({
     ...userData,
     status: UserStatus.waitActivation
   });
   const userid = insertedIds[0];
-  await updateUserRoles(trx, userid, roles);
+  await userRolesService.updateUserRoles(trx, userid, roles);
 
   const newUser = await fetchUser(trx, userid);
 
@@ -113,36 +101,10 @@ export async function insertUser(
   return newUser;
 }
 
-async function updateUserRoles(trx: Transaction, userid: number, roles: UserRole[]) {
-  const addRoleFuns = {
-    [UserRole.admin]: adminsService.makeUserAdmin,
-    [UserRole.teacher]: teachersService.makeUserTeacher,
-    [UserRole.student]: studentenService.makeUserStudent,
-  };
-  const removeRoleFuns = {
-    [UserRole.admin]: adminsService.makeUserNotAdmin,
-    [UserRole.teacher]: teachersService.makeUserNotTeacher,
-    [UserRole.student]: studentenService.makeUserNotStudent,
-  };
-  for (const role of userRoles) {
-    if (_.includes(roles, role)) {
-      await addRoleFuns[role](trx, userid);
-    } else {
-      await removeRoleFuns[role](trx, userid);
-    }
-  }
-}
-
 export async function updateUser(
   trx: Transaction,
   id: number,
-  {roles, ...userData}: {
-    firstname: string;
-    lastname: string;
-    email: string;
-    gender: Gender,
-    roles?: UserRole[]
-  },
+  { roles, ...userData }: InsertUser,
   shouldUpdateRoles?: boolean
 ) {
   await trx
@@ -150,27 +112,15 @@ export async function updateUser(
     .where("id", id)
     .update(userData);
   if (shouldUpdateRoles) {
-    await updateUserRoles(trx, id, roles);
+    await userRolesService.updateUserRoles(trx, id, roles);
   }
-  usersCache.changed(id);
 }
 
 export async function disableUser(trx: Transaction, id: number) {
-  usersCache.changed(id);
   await trx.table("users")
     .update({ status: UserStatus.disabled })
     .where({ id });
   await accessTokenService.deleteAccessTokensForUser(trx, id);
-}
-
-export async function fetchAll(trx: Transaction, allowDisabledUsers?: boolean) {
-  const filter: any = {};
-  if (!allowDisabledUsers) {
-    filter.status = UserStatus.active;
-  }
-  const rows = await getUserQuery(trx)
-    .where(filter);
-  return rows.map(rowToUser);
 }
 
 export type FetchUsersOptions = {
@@ -192,14 +142,8 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
     query.where("status", options.status);
   }
   if (options.role) {
-    const key = {
-      [UserRole.admin]: "stillAdmin",
-      [UserRole.teacher]: "stillTeacher",
-      [UserRole.student]: "stillStudent",
-    }[options.role];
-    query.where(key, 1);
+    query.where(options.role.toLowerCase(), 1);
   }
-
   if (options.search) {
     query.whereRaw("CONCAT(firstname, ' ', lastname) LIKE CONCAT('%', ?, '%')", [options.search]);
   }

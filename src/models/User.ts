@@ -5,11 +5,6 @@ export enum Gender {
 
 export const genders = [Gender.male, Gender.female];
 
-export enum Language {
-  dutch = "NL",
-  english = "EN"
-}
-
 export enum UserStatus {
   waitActivation = "WAIT_ACTIVATION",
   active = "ACTIVE",
@@ -21,10 +16,11 @@ export const userStatuses = [UserStatus.waitActivation, UserStatus.active, UserS
 export enum UserRole {
   student = "STUDENT",
   teacher = "TEACHER",
-  admin = "ADMIN"
+  admin = "ADMIN",
+  staff = "STAFF"
 }
 
-export const userRoles = [UserRole.admin, UserRole.teacher, UserRole.student];
+export const userRoles = [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.student];
 
 export interface User {
   id: number;
@@ -33,10 +29,10 @@ export interface User {
   lastname: string;
   password?: string;
   gender: Gender;
-  language: Language;
   status: UserStatus;
-  accountCreatedTimestamp: Date;
+  creation: Date;
   creatorId?: number;
+  nationalRegisterNumber: string;
 
   /**
    * Optional properties which are not columns

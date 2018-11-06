@@ -9,7 +9,7 @@ import {
   adminsOnly,
   teacherOrAdminOnly
 } from "../util/accessMiddleware";
-import { User, UserRole, Gender, genders, userRoles, userStatuses } from "../models/User";
+import { User, genders, userRoles, userStatuses } from "../models/User";
 import logger from "../util/logger";
 
 const router = Router({
@@ -56,8 +56,8 @@ router.get(
   "/:id",
   [teacherOrAdminOnly,
     check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function (req, trx, matchedData) {
-    const user = await usersService.fetchUser(trx, matchedData.id);
+  executor(async function (req, trx, { id }) {
+    const user = await usersService.fetchUser(trx, id);
     if (!user) {
       throw new HttpError(404, "User doesn't exist");
     }
@@ -73,17 +73,19 @@ router.post(
     check("lastname").exists(),
     check("email").isEmail(),
     check("gender").isIn(genders),
-    check("roles").exists()
+    check("roles").exists(),
+    check("nationalRegisterNumber").exists(),
   ],
-  executor(async function(req, trx, matchedData) {
+  executor(async function(req, trx, data) {
+    const currentUser = req.user as User;
     const existingUser = await usersService.fetchUserByEmail(
       trx,
-      matchedData.email
+      data.email
     );
     if (existingUser) {
       throw new HttpError(400, "A user with this email already exists");
     }
-    const newUser = await usersService.insertUser(trx, matchedData);
+    const newUser = await usersService.insertUser(trx, { ...data, creatorId: currentUser.id });
     return newUser;
   })
 );
@@ -91,21 +93,18 @@ router.post(
 router.put(
   "/:id",
   [
+    adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
     check("gender").isIn(genders),
-    check("roles").exists()
+    check("roles").exists(),
+    check("nationalRegisterNumber").exists(),
   ],
   executor(async function(req, trx, { id, ...userData }) {
-    const currentUser = req.user as User;
-    const isAdmin = usersService.hasRole(currentUser, UserRole.admin);
-    if (!isAdmin && currentUser.id !== id) {
-      throw new HttpError(403, "You are not authorized to edit this user.");
-    }
-    await usersService.updateUser(trx, id, userData, isAdmin);
+    await usersService.updateUser(trx, id, { ...userData });
   })
 );
 

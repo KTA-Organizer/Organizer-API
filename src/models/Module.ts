@@ -1,20 +1,19 @@
-import { Opleiding } from "./Opleiding";
-import { Teacher } from "./Teacher";
+import { Discipline } from "./Discipline";
 import { User } from "./User";
-import { DoelstellingsCategorie } from "./DoelstellingsCategorie";
+import { Domain } from "./Domain";
 
 export interface Module {
   id: number;
   name: string;
-  opleidingId?: number;
-  teacherId: number;
-  creatorId?: number;
+  active: boolean;
+  creatorId: number;
+  disciplineid: number;
+  creation: Date;
 
   /**
    * Optional properties which are not columns
    */
-  opleiding?: Opleiding;
-  teacher?: Teacher;
+  discipline?: Discipline;
   creator?: User;
-  doelstellingCategories?: DoelstellingsCategorie[];
+  domains?: Domain[];
 }

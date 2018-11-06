@@ -1,60 +1,40 @@
 import logger from "../util/logger";
 import { Module } from "../models/Module";
-import * as doelstellingCategoryService from "../services/doelstellingsCategories";
 import { Transaction } from "knex";
+import * as domainsService from "./domains";
 
-async function rowToModule(row: any) {
-  /*if (row.teacherId) {
-        row.teacher = await teachersService.fetchTeacher(row.teacherId);
-    }
-    if (row.creatorId) {
-        row.creator = await usersService.fetchUser(row.creatorId);
-    }*/
+function rowToModule(row: any) {
+  if (!row) return;
   return row as Module;
 }
 
-export async function fetchAllModules(trx: Transaction) {
-  const rows = await trx.table("modules")
-    .select("*")
-    .map(rowToModule);
-  if (rows.length < 1) return;
-  return rows;
-}
-
 export async function fetchModule(trx: Transaction, id: number) {
-  const rows = await trx.table("modules")
+  const row = await trx.table("modules")
     .select("*")
-    .where({ id });
-  if (rows.length < 1) return;
-  return rowToModule(rows[0]);
+    .where({ id })
+    .first();
+  return rowToModule(row);
 }
 
-async function rowsToModules(trx: Transaction, rows: any) {
-  const modules = rows as Module[];
-  const moduleIds = modules.map(m => m.id);
-
-  const allDoelstellingCategories = await doelstellingCategoryService.fetchDoelstellingsCategoryForModules(trx, moduleIds);
-
-  for (const module of modules) {
-    module.doelstellingCategories = allDoelstellingCategories
-      .filter(dc => dc.moduleId == module.id);
-  }
-
-  return rows as Module[];
-}
-
-export async function fetchModulesForOpleiding(trx: Transaction, id: number) {
-  const rows = await trx.table("modules")
+export async function fetchFullModule(trx: Transaction, id: number) {
+  const row = await trx.table("modules")
     .select("*")
-    .where({ opleidingId: id });
-  return await rowsToModules(trx, rows);
+    .where("id", id)
+    .first();
+  return rowToFullModule(trx, row);
 }
 
-export async function fetchModuleIdsForOpleiding(trx: Transaction, id: number) {
-  const rows = await trx.table("modules")
-    .select("id")
-    .where({ opleidingId: id });
-  return rows;
+async function rowToFullModule(trx: Transaction, row: any) {
+  const module = rowToModule(row);
+  module.domains = await domainsService.fetchDomainsForModule(trx, module.id);
+  return module;
+}
+
+export async function fetchModulesForDiscipline(trx: Transaction, disciplineid: number) {
+  const rows: any[] = await trx.table("modules")
+    .select("*")
+    .where({ disciplineid });
+  return rows.map(rowToModule);
 }
 
 export async function fetchModulesForStudent(trx: Transaction, studId: number) {
@@ -68,14 +48,14 @@ export async function fetchModulesForStudent(trx: Transaction, studId: number) {
   return modules as Module[];
 }
 
-export async function insertModule(trx: Transaction, data: { opleidingId: number, teacherId: number, name: string, creatorId: number }) {
+export async function insertModule(trx: Transaction, data: { disciplineid: number, name: string, creatorId: number }) {
     return await trx.table("modules").insert( data );
 }
 
-export async function updateModule(trx: Transaction, data: { id: number, name: string }) {
-    await trx.table("modules").where("id", data.id).update( data );
+export async function updateModule(trx: Transaction, id: number, data: { name: string }) {
+    await trx.table("modules").where("id", id).update( data );
 }
 
-export async function removeModule(trx: Transaction, id: number) {
-    await trx.table("modules").where("id", id).del();
+export async function deactivateModule(trx: Transaction, id: number) {
+    await trx.table("modules").where("id", id).update({ active: 0 });
 }

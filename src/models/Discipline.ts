@@ -1,7 +1,7 @@
 import { User } from "./User";
 import { Module } from "./Module";
 
-export interface Opleiding {
+export interface Discipline {
   id: number;
   name: string;
   active: boolean;

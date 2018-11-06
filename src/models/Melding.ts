@@ -1,5 +1,4 @@
 import { User } from "./User";
-import { Opleiding } from "./Opleiding";
 
 export interface Melding {
   id: number;
@@ -12,5 +11,4 @@ export interface Melding {
    * Optional properties which are not columns
    */
   creator?: User;
-  opleidingen?: Opleiding[];
 }

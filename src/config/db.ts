@@ -9,7 +9,7 @@ async function getKnex() {
     const connection: Config["connection"] = {
       user: config.mysql.user,
       password: config.mysql.password,
-      database: config.mysql.database
+      database: "v2"
     };
     if (!config.mysql.host) {
       connection.socketPath = `/cloudsql/${config.gcloud.sqlInstance}`;
