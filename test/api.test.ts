@@ -270,11 +270,20 @@ describe("Opleidingen API", () => {
 
   });
 
-  describe("PUT /api/opleidingen", () => {
+  describe("PUT /api/opleidingen/:id", () => {
 
     it("should return 200 OK", () => {
       return agent.put("/api/opleidingen/1")
         .send(TEST_OPLEIDING_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/opleidingen/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/opleidingen/1/status")
         .expect(200);
     });
 
