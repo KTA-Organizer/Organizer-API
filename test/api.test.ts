@@ -446,6 +446,16 @@ describe("EvaluatieCriteria API", () => {
     });
 
   });
+
+  describe("PUT /api/evaluatieCriteria/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/evaluatieCriteria/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
 });
 
 describe("Doelstellings Categorie API", () => {
