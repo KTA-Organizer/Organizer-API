@@ -13,7 +13,7 @@ const router = Router({
   strict: true
 });
 
-// router.use(usersOnly);
+router.use(usersOnly);
 
 router.get("/:id", [
     check("id").isNumeric(),

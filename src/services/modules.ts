@@ -37,17 +37,6 @@ export async function fetchModulesForDiscipline(trx: Transaction, disciplineid: 
   return rows.map(rowToModule);
 }
 
-export async function fetchModulesForStudent(trx: Transaction, studId: number) {
-  const rows = await trx.table("studenten_modules")
-    .select("moduleId")
-    .where({ studentId: studId });
-  const module_ids = rows.map((x: any) => x.moduleId);
-  const modules = await trx.table("modules")
-    .select("*")
-    .whereIn("id", module_ids);
-  return modules as Module[];
-}
-
 export async function insertModule(trx: Transaction, data: { disciplineid: number, name: string, creatorId: number }) {
     return await trx.table("modules").insert( data );
 }

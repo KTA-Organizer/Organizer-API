@@ -31,8 +31,3 @@ export async function requestPasswordReset(trx: Transaction, user: User) {
   await sendResetMail(user.email, token);
   console.log("Token:", token);
 }
-
-export async function resetPassword(trx: Transaction, accessToken: AccessToken, password: string) {
-  await accessTokensService.deleteAccessToken(trx, accessToken.token);
-  await usersService.updatePassword(trx, accessToken.userid, password);
-}

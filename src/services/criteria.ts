@@ -6,12 +6,12 @@ function rowToCriterion(row: any) {
   return row as Criterion;
 }
 
-// export async function fetchCriteria(trx: Transaction, id: number) {
-//   const row = await trx.table("criteria")
-//     .where("id", id)
-//     .first();
-//   return rowToCriterion(row);
-// }
+export async function fetchCriteria(trx: Transaction, id: number) {
+  const row = await trx.table("criteria")
+    .where("id", id)
+    .first();
+  return rowToCriterion(row);
+}
 
 export async function fetchCriteriaForGoals(trx: Transaction, goalIds: number[]) {
   const rows: any[] = await trx.table("criteria")
@@ -20,11 +20,11 @@ export async function fetchCriteriaForGoals(trx: Transaction, goalIds: number[])
   return rows.map(rowToCriterion);
 }
 
-// export async function insertCriterion(trx: Transaction, data: { name: string, weight: number, creatorId: number }) {
-//   const [id] = await trx.table("criteria").insert(data);
-//   return await fetchCriteria(trx, id);
-// }
+export async function insertCriterion(trx: Transaction, data: { name: string, weight: number, creatorId: number }) {
+  const [id] = await trx.table("criteria").insert(data);
+  return await fetchCriteria(trx, id);
+}
 
-// export async function updateCriterion(trx: Transaction, id: number, data: { name: string, weight: number }) {
-//   await trx.table("criteria").where("id", id).update(data);
-// }
+export async function updateCriterion(trx: Transaction, id: number, data: { name: string, weight: number }) {
+  await trx.table("criteria").where("id", id).update(data);
+}

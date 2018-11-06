@@ -10,6 +10,7 @@ const TEST_LOGIN_ADMIN_DATA = {
 };
 
 const TEST_USER_ID = 107;
+const TEST_ADMIN_USER_ID = 105;
 
 const TEST_LOGIN_TEACHER_DATA = {
   email: "teacher@test.test",
@@ -289,6 +290,34 @@ describe("Disciplines API", () => {
     it("should return 200 OK", () => {
       return agent.put("/api/disciplines/" + TEST_DISCIPLINE_ID)
         .send(TEST_DISCIPLINE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("GET /api/disciplines/student/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/disciplines/student/" + TEST_USER_ID)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/disciplines/student/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/disciplines/student/" + TEST_ADMIN_USER_ID)
+        .send({ disciplineid: TEST_DISCIPLINE_ID })
+        .expect(200);
+    });
+
+  });
+
+  describe("DELETE /api/disciplines/student/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.delete("/api/disciplines/student/" + TEST_USER_ID)
         .expect(200);
     });
 

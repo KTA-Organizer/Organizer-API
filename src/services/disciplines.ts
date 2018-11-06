@@ -39,18 +39,6 @@ export async function fetchFullDiscipline(trx: Transaction, id: number) {
   return await rowToFullDiscipline(trx, discipline_rows);
 }
 
-export async function fetchDisciplineForStudent(trx: Transaction, id: number) {
-  const row = await trx.table("studenten_disciplines")
-    .select("disciplineId")
-    .where({ studentId: id })
-    .first();
-  if (!row) {
-    return;
-  }
-  const discipline = await fetchDiscipline(trx, row.disciplineId);
-  return discipline;
-}
-
 export async function insertDiscipline(trx: Transaction, data: {name: string, creatorId: number}) {
    return await trx.table("disciplines").insert({ ...data, active: 1 });
 }

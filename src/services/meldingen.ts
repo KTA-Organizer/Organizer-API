@@ -39,18 +39,6 @@ export async function insertMelding(trx: Transaction, data: { tekst: string, tea
   return meldingId;
 }
 
-export async function updateMelding(trx: Transaction, id: number, data: { tekst: string, teacherId: number, titel: string }) {
-  await trx.table("meldingen").where("id", id).update(data);
-}
-
-export async function addMeldingWithOpleiding(
-  trx: Transaction,
-  meldingId: number,
-  opleidingId: number,
-) {
-  await trx.table("meldingen_opleidingen").insert({ meldingId, opleidingId });
-}
-
 export async function removeMelding(trx: Transaction, id: number) {
   await trx.table("meldingen")
     .where({ id })

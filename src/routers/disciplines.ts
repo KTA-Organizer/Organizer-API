@@ -3,9 +3,9 @@ import { check } from "express-validator/check";
 import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as disciplinesService from "../services/disciplines";
+import * as studentDisciplinesService from "../services/studentDisciplines";
 import { HttpError } from "../util/httpStatus";
-import { adminsOnly, usersOnly } from "../util/accessMiddleware";
-import * as modulesService from "../services/modules";
+import { adminsOnly, usersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
 import { User } from "../models/User";
 
 const router = Router({
@@ -27,10 +27,40 @@ router.get(
   "/student/:id",
   [check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function (req, trx, { id }) {
-    const opleiding = await disciplinesService.fetchDisciplineForStudent(trx, id);
+    const opleiding = await studentDisciplinesService.fetchStudentDiscipline(trx, id);
     return opleiding;
   })
 );
+
+router.put("/student/:id", [
+  adminsOnly,
+  check("id").isNumeric(),
+  sanitize("id").toInt(),
+  check("disciplineid").isNumeric(),
+  sanitize("disciplineid").toInt(),
+], executor(async function (req, trx, { id, disciplineid }) {
+  const currentDiscipline = await studentDisciplinesService.fetchStudentDiscipline(trx, id);
+  if (currentDiscipline) {
+    throw new HttpError(400, "User already has a discipline");
+  }
+  const discipline = await disciplinesService.fetchDiscipline(trx, disciplineid);
+  if (!discipline) {
+    throw new HttpError(404, "A opleiding with this id doesn't exist");
+  }
+  await studentDisciplinesService.addStudentToDiscipline(trx, { studentid: id, disciplineid });
+}));
+
+router.delete("/student/:id", [
+  adminsOnly,
+  check("id").isNumeric(),
+  sanitize("id").toInt(),
+], executor(async function (req, trx, { id }) {
+  const opleiding = await studentDisciplinesService.fetchStudentDiscipline(trx, id);
+  if (!opleiding) {
+    throw new HttpError(404, "A opleiding with this id doesn't exist");
+  }
+  await studentDisciplinesService.removeStudentFromDiscipline(trx, id);
+}));
 
 router.post("/", [
   adminsOnly,
