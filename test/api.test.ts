@@ -490,6 +490,17 @@ describe("Doelstelling API", () => {
     });
 
   });
+
+  describe("PUT /api/doelstellingen/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/doelstellingen/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
 });
 
 
