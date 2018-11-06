@@ -44,6 +44,10 @@ const TEST_OPLEIDING_INSERT_DATA = {
   "creatorId": 3
 };
 
+const TEST_OPLEIDING_UPDATE_DATA = {
+  "name": "Opleiding Test Updated"
+};
+
 const TEST_USER_UPDATE_DATA = {
   "firstname": "jeanke",
   "lastname": "bonny",
@@ -261,6 +265,16 @@ describe("Opleidingen API", () => {
     it("should return 200 OK", () => {
       return agent.post("/api/opleidingen")
         .send(TEST_OPLEIDING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/opleidingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/opleidingen/1")
+        .send(TEST_OPLEIDING_UPDATE_DATA)
         .expect(200);
     });
 
