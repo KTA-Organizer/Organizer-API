@@ -38,6 +38,12 @@ const TEST_USER_INSERT_DATA = {
   "roles": ["ADMIN", "TEACHER"]
 };
 
+const TEST_OPLEIDING_INSERT_DATA = {
+  "name": "Opleiding Test",
+  "active": 1,
+  "creatorId": 3
+};
+
 const TEST_USER_UPDATE_DATA = {
   "firstname": "jeanke",
   "lastname": "bonny",
@@ -249,6 +255,18 @@ describe("Opleidingen API", () => {
     });
 
   });
+
+  describe("POST /api/opleidingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/opleidingen")
+        .send(TEST_OPLEIDING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  
 });
 
 describe("Meldingen API", () => {
