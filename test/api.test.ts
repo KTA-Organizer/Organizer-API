@@ -51,6 +51,14 @@ const TEST_DOELSTELLING_INSERT_DATA = {
   "creatorId": 3
 };
 
+const TEST_CRITERIA_INSERT_DATA = {
+  "name": "EvaluatieCriteria Test",
+  "doelstellingId": 1,
+  "inGebruik": 1,
+  "gewicht": 1,
+  "creatorId": 3
+};
+
 const TEST_MODULE_INSERT_DATA = {
   "name": "Module Test",
   "opleidingId": 1,
@@ -424,6 +432,16 @@ describe("EvaluatieCriteria API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/evaluatieCriteria")
+        .expect(200);
+    });
+
+  });
+
+  describe("POST /api/evaluatieCriteria", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/evaluatieCriteria")
+        .send(TEST_CRITERIA_INSERT_DATA)
         .expect(200);
     });
 
