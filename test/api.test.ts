@@ -38,6 +38,38 @@ const TEST_USER_INSERT_DATA = {
   "roles": ["ADMIN", "TEACHER"]
 };
 
+const TEST_OPLEIDING_INSERT_DATA = {
+  "name": "Opleiding Test",
+  "active": 1,
+  "creatorId": 3
+};
+
+const TEST_DOELSTELLING_INSERT_DATA = {
+  "name": "Doelstelling Test",
+  "doelstellingscategorieId": 1,
+  "inGebruik": 1,
+  "creatorId": 3
+};
+
+const TEST_CRITERIA_INSERT_DATA = {
+  "name": "EvaluatieCriteria Test",
+  "doelstellingId": 1,
+  "inGebruik": 1,
+  "gewicht": 1,
+  "creatorId": 3
+};
+
+const TEST_MODULE_INSERT_DATA = {
+  "name": "Module Test",
+  "opleidingId": 1,
+  "teacherId": 4,
+  "creatorId": 3
+};
+
+const TEST_NAME_UPDATE_DATA = {
+  "name": "Test Update"
+};
+
 const TEST_USER_UPDATE_DATA = {
   "firstname": "jeanke",
   "lastname": "bonny",
@@ -249,6 +281,38 @@ describe("Opleidingen API", () => {
     });
 
   });
+
+  describe("POST /api/opleidingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/opleidingen")
+        .send(TEST_OPLEIDING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/opleidingen/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/opleidingen/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/opleidingen/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/opleidingen/1/status")
+        .send({active: 0})
+        .expect(200);
+    });
+
+  });
+
+  
 });
 
 describe("Meldingen API", () => {
@@ -372,6 +436,26 @@ describe("EvaluatieCriteria API", () => {
     });
 
   });
+
+  describe("POST /api/evaluatieCriteria", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/evaluatieCriteria")
+        .send(TEST_CRITERIA_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/evaluatieCriteria/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/evaluatieCriteria/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
 });
 
 describe("Doelstellings Categorie API", () => {
@@ -424,6 +508,27 @@ describe("Doelstelling API", () => {
     });
 
   });
+
+  describe("POST /api/doelstellingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/doelstellingen")
+        .send(TEST_DOELSTELLING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/doelstellingen/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/doelstellingen/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
 });
 
 
@@ -451,6 +556,29 @@ describe("Modules API", () => {
     });
 
   });
+
+  describe("POST /api/modules", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/modules")
+        .send(TEST_MODULE_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/modules/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/modules/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  
+
 });
 
 describe("Student API", () => {
