@@ -36,6 +36,7 @@ export interface User {
   language: Language;
   status: UserStatus;
   accountCreatedTimestamp: Date;
+  nationalRegisterNumber: string;
   creatorId?: number;
 
   /**
