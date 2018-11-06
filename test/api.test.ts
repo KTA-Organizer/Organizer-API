@@ -51,8 +51,8 @@ const TEST_MODULE_INSERT_DATA = {
   "creatorId": 3
 };
 
-const TEST_OPLEIDING_UPDATE_DATA = {
-  "name": "Opleiding Test Updated"
+const TEST_NAME_UPDATE_DATA = {
+  "name": "Test Update"
 };
 
 const TEST_USER_UPDATE_DATA = {
@@ -281,7 +281,7 @@ describe("Opleidingen API", () => {
 
     it("should return 200 OK", () => {
       return agent.put("/api/opleidingen/1")
-        .send(TEST_OPLEIDING_UPDATE_DATA)
+        .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
 
@@ -506,6 +506,16 @@ describe("Modules API", () => {
     it("should return 200 OK", () => {
       return agent.post("/api/modules")
         .send(TEST_MODULE_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/modules/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/modules/1")
+        .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
 
