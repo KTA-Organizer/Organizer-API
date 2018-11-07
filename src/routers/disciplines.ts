@@ -41,13 +41,15 @@ router.put("/student/:id", [
 ], executor(async function (req, trx, { id, disciplineid }) {
   const currentDiscipline = await studentDisciplinesService.fetchStudentDiscipline(trx, id);
   if (currentDiscipline) {
-    throw new HttpError(400, "User already has a discipline");
+    await studentDisciplinesService.updateDisciplineForStudent(trx, { studentid: id, disciplineid });
+    // throw new HttpError(400, "User already has a discipline");
+  } else {
+    const discipline = await disciplinesService.fetchDiscipline(trx, disciplineid);
+    if (!discipline) {
+      throw new HttpError(404, "A opleiding with this id doesn't exist");
+    }
+    await studentDisciplinesService.addStudentToDiscipline(trx, { studentid: id, disciplineid });
   }
-  const discipline = await disciplinesService.fetchDiscipline(trx, disciplineid);
-  if (!discipline) {
-    throw new HttpError(404, "A opleiding with this id doesn't exist");
-  }
-  await studentDisciplinesService.addStudentToDiscipline(trx, { studentid: id, disciplineid });
 }));
 
 router.delete("/student/:id", [

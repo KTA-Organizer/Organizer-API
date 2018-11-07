@@ -324,11 +324,7 @@ describe("Disciplines API", () => {
         .send({ active: 0 })
         .expect(200);
     });
-
   });
-
-
-
 
   describe("Meldingen API", () => {
     let agent: any;

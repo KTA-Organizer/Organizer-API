@@ -30,6 +30,14 @@ export async function removeStudentFromDiscipline(
 ) {
   await trx
     .table("student_disciplines")
-    .where("studentId", studentid)
+    .where("studentid", studentid)
     .del();
+}
+
+export async function updateDisciplineForStudent(trx: Transaction, data: { studentid: number; disciplineid: number }) {
+  console.log("updating ...");
+  await trx
+    .table("student_disciplines")
+    .where("studentid", data.studentid)
+    .update(data);
 }
