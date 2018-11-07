@@ -56,6 +56,19 @@ router.put("/:id", [
   await modulesService.updateModule(trx, id, { name });
 }));
 
+router.put("/:id/status", [
+  adminsOnly,
+  check("id").isNumeric(),
+  sanitize("id").toInt(),
+  check("active").exists()
+], executor(async function (req, trx, { id, active }) {
+  const existingModule = await modulesService.fetchModule(trx, id);
+  if (!existingModule) {
+    throw new HttpError(400, "A module with this id doesn't exist");
+  }
+  await modulesService.updateModuleStatus(trx, id, { active });
+}));
+
 router.delete("/:id", [
   adminsOnly,
   check("id").isNumeric(),

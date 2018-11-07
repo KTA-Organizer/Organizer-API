@@ -45,6 +45,10 @@ export async function updateModule(trx: Transaction, id: number, data: { name: s
     await trx.table("modules").where("id", id).update( data );
 }
 
+export async function updateModuleStatus(trx: Transaction, id: number, data: { active: number }) {
+  await trx.table("modules").where("id", id).update( data );
+}
+
 export async function deactivateModule(trx: Transaction, id: number) {
     await trx.table("modules").where("id", id).update({ active: 0 });
 }
