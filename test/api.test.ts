@@ -263,64 +263,64 @@ describe("Users API", () => {
 
 });
 
-describe("Opleidingen API", () => {
+describe("Disciplines API", () => {
   let agent: any;
   beforeAll(async function () {
     agent = await getAgent();
     await authWithTest(agent);
   });
 
-  describe("GET /api/opleidingen/:id", () => {
+  describe("GET /api/disciplines/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/opleidingen/10")
+      return agent.get("/api/disciplines/10")
         .expect(200);
     });
 
   });
 
-  describe("GET /api/opleidingen", () => {
+  describe("GET /api/disciplines", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/opleidingen")
+      return agent.get("/api/disciplines")
         .expect(200);
     });
 
   });
 
-  describe("GET /api/opleidingen/:id/full", () => {
+  describe("GET /api/disciplines/:id/full", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/opleidingen/1/full")
+      return agent.get("/api/disciplines/1/full")
         .expect(200);
     });
 
   });
 
-  describe("POST /api/opleidingen", () => {
+  describe("POST /api/disciplines", () => {
 
     it("should return 200 OK", () => {
-      return agent.post("/api/opleidingen")
+      return agent.post("/api/disciplines")
         .send(TEST_OPLEIDING_INSERT_DATA)
         .expect(200);
     });
 
   });
 
-  describe("PUT /api/opleidingen/:id", () => {
+  describe("PUT /api/disciplines/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/opleidingen/1")
+      return agent.put("/api/disciplines/1")
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
 
   });
 
-  describe("PUT /api/opleidingen/:id/status", () => {
+  describe("PUT /api/disciplines/:id/status", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/opleidingen/1/status")
+      return agent.put("/api/disciplines/1/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -328,49 +328,51 @@ describe("Opleidingen API", () => {
   });
 
 
-});
 
-describe("Meldingen API", () => {
-  let agent: any;
-  beforeAll(async function () {
-    agent = await getAgent();
-    await authTeacherWithTest(agent);
+
+  describe("Meldingen API", () => {
+    let agent: any;
+    beforeAll(async function () {
+      agent = await getAgent();
+      await authTeacherWithTest(agent);
+    });
+
+    describe("GET /api/meldingen", () => {
+      it("should return 200 OK", () => {
+        return agent.get("/api/meldingen").expect(200);
+      });
+    });
+
+    describe("POST /api/meldingen", () => {
+      it("should return 200 on succesful melding post", () => {
+        return agent
+          .post("/api/meldingen")
+          .send(TEST_MELDING_DATA)
+          .expect(201);
+      });
+      it("should return 404 on failed melding post", () => {
+        return agent
+          .post("/api/meldingen")
+          .send({})
+          .expect(400);
+      });
+    });
+
+    describe("DELETE /api/meldingen/:id", () => {
+      it("should return 200 OK", () => {
+        return agent.delete("/api/meldingen/" + TEST_MELDING_ID).expect(200);
+      });
+    });
+
   });
 
-  describe("GET /api/meldingen", () => {
-    it("should return 200 OK", () => {
-      return agent.get("/api/meldingen").expect(200);
+  describe("Disciplines API", () => {
+    let agent: any;
+    beforeAll(async function () {
+      agent = await getAgent();
+      await authWithTest(agent);
     });
-  });
 
-  describe("POST /api/meldingen", () => {
-    it("should return 200 on succesful melding post", () => {
-      return agent
-        .post("/api/meldingen")
-        .send(TEST_MELDING_DATA)
-        .expect(201);
-    });
-    it("should return 404 on failed melding post", () => {
-      return agent
-        .post("/api/meldingen")
-        .send({})
-        .expect(400);
-    });
-  });
-
-  describe("DELETE /api/meldingen/:id", () => {
-    it("should return 200 OK", () => {
-      return agent.delete("/api/meldingen/" + TEST_MELDING_ID).expect(200);
-    });
-  });
-
-});
-
-describe("Disciplines API", () => {
-  let agent: any;
-  beforeAll(async function () {
-    agent = await getAgent();
-    await authWithTest(agent);
   });
 
   describe("GET /api/disciplines", () => {
@@ -430,26 +432,26 @@ describe("Disciplines API", () => {
     });
 
   });
-});
 
-describe("PUT /api/disciplines/student/:id", () => {
 
-  it("should return 200 OK", () => {
-    return agent.put("/api/disciplines/student/" + TEST_ADMIN_USER_ID)
-      .send({ disciplineid: TEST_DISCIPLINE_ID })
-      .expect(200);
+  describe("PUT /api/disciplines/student/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/disciplines/student/" + TEST_ADMIN_USER_ID)
+        .send({ disciplineid: TEST_DISCIPLINE_ID })
+        .expect(200);
+    });
+
   });
 
-});
+  describe("DELETE /api/disciplines/student/:id", () => {
 
-describe("DELETE /api/disciplines/student/:id", () => {
+    it("should return 200 OK", () => {
+      return agent.delete("/api/disciplines/student/" + TEST_USER_ID)
+        .expect(200);
+    });
 
-  it("should return 200 OK", () => {
-    return agent.delete("/api/disciplines/student/" + TEST_USER_ID)
-      .expect(200);
   });
-
-});
 });
 
 describe("Modules API", () => {
@@ -496,9 +498,7 @@ describe("Modules API", () => {
     });
 
   });
-
 });
-
 
 describe("Modules API", () => {
   let agent: any;
@@ -548,14 +548,12 @@ describe("Modules API", () => {
   });
 
 
+  describe("DELETE /api/modules/:id", () => {
 
-});
+    it("should return 200 OK", () => {
+      return agent.delete("/api/modules/" + TEST_MODULE_ID)
+        .expect(200);
+    });
 
-describe("DELETE /api/modules/:id", () => {
-
-  it("should return 200 OK", () => {
-    return agent.delete("/api/modules/" + TEST_MODULE_ID)
-      .expect(200);
   });
-
 });
