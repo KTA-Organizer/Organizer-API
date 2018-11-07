@@ -48,7 +48,47 @@ const TEST_USER_INSERT_DATA = {
 const TEST_DISCIPLINE_ID = 2;
 
 const TEST_DISCIPLINE_DATA = {
-  name: "test opleiding",
+  name: "test opleiding"
+};
+
+const TEST_OPLEIDING_INSERT_DATA = {
+  "name": "Opleiding Test",
+  "active": 1,
+  "creatorId": 3
+};
+
+const TEST_DOELSTELLING_INSERT_DATA = {
+  "name": "Doelstelling Test",
+  "doelstellingscategorieId": 1,
+  "inGebruik": 1,
+  "creatorId": 3
+};
+
+const TEST_CRITERIA_INSERT_DATA = {
+  "name": "EvaluatieCriteria Test",
+  "doelstellingId": 1,
+  "inGebruik": 1,
+  "gewicht": 1,
+  "creatorId": 3
+};
+
+const TEST_MODULE_INSERT_DATA = {
+  "name": "Module Test",
+  "opleidingId": 1,
+  "teacherId": 4,
+  "creatorId": 3
+};
+
+const TEST_NAME_UPDATE_DATA = {
+  "name": "Test Update"
+};
+
+const TEST_USER_UPDATE_DATA = {
+  "firstname": "jeanke",
+  "lastname": "bonny",
+  "email": "testemail@gmail.com",
+  "gender": "F",
+  "roles": ["ADMIN", "TEACHER"]
 };
 
 const TEST_MODULE_ID = 1;
@@ -137,8 +177,8 @@ describe("Authentication API", () => {
 
     it("should return 200 OK", () => {
       return agent
-      .get(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
-      .expect(200);
+        .get(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
+        .expect(200);
     });
 
   });
@@ -147,11 +187,11 @@ describe("Authentication API", () => {
 
     it("should return 200 OK", () => {
       return agent
-      .put(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
-      .send({
-        password: "new password"
-      })
-      .expect(200);
+        .put(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
+        .send({
+          password: "new password"
+        })
+        .expect(200);
     });
 
   });
@@ -220,6 +260,73 @@ describe("Users API", () => {
     });
 
   });
+
+});
+
+describe("Opleidingen API", () => {
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
+  describe("GET /api/opleidingen/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/opleidingen/10")
+        .expect(200);
+    });
+
+  });
+
+  describe("GET /api/opleidingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/opleidingen")
+        .expect(200);
+    });
+
+  });
+
+  describe("GET /api/opleidingen/:id/full", () => {
+
+    it("should return 200 OK", () => {
+      return agent.get("/api/opleidingen/1/full")
+        .expect(200);
+    });
+
+  });
+
+  describe("POST /api/opleidingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/opleidingen")
+        .send(TEST_OPLEIDING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/opleidingen/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/opleidingen/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/opleidingen/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/opleidingen/1/status")
+        .send({ active: 0 })
+        .expect(200);
+    });
+
+  });
+
 
 });
 
@@ -304,24 +411,45 @@ describe("Disciplines API", () => {
 
   });
 
-  describe("PUT /api/disciplines/student/:id", () => {
+  describe("POST /api/evaluatieCriteria", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/disciplines/student/" + TEST_ADMIN_USER_ID)
-        .send({ disciplineid: TEST_DISCIPLINE_ID })
+      return agent.post("/api/evaluatieCriteria")
+        .send(TEST_CRITERIA_INSERT_DATA)
         .expect(200);
     });
 
   });
 
-  describe("DELETE /api/disciplines/student/:id", () => {
+  describe("PUT /api/evaluatieCriteria/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.delete("/api/disciplines/student/" + TEST_USER_ID)
+      return agent.put("/api/evaluatieCriteria/1")
+        .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
 
   });
+});
+
+describe("PUT /api/disciplines/student/:id", () => {
+
+  it("should return 200 OK", () => {
+    return agent.put("/api/disciplines/student/" + TEST_ADMIN_USER_ID)
+      .send({ disciplineid: TEST_DISCIPLINE_ID })
+      .expect(200);
+  });
+
+});
+
+describe("DELETE /api/disciplines/student/:id", () => {
+
+  it("should return 200 OK", () => {
+    return agent.delete("/api/disciplines/student/" + TEST_USER_ID)
+      .expect(200);
+  });
+
+});
 });
 
 describe("Modules API", () => {
@@ -349,6 +477,36 @@ describe("Modules API", () => {
 
   });
 
+  describe("POST /api/doelstellingen", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/doelstellingen")
+        .send(TEST_DOELSTELLING_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/doelstellingen/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/doelstellingen/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+});
+
+
+describe("Modules API", () => {
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
   describe("POST /api/modules", () => {
 
     it("should return 200 OK", () => {
@@ -369,12 +527,35 @@ describe("Modules API", () => {
 
   });
 
-  describe("DELETE /api/modules/:id", () => {
+  describe("POST /api/modules", () => {
 
     it("should return 200 OK", () => {
-      return agent.delete("/api/modules/" + TEST_MODULE_ID)
+      return agent.post("/api/modules")
+        .send(TEST_MODULE_INSERT_DATA)
         .expect(200);
     });
 
   });
+
+  describe("PUT /api/modules/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/modules/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+
+
+});
+
+describe("DELETE /api/modules/:id", () => {
+
+  it("should return 200 OK", () => {
+    return agent.delete("/api/modules/" + TEST_MODULE_ID)
+      .expect(200);
+  });
+
 });
