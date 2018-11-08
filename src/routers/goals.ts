@@ -23,6 +23,20 @@ router.use(usersOnly);
     return await goalsService.insertGoals(trx, { domainid, name, creatorId: user.id });
  }));
 
+ router.put("/:id/status", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("active").isNumeric(),
+    sanitize("active").toInt(),
+  ], executor(async function (req, trx, { id, active }) {
+    const existingGoal = await goalsService.fetchGoal(trx, id);
+    if (!existingGoal) {
+      throw new HttpError(400, "A goal with this id doesn't exist");
+    }
+    await goalsService.updateGoalStatus(trx, id, { active });
+  }));
+
 // router.put("/:id", [
 //     adminsOnly,
 //     check("id").isNumeric(),

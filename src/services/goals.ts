@@ -26,12 +26,23 @@ export async function fetchGoalsForDomain(trx: Transaction, domainIds: number[])
   return rowsToFullGoals(trx, rows);
 }
 
+export async function fetchGoal(trx: Transaction, goalid: number) {
+  const row = await trx.table("goals")
+    .select("*")
+    .where("id", goalid);
+  return row;
+}
+
 export async function insertGoals(trx: Transaction, data: { domainid: number, name: string, creatorId: number }) {
   return await trx.table("goals").insert(data);
 }
 
 export async function updateGoals(trx: Transaction, data: { id: number, name: string }) {
   await trx.table("goals").where("id", data.id).update(data);
+}
+
+export async function updateGoalStatus(trx: Transaction, id: number, data: { active: number }) {
+  await trx.table("goals").where("id", id).update(data);
 }
 
 export async function removeGoals(trx: Transaction, id: number) {
