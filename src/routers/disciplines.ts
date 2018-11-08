@@ -79,34 +79,34 @@ router.put("/:id", [
   sanitize("id").toInt(),
   check("name").exists()
 ], executor(async function (req, trx, { id, name }) {
-  const existingOpleiding = await disciplinesService.fetchDiscipline(trx, id);
-  if (!existingOpleiding) {
+  const existingDiscipline = await disciplinesService.fetchDiscipline(trx, id);
+  if (!existingDiscipline) {
     throw new HttpError(404, "A opleiding with this id doesn't exist");
   }
   await disciplinesService.updateDiscipline(trx, id, { name });
 }));
 
-// router.put("/:id/status", [
-//   adminsOnly,
-//   check("id").isNumeric(),
-//   sanitize("id").toInt(),
-//   check("active").isNumeric(),
-//   sanitize("active").toInt(),
-// ], executor(async function (req, trx, { id, active }) {
-//   const existingOpleiding = await disciplinesService.fetchOpleiding(trx, id);
-//   if (!existingOpleiding) {
-//     throw new HttpError(400, "A opleiding with this id doesn't exist");
-//   }
-//   await disciplinesService.updateOpleidingStatus(trx, { id, active });
-// }));
+ router.put("/:id/status", [
+   adminsOnly,
+   check("id").isNumeric(),
+   sanitize("id").toInt(),
+   check("active").isNumeric(),
+   sanitize("active").toInt(),
+ ], executor(async function (req, trx, { id, active }) {
+   const existingDiscipline = await disciplinesService.fetchDiscipline(trx, id);
+   if (!existingDiscipline) {
+     throw new HttpError(400, "A discipline with this id doesn't exist");
+   }
+   await disciplinesService.updateDisciplineStatus(trx, id, { active });
+ }));
 
 // router.delete("/:id", [
 //   adminsOnly,
 //   check("id").isNumeric(),
 //   sanitize("id").toInt()
 // ], executor(async function (req, trx, matchedData) {
-//   const existingOpleiding = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(trx, matchedData.id);
-//   if (!existingOpleiding) {
+//   const existingDiscipline = await doelstellingsCategoriesService.fetchDoelstellingsCategorie(trx, matchedData.id);
+//   if (!existingDiscipline) {
 //     throw new HttpError(400, "A opleiding with this id doesn't exist");
 //   }
 //   await disciplinesService.removeOpleiding(trx, matchedData.id);

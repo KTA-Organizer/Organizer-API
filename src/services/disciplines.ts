@@ -47,6 +47,10 @@ export async function updateDiscipline(trx: Transaction, id: number, data: {name
     await trx.table("disciplines").where("id", id).update( data );
 }
 
+export async function updateDisciplineStatus(trx: Transaction, id: number, data: {active: number}) {
+  await trx.table("disciplines").where("id", id).update( data );
+}
+
 export async function deactivateDiscipline(trx: Transaction, id: number) {
     await trx.table("disciplines").where("id", id).update({ active: 0 });
 }
