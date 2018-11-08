@@ -28,7 +28,7 @@ export async function fetchDomainsForModule(trx: Transaction, moduleid: number) 
   return rowsToFullDoelstellingsCategory(trx, rows);
 }
 
-export async function insertDomain(trx: Transaction, data: { moduleId: number, name: string, creatorId: number }) {
+export async function insertDomain(trx: Transaction, data: { moduleid: number, name: string, creatorId: number }) {
     return await trx.table("domains").insert( data );
 }
 
