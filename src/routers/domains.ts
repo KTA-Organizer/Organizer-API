@@ -24,4 +24,18 @@ router.post("/", [
     return await domainsService.insertDomain(trx, { moduleid, name, creatorId: user.id });
   }));
 
+router.put("/:id/status", [
+   adminsOnly,
+   check("id").isNumeric(),
+   sanitize("id").toInt(),
+   check("active").isNumeric(),
+   sanitize("active").toInt(),
+ ], executor(async function (req, trx, { id, active }) {
+   const existingDomain = await domainsService.fetchDomain(trx, id);
+   if (!existingDomain) {
+     throw new HttpError(400, "A domain with this id doesn't exist");
+   }
+   await domainsService.updateDomainStatus(trx, id, { active });
+ }));
+
   export default router;

@@ -28,10 +28,21 @@ export async function fetchDomainsForModule(trx: Transaction, moduleid: number) 
   return rowsToFullDoelstellingsCategory(trx, rows);
 }
 
+export async function fetchDomain(trx: Transaction, domainid: number) {
+  const row = await trx.table("domains")
+    .select("*")
+    .where("id", domainid);
+  return row;
+}
+
 export async function insertDomain(trx: Transaction, data: { moduleid: number, name: string, creatorId: number }) {
     return await trx.table("domains").insert( data );
 }
 
 export async function updateDomain(trx: Transaction, id: number, data: { name: string}) {
     await trx.table("domains").where("id", id).update( data );
+}
+
+export async function updateDomainStatus(trx: Transaction, id: number, data: { active: number}) {
+  await trx.table("domains").where("id", id).update( data );
 }
