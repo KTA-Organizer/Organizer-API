@@ -40,10 +40,3 @@ export async function fetchEvaluationsForStudentForModule(trx: Transaction, stud
         .leftJoin("modules", "modules.id", "domains.moduleid")
         .where({ "modules.id": moduleid, "studentid": studentid });
 }
-
-// select s.*, m.id as moduleid, m.name as modulename
-// from scores s
-// left join criteria c on s.criteriaid = c.id
-// left join goals g on g.id = c.goalid
-// left join domains d on d.id = g.domainid
-// left join modules m on m.id = d.moduleid;

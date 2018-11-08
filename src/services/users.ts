@@ -39,20 +39,20 @@ export async function fetchUserPasswordByEmail(
 
 const getUserQuery = (trx: Transaction) => trx
   .table("users")
-  .select("users.*", "teachers.active as teacher", "students.active as student", "admins.active as admin", "staff.active as staff")
+  .select("users.*", "students.userid", "teachers.userid", "admins.userid", "staff.userid", "teachers.active as teacher", "students.active as student", "admins.active as admin", "staff.active as staff")
   .leftJoin("teachers", "users.id", "teachers.userid")
   .leftJoin("students", "users.id", "students.userid")
   .leftJoin("admins", "users.id", "admins.userid")
   .leftJoin("staff", "users.id", "staff.userid");
 
-export async function fetchUser (trx: Transaction, id: number) {
+export async function fetchUser(trx: Transaction, id: number) {
   const row = await getUserQuery(trx)
     .where({ id })
     .first();
   return rowToUser(row);
 }
 
-export async function fetchUserByEmail (trx: Transaction, email: string) {
+export async function fetchUserByEmail(trx: Transaction, email: string) {
   const row = await getUserQuery(trx)
     .where({ email })
     .first();
@@ -142,12 +142,14 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
     query.where("status", options.status);
   }
   if (options.role) {
-    query.where(options.role.toLowerCase(), 1);
+    const s = options.role.toLowerCase() === "staff" ? "" : "s";
+    const ids = await trx.table(`${options.role.toLowerCase()}${s}`).select("userid");
+    const userids = ids.map((x: any) => x.userid);
+    query.whereIn("users.id", userids);
   }
   if (options.search) {
     query.whereRaw("CONCAT(firstname, ' ', lastname) LIKE CONCAT('%', ?, '%')", [options.search]);
   }
-
   const paginator: PaginateResult<User> = await paginate(query)(options.page, options.perPage);
   paginator.items = paginator.items
     .map(rowToUser);
