@@ -4,7 +4,7 @@ export enum Grade {
   goed = 4,
   voldoende = 3,
   onvoldoende = 2,
-  ro = 1
+  "ruim onvoldoende" = 1
 }
 
 export interface Score {
