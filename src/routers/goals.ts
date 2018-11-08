@@ -5,7 +5,7 @@ import executor from "../util/executor";
 import * as goalsService from "../services/goals";
 import { HttpError } from "../util/httpStatus";
 import { adminsOnly, usersOnly } from "../util/accessMiddleware";
-import * as criteriaService from "../services/criteria";
+import { User } from "../models/User";
 
 const router = Router({
     mergeParams: true,
@@ -14,15 +14,14 @@ const router = Router({
 
 router.use(usersOnly);
 
-// router.post("/", [
-//     adminsOnly,
-//     check("doelstellingscategorieId").exists(),
-//     check("name").exists(),
-//     check("inGebruik").exists(),
-//     check("creatorId").exists()
-// ], executor(async function (req, trx, { doelstellingscategorieId, name, inGebruik, creatorId }) {
-//     return await goalsService.insertGoals(trx, { doelstellingscategorieId, name, inGebruik, creatorId});
-// }));
+ router.post("/", [
+     adminsOnly,
+     check("domainid").exists(),
+     check("name").exists(),
+ ], executor(async function (req, trx, { domainid, name }) {
+    const user = req.user as User;
+    return await goalsService.insertGoals(trx, { domainid, name, creatorId: user.id });
+ }));
 
 // router.put("/:id", [
 //     adminsOnly,

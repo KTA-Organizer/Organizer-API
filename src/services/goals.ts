@@ -26,7 +26,7 @@ export async function fetchGoalsForDomain(trx: Transaction, domainIds: number[])
   return rowsToFullGoals(trx, rows);
 }
 
-export async function insertGoals(trx: Transaction, data: { doelstellingscategorieId: number, name: string, inGebruik: number, creatorId: number }) {
+export async function insertGoals(trx: Transaction, data: { domainid: number, name: string, creatorId: number }) {
   return await trx.table("goals").insert(data);
 }
 

@@ -17,9 +17,11 @@ router.use(usersOnly);
 
 router.post("/", [
     adminsOnly,
-    check("moduleId").exists(),
+    check("moduleid").exists(),
     check("name").exists(),
   ], executor(async function (req, trx, { moduleid, name }) {
     const user = req.user as User;
     return await domainsService.insertDomain(trx, { moduleid, name, creatorId: user.id });
   }));
+
+  export default router;
