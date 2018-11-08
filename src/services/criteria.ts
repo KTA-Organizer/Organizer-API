@@ -28,3 +28,7 @@ export async function insertCriterion(trx: Transaction, data: { name: string, go
 export async function updateCriterion(trx: Transaction, id: number, data: { name: string, weight: number }) {
   await trx.table("criteria").where("id", id).update(data);
 }
+
+export async function updateCriterionStatus(trx: Transaction, id: number, data: { active: number }) {
+  await trx.table("criteria").where("id", id).update(data);
+}
