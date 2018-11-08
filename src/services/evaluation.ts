@@ -13,5 +13,37 @@ export async function fetchEvaluations(trx: Transaction) {
 }
 
 export async function fetchEvaluation(trx: Transaction, id: number) {
-    return trx.table("scores").select("*").where({id});
+    return trx.table("scores").select("*").where({ id });
 }
+
+export async function fetchEvaluationsForStudent(trx: Transaction, id: number) {
+    return trx.table("scores").select("*").where({ studentid: id });
+}
+
+export async function fetchEvaluationsForMolule(trx: Transaction, id: number) {
+    console.log("moduleid-->", id);
+    return trx.table("scores")
+        .select("scores.*", "modules.id as moduleid", "modules.name as modulename")
+        .leftJoin("criteria", "scores.criteriaid", "criteria.id")
+        .leftJoin("goals", "goals.id", "criteria.goalid")
+        .leftJoin("domains", "domains.id", "goals.domainid")
+        .leftJoin("modules", "modules.id", "domains.moduleid")
+        .where({ "modules.id": id });
+}
+
+export async function fetchEvaluationsForStudentForModule(trx: Transaction, studentid: number, moduleid: number) {
+    return trx.table("scores")
+        .select("scores.*", "modules.id as moduleid", "modules.name as modulename")
+        .leftJoin("criteria", "scores.criteriaid", "criteria.id")
+        .leftJoin("goals", "goals.id", "criteria.goalid")
+        .leftJoin("domains", "domains.id", "goals.domainid")
+        .leftJoin("modules", "modules.id", "domains.moduleid")
+        .where({ "modules.id": moduleid, "studentid": studentid });
+}
+
+// select s.*, m.id as moduleid, m.name as modulename
+// from scores s
+// left join criteria c on s.criteriaid = c.id
+// left join goals g on g.id = c.goalid
+// left join domains d on d.id = g.domainid
+// left join modules m on m.id = d.moduleid;
