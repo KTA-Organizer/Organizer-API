@@ -5,6 +5,7 @@ import disciplinesRouter from "./disciplines";
 import meldingRouter from "./melding";
 import moduleRouter from "./module";
 import domainsRouter from "./domains";
+import criteriaRouter from "./criteria";
 import goalsRouter from "./goals";
 import evaluationRouter from "./evaluation";
 import { errorResponse } from "../util/executor";
@@ -23,6 +24,7 @@ router.use("/modules", moduleRouter);
 router.use("/goals", goalsRouter);
 router.use("/evaluations", evaluationRouter);
 router.use("/domains", domainsRouter);
+router.use("/criteria", criteriaRouter);
 
 router.use("/*", (req, res, next) => {
   errorResponse(new HttpError(404, "This route doesn't exist"), res);

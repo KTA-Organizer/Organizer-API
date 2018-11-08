@@ -20,7 +20,7 @@ export async function fetchCriteriaForGoals(trx: Transaction, goalIds: number[])
   return rows.map(rowToCriterion);
 }
 
-export async function insertCriterion(trx: Transaction, data: { name: string, weight: number, creatorId: number }) {
+export async function insertCriterion(trx: Transaction, data: { name: string, goalid: number, weight: number, creatorId: number }) {
   const [id] = await trx.table("criteria").insert(data);
   return await fetchCriteria(trx, id);
 }
