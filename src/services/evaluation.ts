@@ -28,7 +28,8 @@ export async function fetchEvaluationsForMolule(trx: Transaction, id: number) {
         .leftJoin("goals", "goals.id", "criteria.goalid")
         .leftJoin("domains", "domains.id", "goals.domainid")
         .leftJoin("modules", "modules.id", "domains.moduleid")
-        .where({ "modules.id": id });
+        .where({ "modules.id": id })
+        .orderBy("scores.creation", "asc");
 }
 
 export async function fetchEvaluationsForStudentForModule(trx: Transaction, studentid: number, moduleid: number) {
@@ -38,5 +39,6 @@ export async function fetchEvaluationsForStudentForModule(trx: Transaction, stud
         .leftJoin("goals", "goals.id", "criteria.goalid")
         .leftJoin("domains", "domains.id", "goals.domainid")
         .leftJoin("modules", "modules.id", "domains.moduleid")
-        .where({ "modules.id": moduleid, "studentid": studentid });
+        .where({ "modules.id": moduleid, "studentid": studentid })
+        .orderBy("scores.creation", "asc");
 }
