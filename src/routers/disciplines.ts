@@ -24,6 +24,18 @@ router.get(
 );
 
 router.get(
+  "/:id",
+  [check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function (req, trx, { id }) {
+    const opleiding = await disciplinesService.fetchDiscipline(trx, id);
+    if (!opleiding) {
+      throw new HttpError(404, "Discipline does not exist");
+    }
+    return opleiding;
+  })
+);
+
+router.get(
   "/student/:id",
   [check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function (req, trx, { id }) {
