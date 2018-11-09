@@ -38,6 +38,6 @@ router.post("/", [
     }
     await criteriaService.updateCriterionStatus(trx, id, { active });
   }));
- 
+
 
   export default router;
