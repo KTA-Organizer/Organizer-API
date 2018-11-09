@@ -13,16 +13,16 @@ export async function fetchEvaluations(trx: Transaction) {
 }
 
 export async function fetchEvaluation(trx: Transaction, id: number) {
-    return trx.table("scores").select("*").where({ id });
+    return await trx.table("scores").select("*").where({ id });
 }
 
 export async function fetchEvaluationsForStudent(trx: Transaction, id: number) {
-    return trx.table("scores").select("*").where({ studentid: id });
+    return await trx.table("scores").select("*").where({ studentid: id });
 }
 
 export async function fetchEvaluationsForMolule(trx: Transaction, id: number) {
     console.log("moduleid-->", id);
-    return trx.table("scores")
+    return await trx.table("scores")
         .select("scores.*", "modules.id as moduleid", "modules.name as modulename")
         .leftJoin("criteria", "scores.criteriaid", "criteria.id")
         .leftJoin("goals", "goals.id", "criteria.goalid")
@@ -33,7 +33,7 @@ export async function fetchEvaluationsForMolule(trx: Transaction, id: number) {
 }
 
 export async function fetchEvaluationsForStudentForModule(trx: Transaction, studentid: number, moduleid: number) {
-    return trx.table("scores")
+    return await trx.table("scores")
         .select("scores.*", "modules.id as moduleid", "modules.name as modulename")
         .leftJoin("criteria", "scores.criteriaid", "criteria.id")
         .leftJoin("goals", "goals.id", "criteria.goalid")
@@ -41,4 +41,8 @@ export async function fetchEvaluationsForStudentForModule(trx: Transaction, stud
         .leftJoin("modules", "modules.id", "domains.moduleid")
         .where({ "modules.id": moduleid, "studentid": studentid })
         .orderBy("scores.creation", "asc");
+}
+
+export async function insertEvaluations(trx: Transaction, evaluations: any[]) {
+    await trx.table("scores").insert(evaluations);
 }
