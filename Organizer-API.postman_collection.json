@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"admin@test.test\",\n\t\"password\": \"test\"\n}"
+							"raw": "{\n\t\"email\": \"teacher@test.test\",\n\t\"password\": \"test\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/auth/login",
@@ -107,7 +107,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/auth/token/ba757a2ba799b4c669185d86dbb1d4e1f1cfba9bbc0402e6215c2abb7edd3bbb",
+							"raw": "http://localhost:3000/api/auth/token/f1debc74a89daa55710a4ed735386f6ffd6048c5b8cac01e31f34fac79820ad3",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -117,7 +117,7 @@
 								"api",
 								"auth",
 								"token",
-								"ba757a2ba799b4c669185d86dbb1d4e1f1cfba9bbc0402e6215c2abb7edd3bbb"
+								"f1debc74a89daa55710a4ed735386f6ffd6048c5b8cac01e31f34fac79820ad3"
 							]
 						}
 					},
@@ -251,10 +251,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"disciplineid\": 4\n}"
+							"raw": "{\n\t\"disciplineid\": 5\n}"
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/disciplines/student/107",
+							"raw": "http://localhost:3000/api/disciplines/student/135",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -264,7 +264,7 @@
 								"api",
 								"disciplines",
 								"student",
-								"107"
+								"135"
 							]
 						}
 					},
@@ -409,7 +409,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/meldingen/161",
+							"raw": "http://localhost:3000/api/meldingen/163",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -418,7 +418,7 @@
 							"path": [
 								"api",
 								"meldingen",
-								"161"
+								"163"
 							]
 						}
 					},
@@ -653,6 +653,36 @@
 					"response": []
 				},
 				{
+					"name": "getUsersWithRole",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users?role=STAFF",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "STAFF"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "addUser",
 					"request": {
 						"method": "POST",
@@ -666,7 +696,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"firstname\": \"Ben\",\n\t\"lastname\": \"De Boevere\",\n\t\"email\": \"ben@bendb.be\",\n\t\"gender\": \"M\",\n\t\"roles\": [\"ADMIN\"],\n\t\"nationalRegisterNumber\": \"12345678910\"\n}"
+							"raw": "{\n\t\"firstname\": \"Ben\",\n\t\"lastname\": \"De Boevere\",\n\t\"email\": \"ben@bendb.be\",\n\t\"gender\": \"M\",\n\t\"roles\": [\"STUDENT\"],\n\t\"nationalRegisterNumber\": \"12345678912\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/users/",
@@ -762,6 +792,121 @@
 								"api",
 								"users",
 								"132"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "evaluations",
+			"item": [
+				{
+					"name": "getEvaluations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/evaluations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"evaluations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEvaluationForModule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/evaluations/module/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"evaluations",
+								"module",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEvaluationForModuleForStudent",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/evaluations/student/136/module/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"evaluations",
+								"student",
+								"136",
+								"module",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveEvaluation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"evaluations\": [\n    \t{\n            \"name\": \"testje met postman\",\n            \"grade\": 4,\n            \"criteriaid\": 3,\n            \"studentid\": 136,\n            \"creatorId\": 106\n        },\n        {\n            \"name\": \"testje met postman\",\n            \"grade\": 3,\n            \"criteriaid\": 4,\n            \"studentid\": 136,\n            \"creatorId\": 106\n        },\n        {\n            \"name\": \"testje met postman\",\n            \"grade\": 4,\n            \"criteriaid\": 5,\n            \"studentid\": 136,\n            \"creatorId\": 106\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/evaluations/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"evaluations",
+								""
 							]
 						}
 					},
