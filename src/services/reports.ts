@@ -1,6 +1,4 @@
 import { Transaction } from "knex";
-import * as evaluationService from "./evaluation";
-
 
 export async function createReportForUser(trx: Transaction, studentid: number, moduleid: number) {
     const evaluations = await trx.table("scores")
