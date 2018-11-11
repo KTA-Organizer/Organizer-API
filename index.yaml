@@ -1,0 +1,8 @@
+indexes:
+- kind: report
+  properties:
+  - name: studentid
+  - name: creation
+    direction: desc
+  - name: module.id
+  - name: teacherid

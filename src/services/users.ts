@@ -52,6 +52,12 @@ export async function fetchUser(trx: Transaction, id: number) {
   return rowToUser(row);
 }
 
+export async function fetchUsers(trx: Transaction, ids: number[]) {
+  const rows = await getUserQuery(trx)
+    .whereIn("id", ids);
+  return rows.map(rowToUser);
+}
+
 export async function fetchUserByEmail(trx: Transaction, email: string) {
   const row = await getUserQuery(trx)
     .where({ email })

@@ -10,10 +10,15 @@ function rowToModule(row: any) {
 
 export async function fetchModule(trx: Transaction, id: number) {
   const row = await trx.table("modules")
-    .select("*")
     .where({ id })
     .first();
   return rowToModule(row);
+}
+
+export async function fetchModules(trx: Transaction, ids: number[]) {
+  const rows = await trx.table("modules")
+    .whereIn("id", ids);
+  return rows.map(rowToModule);
 }
 
 export async function fetchFullModule(trx: Transaction, id: number) {
