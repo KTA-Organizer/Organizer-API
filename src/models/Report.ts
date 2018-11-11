@@ -1,6 +1,7 @@
 import { Score } from "./Score";
 import { User } from "./User";
 import { Module } from "./Module";
+import { GoalAggregateScore } from "./GoalScore";
 
 export interface GoalComment {
   goalid: number;
@@ -12,7 +13,7 @@ export interface Report {
   teacherid: number;
 
   module: Module;
-  scores: Score[];
+  goalAggregateScores: GoalAggregateScore[];
   creation: Date;
   termStart: Date;
   termEnd: Date;
@@ -22,9 +23,13 @@ export interface Report {
 }
 
 export interface ReportListItem {
-  moduleid: number;
+  id: string;
   studentid: number;
   teacherid: number;
+  termStart: Date;
+  termEnd: Date;
+  moduleid: number;
+  creation: Date;
 
   module?: Module;
   student?: User;

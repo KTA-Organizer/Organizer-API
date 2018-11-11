@@ -14,15 +14,6 @@ const router = Router({
 
 router.use(teacherOrAdminOnly);
 
-router.get("/student/:studentid/module/:moduleid", [
-    check("studentid").exists(),
-    sanitize("studentid").toInt(),
-    check("moduleid").exists(),
-    sanitize("moduleid").toInt()
-], executor(async function (req, trx, {studentid, moduleid}) {
-    return await reportService.fetchUserScores(trx, studentid, moduleid);
-}));
-
 router.post("/", [
     check("moduleid").isNumeric(),
     sanitize("moduleid").toInt(),
@@ -36,16 +27,25 @@ router.post("/", [
     check("studentids").exists(),
 ], executor(async function (req, trx, {moduleid, studentids, termStart, termEnd}) {
     const user = req.user as User;
+    const reportids = [];
     for (const studentid of studentids.slice(0, 1)) {
-        await reportService.generateReport(trx, user.id, studentid, moduleid, termStart, termEnd);
+        const id = await reportService.generateReport(trx, user.id, studentid, moduleid, termStart, termEnd);
+        reportids.push(id);
     }
+    return reportids;
 }));
 
 router.get("/", [
     check("studentid").isNumeric().optional(),
     sanitize("studentid").toInt(),
-], executor(async function (req, trx, {studentid}) {
-    return await reportService.fetchReports(trx, { studentid });
+    check("teacherid").isNumeric().optional(),
+    sanitize("teacherid").toInt(),
+    check("moduleid").isNumeric().optional(),
+    sanitize("moduleid").toInt(),
+    check("disciplineid").isNumeric().optional(),
+    sanitize("disciplineid").toInt(),
+], executor(async function (req, trx, filters) {
+    return await reportService.fetchReports(trx, filters);
 }));
 
 router.get("/:reportid", [
