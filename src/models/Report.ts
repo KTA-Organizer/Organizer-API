@@ -20,6 +20,9 @@ export interface Report {
 
   goalComments: GoalComment[];
   generalComment: string;
+
+  student?: User;
+  teacher?: User;
 }
 
 export interface ReportListItem {

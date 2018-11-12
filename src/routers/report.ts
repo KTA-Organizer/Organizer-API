@@ -51,7 +51,7 @@ router.get("/", [
 router.get("/:reportid", [
     check("reportid").isNumeric(),
 ], executor(async function (req, trx, {reportid}) {
-    const report = await reportService.fetchReport(reportid);
+    const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
         throw new HttpError(404, "Report doesnt exist");
     }
@@ -63,7 +63,7 @@ router.put("/:reportid", [
     check("generalComment").exists(),
     check("goalComments").exists(),
 ], executor(async function (req, trx, { reportid, generalComment, goalComments }) {
-    const report = await reportService.fetchReport(reportid);
+    const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
         throw new HttpError(404, "Report doesnt exist");
     }

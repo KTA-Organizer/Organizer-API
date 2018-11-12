@@ -3,7 +3,7 @@ import { Report, ReportListItem, GoalComment } from "../models/Report";
 import { datastore } from "../config/datastore";
 import { fetchFullModule, fetchModules } from "./modules";
 import _ from "lodash";
-import { fetchUsers } from "./users";
+import { fetchUsers, fetchUser } from "./users";
 import { GoalAggregateScore } from "../models/GoalScore";
 import { convertNestedFields, addFilters } from "../util/knexHelpers";
 
@@ -90,8 +90,14 @@ function getKey(id: string) {
   return key;
 }
 
-export async function fetchReport(id: string) {
-  const [report] = await datastore.get(getKey(id));
+export async function fetchReport(trx: Transaction, id: string) {
+  const [report]: any = await datastore.get(getKey(id));
+  const [student, teacher] = await Promise.all([
+    fetchUser(trx, report.studentid),
+    fetchUser(trx, report.teacherid),
+  ]);
+  report.student = student;
+  report.teacher = teacher;
   return report as Report;
 }
 
