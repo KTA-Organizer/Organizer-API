@@ -37,7 +37,7 @@ router.use(usersOnly);
     await goalsService.updateGoalStatus(trx, id, { active });
   }));
 
-  router.put("/:id/status", [
+  router.put("/:id", [
     adminsOnly,
     check("id").isNumeric(),
     sanitize("id").toInt(),

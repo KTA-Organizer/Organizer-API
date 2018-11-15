@@ -39,8 +39,8 @@ export async function insertDomain(trx: Transaction, data: { moduleid: number, n
     return await trx.table("domains").insert( data );
 }
 
-export async function updateDomain(trx: Transaction, id: number, data: { name: string}) {
-    await trx.table("domains").where("id", id).update( data );
+export async function updateDomain(trx: Transaction, id: number, data: { name: string }) {
+  await trx.table("domains").where("id", id).update(data);
 }
 
 export async function updateDomainStatus(trx: Transaction, id: number, data: { active: number}) {
