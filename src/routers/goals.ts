@@ -37,18 +37,20 @@ router.use(usersOnly);
     await goalsService.updateGoalStatus(trx, id, { active });
   }));
 
-// router.put("/:id", [
-//     adminsOnly,
-//     check("id").isNumeric(),
-//     sanitize("id").toInt(),
-//     check("name").exists()
-// ], executor(async function (req, trx, {id, name }) {
-//     const existingDoelstelling = await goalsService.fetchDoelstelling(trx, id);
-//     if (!existingDoelstelling) {
-//         throw new HttpError(400, "A doelstelling with this id doesn't exist");
-//     }
-//     await goalsService.updateDoelstelling(trx, {id, name});
-// }));
+  router.put("/:id/status", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("name").exists()
+  ], executor(async function (req, trx, { id, name }) {
+    const existingGoal = await goalsService.fetchGoal(trx, id);
+    if (!existingGoal) {
+      throw new HttpError(400, "A goal with this id doesn't exist");
+    }
+    await goalsService.updateGoal(trx, { id, name });
+  }));
+
+
 
 // router.delete("/:id", [
 //     adminsOnly,
