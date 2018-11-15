@@ -1,48 +1,49 @@
 import { Transaction } from "knex";
-import { text } from "body-parser";
-import { Score } from "../models/Score";
+import { EvaluationSheet } from "../models/EvaluationSheet";
+import { fetchUser } from "./users";
+import { fetchFullModule } from "./modules";
 
 
-function asScores(rows: any[]) {
-    return rows as Score[];
+function rowToEvaluationSheet(row: any) {
+    return row as EvaluationSheet;
 }
 
-export async function fetchEvaluations(trx: Transaction) {
-    const rows = await trx.table("scores").select("*");
-    return asScores(rows);
+async function rowToFullEvaluationSheet(trx: Transaction, row: any) {
+    const sheet = rowToEvaluationSheet(row);
+    const [student, teacher] = await Promise.all([
+        fetchUser(trx, sheet.studentid),
+        fetchUser(trx, sheet.teacherid)
+    ]);
+    sheet.student = student;
+    sheet.teacher = teacher;
+    sheet.scores = await fetchScoresForEvaluationSheet(trx, sheet.id);
+    sheet.module = await fetchFullModule(trx, sheet.moduleid);
+    return sheet;
 }
 
-export async function fetchEvaluation(trx: Transaction, id: number) {
-    return await trx.table("scores").select("*").where({ id });
+export async function fetchEvaluationSheets(trx: Transaction, options: { studentid: number, moduleid: number }) {
+    const query = trx.table("evaluationsheets");
+    if (options.studentid) {
+        query.where("studentid", options.studentid);
+    }
+    if (options.moduleid) {
+        query.where("moduleid", options.moduleid);
+    }
+    const rows = await query;
+    return rows.map(rowToEvaluationSheet);
 }
 
-export async function fetchEvaluationsForStudent(trx: Transaction, id: number) {
-    return await trx.table("scores").select("*").where({ studentid: id });
+export async function fetchEvaluationSheet(trx: Transaction, id: number) {
+    const row = await trx.table("evaluationsheets").where("id", id).first();
+    return await rowToFullEvaluationSheet(trx, row);
 }
 
-export async function fetchEvaluationsForMolule(trx: Transaction, id: number) {
-    console.log("moduleid-->", id);
+export async function fetchScoresForEvaluationSheet(trx: Transaction, evaluationsheetid: number) {
     return await trx.table("scores")
-        .select("scores.*", "modules.id as moduleid", "modules.name as modulename")
-        .leftJoin("criteria", "scores.criteriaid", "criteria.id")
-        .leftJoin("goals", "goals.id", "criteria.goalid")
-        .leftJoin("domains", "domains.id", "goals.domainid")
-        .leftJoin("modules", "modules.id", "domains.moduleid")
-        .where({ "modules.id": id })
+        .where({ evaluationsheetid })
         .orderBy("scores.creation", "asc");
 }
 
-export async function fetchEvaluationsForStudentForModule(trx: Transaction, studentid: number, moduleid: number) {
-    return await trx.table("scores")
-        .select("scores.*", "modules.id as moduleid", "modules.name as modulename")
-        .leftJoin("criteria", "scores.criteriaid", "criteria.id")
-        .leftJoin("goals", "goals.id", "criteria.goalid")
-        .leftJoin("domains", "domains.id", "goals.domainid")
-        .leftJoin("modules", "modules.id", "domains.moduleid")
-        .where({ "modules.id": moduleid, "studentid": studentid })
-        .orderBy("scores.creation", "asc");
-}
-
-export async function insertEvaluations(trx: Transaction, evaluations: any[]) {
+export async function insertScores(trx: Transaction, evaluations: any[]) {
     await trx.table("scores").insert(evaluations);
 }

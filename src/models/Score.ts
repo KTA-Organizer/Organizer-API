@@ -13,13 +13,12 @@ export interface Score {
   grade: Grade;
   creatorId: number;
   criteriaid: number;
-  userid: number;
   creation: Date;
+  evaluationid: number;
 
   /**
    * Optional properties which are not columns
    */
   creator?: User;
   criteria?: User;
-  user?: User;
 }
