@@ -39,5 +39,18 @@ router.post("/", [
     await criteriaService.updateCriterionStatus(trx, id, { active });
   }));
 
+  router.put("/:id", [
+    adminsOnly,
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
+    check("name").exists()
+  ], executor(async function (req, trx, { id, name }) {
+    const existingCriteria = await criteriaService.fetchCriteria(trx, id);
+    if (!existingCriteria) {
+      throw new HttpError(400, "A criteria with this id doesn't exist");
+    }
+    await criteriaService.updateCriterion(trx, id, { name });
+  }));
+
 
   export default router;

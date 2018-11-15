@@ -37,7 +37,7 @@ export async function insertGoals(trx: Transaction, data: { domainid: number, na
   return await trx.table("goals").insert(data);
 }
 
-export async function updateGoals(trx: Transaction, data: { id: number, name: string }) {
+export async function updateGoal(trx: Transaction, data: { id: number, name: string }) {
   await trx.table("goals").where("id", data.id).update(data);
 }
 
