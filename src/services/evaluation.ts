@@ -88,6 +88,6 @@ export async function endEvaluation(
 ) {
   await trx
     .table("evaluationsheets")
-    .where({ evaluationsheetid })
+    .where({ id: evaluationsheetid })
     .update({ enddate: new Date() });
 }
