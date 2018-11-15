@@ -46,6 +46,7 @@ router.put("/:id", [
     sanitize("id").toInt(),
     check("scores").exists()
 ], executor(async function (req, trx, { id, scores }) {
+    const user = req.user as User;
     const {error} = Joi.validate(scores, scoreSchema);
     if (error) {
         throw new HttpError(400, error.message);
@@ -54,7 +55,7 @@ router.put("/:id", [
     if (!sheet) {
         throw new HttpError(404, "Sheet not found");
     }
-    await evaluationService.insertScores(trx, id, scores);
+    await evaluationService.insertScores(trx, id, user.id, scores);
 }));
 
 router.post("/", [

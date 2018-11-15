@@ -49,7 +49,8 @@ export async function insertEvaluationSheet(trx: Transaction, data: { moduleid: 
     return id as number;
 }
 
-export async function insertScores(trx: Transaction, evaluationsheetid: number, evaluations: any[]) {
-    const rows = evaluations.map(ev => Object.assign(ev, { evaluationsheetid }));
+export async function insertScores(trx: Transaction, evaluationsheetid: number, creatorid: number, evaluations: any[]) {
+    const rows = evaluations.map(ev => Object.assign(ev, { evaluationsheetid, creatorid }));
+    await trx.table("scores").where({ evaluationsheetid }).delete();
     await trx.table("scores").insert(rows);
 }
