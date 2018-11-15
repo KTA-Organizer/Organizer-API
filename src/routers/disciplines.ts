@@ -78,7 +78,6 @@ router.delete("/student/:id", [
 
 router.post("/", [
   adminsOnly,
-  check("active").exists(),
   check("name").exists(),
 ], executor(async function (req, trx, { name }) {
   const user = req.user as User;
