@@ -25,7 +25,7 @@ export async function insertCriterion(trx: Transaction, data: { name: string, go
   return await fetchCriteria(trx, id);
 }
 
-export async function updateCriterion(trx: Transaction, id: number, data: { name: string, weight: number }) {
+export async function updateCriterion(trx: Transaction, id: number, data: { name: string }) {
   await trx.table("criteria").where("id", id).update(data);
 }
 
