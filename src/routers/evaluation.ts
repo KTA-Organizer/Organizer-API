@@ -6,6 +6,7 @@ import executor from "../util/executor";
 import * as evaluationService from "../services/evaluation";
 import { teachersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
 import { HttpError } from "../util/httpStatus";
+import { User } from "../models/User";
 
 const router = Router({
     mergeParams: true,
@@ -28,8 +29,7 @@ router.get("/:id", [
     check("id").isNumeric(),
     sanitize("id").toInt()
 ], executor(async function (req, trx, { id }) {
-    const scores = await evaluationService.fetchEvaluationSheet(trx, id);
-    return scores;
+    return await evaluationService.fetchEvaluationSheet(trx, id);
 }));
 
 const scoreSchema = Joi.array().items([
@@ -37,19 +37,37 @@ const scoreSchema = Joi.array().items([
         name: Joi.string(),
         grade: Joi.number().integer().min(1).max(4).error(new Error("De score moet tussen 1 en 4 liggen!")),
         criteriaid: Joi.number(),
-        evaluationsheetid: Joi.number(),
         creatorId: Joi.number()
     }
 ]);
 
-router.post("/", [
+router.put("/:id", [
+    check("id").isNumeric(),
+    sanitize("id").toInt(),
     check("scores").exists()
-], executor(async function (req, trx, scores) {
+], executor(async function (req, trx, { id, scores }) {
     const {error} = Joi.validate(scores, scoreSchema);
     if (error) {
         throw new HttpError(400, error.message);
     }
-    await evaluationService.insertScores(trx, scores);
+    const sheet = await evaluationService.fetchEvaluationSheet(trx, id);
+    if (!sheet) {
+        throw new HttpError(404, "Sheet not found");
+    }
+    await evaluationService.insertScores(trx, id, scores);
+}));
+
+router.post("/", [
+    check("studentid").isNumeric(),
+    sanitize("studentid").toInt(),
+    check("moduleid").isNumeric(),
+    sanitize("moduleid").toInt(),
+    check("startdate").exists(),
+    sanitize("startdate").toDate(),
+], executor(async function (req, trx, data) {
+    const user = req.user as User;
+    const evaluationsheetid = await evaluationService.insertEvaluationSheet(trx, { ...data, teacherid: user.id });
+    return { evaluationsheetid };
 }));
 
 

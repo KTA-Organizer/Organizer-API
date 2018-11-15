@@ -44,6 +44,12 @@ export async function fetchScoresForEvaluationSheet(trx: Transaction, evaluation
         .orderBy("scores.creation", "asc");
 }
 
-export async function insertScores(trx: Transaction, evaluations: any[]) {
-    await trx.table("scores").insert(evaluations);
+export async function insertEvaluationSheet(trx: Transaction, data: { moduleid: number, studentid: number, teacherid: number, startdate: Date }) {
+    const [id] = await trx.table("evaluationsheets").insert(data);
+    return id as number;
+}
+
+export async function insertScores(trx: Transaction, evaluationsheetid: number, evaluations: any[]) {
+    const rows = evaluations.map(ev => Object.assign(ev, { evaluationsheetid }));
+    await trx.table("scores").insert(rows);
 }
