@@ -73,6 +73,7 @@ router.post("/", [
     check("startdate").exists(),
     sanitize("startdate").toDate(),
 ], executor(async function (req, trx, data) {
+    console.log(data);
     const user = req.user as User;
     const evaluationsheetid = await evaluationService.insertEvaluationSheet(trx, { ...data, teacherid: user.id });
     return { evaluationsheetid };
