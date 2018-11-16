@@ -6,9 +6,8 @@ import _ from "lodash";
 import { GoalAggregateScore } from "../models/GoalScore";
 import { fetchDiscipline } from "./disciplines";
 
-
 function rowToEvaluationSheet(row: any) {
-    return row as EvaluationSheet;
+  return row as EvaluationSheet;
 }
 
 async function rowToFullEvaluationSheet(trx: Transaction, row: any) {
@@ -43,25 +42,34 @@ export async function fetchEvaluationSheets(trx: Transaction, options: { student
 }
 
 export async function fetchEvaluationSheet(trx: Transaction, id: number) {
-    const row = await trx.table("evaluationsheets").where("id", id).first();
-    return await rowToFullEvaluationSheet(trx, row);
+  const row = await trx
+    .table("evaluationsheets")
+    .where("id", id)
+    .first();
+  return await rowToFullEvaluationSheet(trx, row);
 }
 
-export async function fetchScoresForEvaluationSheet(trx: Transaction, evaluationsheetid: number) {
-    return await trx.table("scores")
-        .where({ evaluationsheetid })
-        .orderBy("scores.creation", "asc");
+export async function fetchScoresForEvaluationSheet(
+  trx: Transaction,
+  evaluationsheetid: number
+) {
+  return await trx
+    .table("scores")
+    .where({ evaluationsheetid })
+    .orderBy("scores.creation", "asc");
 }
 
-export async function insertEvaluationSheet(trx: Transaction, data: { moduleid: number, studentid: number, teacherid: number, startdate: Date }) {
-    const [id] = await trx.table("evaluationsheets").insert(data);
-    return id as number;
-}
-
-export async function insertScores(trx: Transaction, evaluationsheetid: number, creatorid: number, evaluations: any[]) {
-    const rows = evaluations.map(ev => Object.assign(ev, { evaluationsheetid, creatorid }));
-    await trx.table("scores").where({ evaluationsheetid }).delete();
-    await trx.table("scores").insert(rows);
+export async function insertEvaluationSheet(
+  trx: Transaction,
+  data: {
+    moduleid: number;
+    studentid: number;
+    teacherid: number;
+    startdate: Date;
+  }
+) {
+  const [id] = await trx.table("evaluationsheets").insert(data);
+  return id as number;
 }
 
 export function calculateEvaluationSheetAggregateScores(evaluationSheet: EvaluationSheet) {
@@ -87,4 +95,30 @@ export function calculateEvaluationSheetAggregateScores(evaluationSheet: Evaluat
     .value();
 
   return goalAggregates;
+}
+
+export async function insertScores(
+  trx: Transaction,
+  evaluationsheetid: number,
+  creatorid: number,
+  evaluations: any[]
+) {
+  const rows = evaluations.map(ev =>
+    Object.assign(ev, { evaluationsheetid, creatorid })
+  );
+  await trx
+    .table("scores")
+    .where({ evaluationsheetid })
+    .delete();
+  await trx.table("scores").insert(rows);
+}
+
+export async function endEvaluation(
+  trx: Transaction,
+  evaluationsheetid: number
+) {
+  await trx
+    .table("evaluationsheets")
+    .where({ id: evaluationsheetid })
+    .update({ enddate: new Date() });
 }

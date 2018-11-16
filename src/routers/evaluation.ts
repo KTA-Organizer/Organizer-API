@@ -58,6 +58,13 @@ router.put("/:id", [
     await evaluationService.insertScores(trx, id, user.id, scores);
 }));
 
+router.delete("/:id", [
+    check("id").isNumeric(),
+    sanitize("id").toInt()
+], executor(async function (req, trx, { id }) {
+    await evaluationService.endEvaluation(trx, id);
+}));
+
 router.post("/", [
     check("studentid").isNumeric(),
     sanitize("studentid").toInt(),
@@ -66,6 +73,7 @@ router.post("/", [
     check("startdate").exists(),
     sanitize("startdate").toDate(),
 ], executor(async function (req, trx, data) {
+    console.log(data);
     const user = req.user as User;
     const evaluationsheetid = await evaluationService.insertEvaluationSheet(trx, { ...data, teacherid: user.id });
     return { evaluationsheetid };
