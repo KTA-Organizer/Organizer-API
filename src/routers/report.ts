@@ -6,15 +6,18 @@ import { teacherOrAdminOnly } from "../util/accessMiddleware";
 import * as reportService from "../services/reports";
 import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
+import * as printer from "../util/printer";
 
 const router = Router({
-    mergeParams: true,
-    strict: true
+  mergeParams: true,
+  strict: true
 });
 
 router.use(teacherOrAdminOnly);
 
-router.post("/", [
+router.post(
+  "/",
+  [
     check("moduleid").isNumeric(),
     sanitize("moduleid").toInt(),
 
@@ -24,50 +27,105 @@ router.post("/", [
     check("termEnd").exists(),
     sanitize("termEnd").toDate(),
 
-    check("studentids").exists(),
-], executor(async function (req, trx, {moduleid, studentids, termStart, termEnd}) {
+    check("studentids").exists()
+  ],
+  executor(async function(
+    req,
+    trx,
+    { moduleid, studentids, termStart, termEnd }
+  ) {
     const user = req.user as User;
     const reportids = [];
     for (const studentid of studentids.slice(0, 1)) {
-        const id = await reportService.generateReport(trx, user.id, studentid, moduleid, termStart, termEnd);
-        reportids.push(id);
+      const id = await reportService.generateReport(
+        trx,
+        user.id,
+        studentid,
+        moduleid,
+        termStart,
+        termEnd
+      );
+      reportids.push(id);
     }
     return reportids;
-}));
+  })
+);
 
-router.get("/", [
-    check("studentid").isNumeric().optional(),
+router.get(
+  "/",
+  [
+    check("studentid")
+      .isNumeric()
+      .optional(),
     sanitize("studentid").toInt(),
-    check("teacherid").isNumeric().optional(),
+    check("teacherid")
+      .isNumeric()
+      .optional(),
     sanitize("teacherid").toInt(),
-    check("moduleid").isNumeric().optional(),
+    check("moduleid")
+      .isNumeric()
+      .optional(),
     sanitize("moduleid").toInt(),
-    check("disciplineid").isNumeric().optional(),
-    sanitize("disciplineid").toInt(),
-], executor(async function (req, trx, filters) {
+    check("disciplineid")
+      .isNumeric()
+      .optional(),
+    sanitize("disciplineid").toInt()
+  ],
+  executor(async function(req, trx, filters) {
     return await reportService.fetchReports(trx, filters);
-}));
+  })
+);
 
-router.get("/:reportid", [
-    check("reportid").isNumeric(),
-], executor(async function (req, trx, {reportid}) {
+router.get(
+  "/:reportid",
+  [check("reportid").isNumeric()],
+  executor(async function(req, trx, { reportid }) {
     const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
-        throw new HttpError(404, "Report doesnt exist");
+      throw new HttpError(404, "Report doesnt exist");
     }
     return report;
-}));
+  })
+);
 
-router.put("/:reportid", [
+router.put(
+  "/:reportid",
+  [
     check("reportid").isNumeric(),
     check("generalComment").exists(),
-    check("goalComments").exists(),
-], executor(async function (req, trx, { reportid, generalComment, goalComments }) {
+    check("goalComments").exists()
+  ],
+  executor(async function(
+    req,
+    trx,
+    { reportid, generalComment, goalComments }
+  ) {
     const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
-        throw new HttpError(404, "Report doesnt exist");
+      throw new HttpError(404, "Report doesnt exist");
     }
-    return await reportService.updateComments(reportid, report, generalComment, goalComments);
-}));
+    return await reportService.updateComments(
+      reportid,
+      report,
+      generalComment,
+      goalComments
+    );
+  })
+);
+
+router.get(
+  "/print/:id",
+  [
+    check("id").isNumeric(),
+    check("text")
+      .isNumeric()
+      .optional()
+  ],
+  executor(async function(req, trx, { id, text }) {
+    console.log(id);
+    printer.createReportPDF(id, text);
+    return;
+  })
+);
 
 export default router;
