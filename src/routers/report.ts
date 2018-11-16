@@ -7,6 +7,8 @@ import * as reportService from "../services/reports";
 import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
 import * as printer from "../util/printer";
+import * as moduleService from "../services/modules";
+import * as userService from "../services/users";
 
 const router = Router({
   mergeParams: true,
@@ -123,8 +125,9 @@ router.get(
   ],
   executor(async function(req, trx, { id, text }) {
     console.log(id);
-    printer.createReportPDF(id, text);
-    return;
+    const module = await moduleService.fetchFullModule(trx, 1);
+    const student = req.user as User;
+    return printer.createReportPDF(id, student, module);
   })
 );
 
