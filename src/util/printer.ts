@@ -2,7 +2,7 @@ import { Report } from "../models/Report";
 import * as Canvas from "canvas";
 import { Module } from "../models/Module";
 import { User } from "../models/User";
-
+import { promise as DataURI } from "datauri";
 const writeRotatedText = function(text: string) {
   const canvas = Canvas.createCanvas(40, 500);
   const ctx = canvas.getContext("2d");
@@ -83,7 +83,7 @@ const scoreHeader = {
 };
 
 function createHeaderObject(student: User, module: Module) {
-  const headerObject: any = {layout: "noBorders"};
+  const headerObject: any = { layout: "noBorders" };
   headerObject["table"] = {
     widths: ["*", "*"],
     body: [
@@ -122,6 +122,141 @@ function createHeaderObject(student: User, module: Module) {
   return headerObject;
 }
 
+async function getDataURL(image: string) {
+  const URI = await DataURI(image);
+  return URI;
+  // const blob = await fs("../../images/logo.png").then(r => r.blob());
+  // const dataUrl = await new Promise(resolve => {
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve(reader.result);
+  //     reader.readAsDataURL(blob);
+  // });
+  // return dataUrl;
+}
+
+async function createFrontPage(student: User, content: any) {
+  const reportHeader = {
+    columns: [
+      {
+        width: "*",
+        text: ""
+      },
+      {
+        width: "auto",
+        table: {
+          body: [
+            [
+              {
+                text: "Rapport",
+                style: {
+                  bold: true
+                },
+                alignment: "center"
+              }
+            ],
+            [
+              {
+                text: `${student.lastname} ${student.firstname}`,
+                style: {
+                  bold: true
+                },
+                alignment: "center"
+              }
+            ],
+            [
+              {
+                text: "Klas 7",
+                style: {
+                  bold: true
+                },
+                alignment: "center"
+              }
+            ],
+            [
+              {
+                text: "Schooljaar: 20XX-20XX",
+                alignment: "center"
+              }
+            ]
+          ]
+        },
+        layout: {
+          hLineWidth: function(i: any, node: any) {
+            return i === 0 || i === node.table.body.length ? 2 : 0;
+          },
+          vLineWidth: function(i: any, node: any) {
+            return i === 0 || i === node.table.widths.length ? 2 : 0;
+          }
+        }
+      },
+      {
+        width: "*",
+        text: ""
+      }
+    ]
+  };
+  const image = {
+    columns: [
+      {
+        width: "*",
+        text: ""
+      },
+      {
+        image: await getDataURL("images/Logos_CLW_KTA_ZWAAN.png"),
+        fit: [200, 200],
+        margin: [0, 200, 0, 230]
+      },
+      {
+        width: "*",
+        text: ""
+      }
+    ]
+  };
+  const address = {
+    columns: [
+      {
+        width: "*",
+        text: ""
+      },
+      {
+        width: "auto",
+        layout: "noBorders",
+        table: {
+          body: [
+            [
+              {
+                text: "KTA- Centrum voor Leren en Werken",
+                stye: {
+                  bold: true
+                },
+                alignment: "center"
+              }
+            ],
+            [
+              {
+                text: "Fonteinstraat 30",
+                alignment: "center"
+              }
+            ],
+            [
+              {
+                text: "8020 Oostkamp",
+                alignment: "center"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        width: "*",
+        text: "",
+        pageBreak: "after"
+      }
+    ]
+  };
+  return { reportHeader, image, address };
+}
+
 function createModuleArray(module: Module, content: any[]) {
   const body = [];
   for (const domain of module.domains) {
@@ -146,9 +281,17 @@ function createModuleArray(module: Module, content: any[]) {
   content.push(moduleObject);
 }
 
-export function createReportPDF(id: number, student: User, module: Module) {
+export async function createReportPDF(
+  id: number,
+  student: User,
+  module: Module
+) {
   const content: any[] = [];
   const pdf = { styles: styles, content: content };
+  const frontPageObject = await createFrontPage(student, pdf.content);
+  pdf.content.push(frontPageObject.reportHeader);
+  pdf.content.push(frontPageObject.image);
+  pdf.content.push(frontPageObject.address);
   pdf.content.push(createHeaderObject(student, module));
   pdf.content.push(scoreHeader);
   pdf.content.push({
