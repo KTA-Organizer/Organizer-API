@@ -89,18 +89,14 @@ router.put(
 );
 
 router.get(
-  "/print/:id",
+  "/pdf/:reportid",
   [
-    check("id").isNumeric(),
-    check("text")
-      .isNumeric()
-      .optional()
+    check("reportid").exists()
   ],
-  executor(async function(req, trx, { id, text }) {
-    console.log(id);
-    const module = await moduleService.fetchFullModule(trx, 1);
-    const student = req.user as User;
-    return printer.createReportPDF(id, student, module);
+  executor(async function(req, trx, { reportid }) {
+    console.log(reportid);
+    const report = await reportService.fetchReport(trx, reportid);
+    return printer.createReportPDF(report);
   })
 );
 

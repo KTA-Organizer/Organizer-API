@@ -3,6 +3,7 @@ import * as Canvas from "canvas";
 import { Module } from "../models/Module";
 import { User } from "../models/User";
 import { promise as DataURI } from "datauri";
+
 const writeRotatedText = function(text: string) {
   const canvas = Canvas.createCanvas(40, 500);
   const ctx = canvas.getContext("2d");
@@ -134,7 +135,7 @@ async function getDataURL(image: string) {
   // return dataUrl;
 }
 
-async function createFrontPage(student: User, content: any) {
+async function createFrontPage(student: User) {
   const reportHeader = {
     columns: [
       {
@@ -257,18 +258,28 @@ async function createFrontPage(student: User, content: any) {
   return { reportHeader, image, address };
 }
 
-function createModuleArray(module: Module, content: any[]) {
+function getCommentForGoal(goalComments: any, goalid: number) {
+  const comment = goalComments.find((obj: any) => obj.goalid === goalid);
+  return comment ? comment : "";
+}
+
+function getScoreForGoal(goalAggregateScores: any, goalid: number, expected: number) {
+    const score = goalAggregateScores.find((obj: any) => obj.goalid === goalid);
+    return !!score && score.grade === expected ? "X" : "";
+}
+
+function createModuleArray(report: Report, module: Module, content: any[]) {
   const body = [];
   for (const domain of module.domains) {
     content.push({ text: domain.name, style: "subheader" });
     for (const goal of domain.goals) {
       body.push([
         { text: goal.name },
-        { text: "" },
-        { text: "" },
-        { text: "" },
-        { text: "" },
-        { text: "" }
+        { text: getScoreForGoal(report.goalAggregateScores, goal.id, 4) },
+        { text: getScoreForGoal(report.goalAggregateScores, goal.id, 3) },
+        { text: getScoreForGoal(report.goalAggregateScores, goal.id, 2) },
+        { text: getScoreForGoal(report.goalAggregateScores, goal.id, 1) },
+        { text: getCommentForGoal(report.goalComments, goal.id) }
       ]);
     }
   }
@@ -282,13 +293,13 @@ function createModuleArray(module: Module, content: any[]) {
 }
 
 export async function createReportPDF(
-  id: number,
-  student: User,
-  module: Module
+  report: Report
 ) {
+  const student = report.evaluationSheet.student;
+  const module = report.evaluationSheet.module;
   const content: any[] = [];
   const pdf = { styles: styles, content: content };
-  const frontPageObject = await createFrontPage(student, pdf.content);
+  const frontPageObject = await createFrontPage(student);
   pdf.content.push(frontPageObject.reportHeader);
   pdf.content.push(frontPageObject.image);
   pdf.content.push(frontPageObject.address);
@@ -298,6 +309,6 @@ export async function createReportPDF(
     text: `Module: ${module.name}`,
     style: "header"
   });
-  createModuleArray(module, pdf.content);
+  createModuleArray(report, module, pdf.content);
   return pdf;
 }
