@@ -17,41 +17,14 @@ const router = Router({
 
 router.use(teacherOrAdminOnly);
 
-router.post(
-  "/",
-  [
-    check("moduleid").isNumeric(),
-    sanitize("moduleid").toInt(),
-
-    check("termStart").exists(),
-    sanitize("termStart").toDate(),
-
-    check("termEnd").exists(),
-    sanitize("termEnd").toDate(),
-
-    check("studentids").exists()
-  ],
-  executor(async function(
-    req,
-    trx,
-    { moduleid, studentids, termStart, termEnd }
-  ) {
+router.post("/", [
+    check("evaluationsheetid").isNumeric(),
+    sanitize("evaluationsheetid").toInt(),
+], executor(async function (req, trx, { evaluationsheetid }) {
     const user = req.user as User;
-    const reportids = [];
-    for (const studentid of studentids.slice(0, 1)) {
-      const id = await reportService.generateReport(
-        trx,
-        user.id,
-        studentid,
-        moduleid,
-        termStart,
-        termEnd
-      );
-      reportids.push(id);
-    }
-    return reportids;
-  })
-);
+    const reportid = await reportService.generateReport(trx, evaluationsheetid);
+    return { reportid };
+}));
 
 router.get(
   "/",

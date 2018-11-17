@@ -1,6 +1,7 @@
 import { User } from "./User";
 import { Module } from "./Module";
 import { Score } from "./Score";
+import { Discipline } from "./Discipline";
 
 export interface EvaluationSheet {
   id: number;
@@ -14,4 +15,5 @@ export interface EvaluationSheet {
   teacher?: User;
   scores?: Score[];
   module?: Module;
+  discipline?: Discipline;
 }

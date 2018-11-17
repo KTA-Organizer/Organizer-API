@@ -2,39 +2,27 @@ import { Score } from "./Score";
 import { User } from "./User";
 import { Module } from "./Module";
 import { GoalAggregateScore } from "./GoalScore";
+import { EvaluationSheet } from "./EvaluationSheet";
 
 export interface GoalComment {
   goalid: number;
   comment: string;
 }
 
-export interface Report {
-  studentid: number;
-  teacherid: number;
-
-  module: Module;
-  goalAggregateScores: GoalAggregateScore[];
+export interface ReportListItem {
+  id?: string;
+  evaluationsheetid: number;
   creation: Date;
-  termStart: Date;
-  termEnd: Date;
+
+  // module?: Module;
+  // student?: User;
+  // teacher?: User;
+}
+
+export interface Report extends ReportListItem {
+  evaluationSheet: EvaluationSheet;
+  goalAggregateScores: GoalAggregateScore[];
 
   goalComments: GoalComment[];
   generalComment: string;
-
-  student?: User;
-  teacher?: User;
-}
-
-export interface ReportListItem {
-  id: string;
-  studentid: number;
-  teacherid: number;
-  termStart: Date;
-  termEnd: Date;
-  moduleid: number;
-  creation: Date;
-
-  module?: Module;
-  student?: User;
-  teacher?: User;
 }
