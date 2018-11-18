@@ -126,13 +126,6 @@ function createHeaderObject(student: User, module: Module) {
 async function getDataURL(image: string) {
   const URI = await DataURI(image);
   return URI;
-  // const blob = await fs("../../images/logo.png").then(r => r.blob());
-  // const dataUrl = await new Promise(resolve => {
-  //     const reader = new FileReader();
-  //     reader.onload = () => resolve(reader.result);
-  //     reader.readAsDataURL(blob);
-  // });
-  // return dataUrl;
 }
 
 async function createFrontPage(student: User) {
@@ -265,13 +258,13 @@ function getCommentForGoal(goalComments: any, goalid: number) {
 
 function getScoreForGoal(goalAggregateScores: any, goalid: number, expected: number) {
     const score = goalAggregateScores.find((obj: any) => obj.goalid === goalid);
-    return !!score && score.grade === expected ? "X" : "";
+    return !!score && Math.round(score.grade) === expected ? "X" : "";
 }
 
 function createModuleArray(report: Report, module: Module, content: any[]) {
-  const body = [];
   for (const domain of module.domains) {
     content.push({ text: domain.name, style: "subheader" });
+    const body = [];
     for (const goal of domain.goals) {
       body.push([
         { text: goal.name },
@@ -282,14 +275,14 @@ function createModuleArray(report: Report, module: Module, content: any[]) {
         { text: getCommentForGoal(report.goalComments, goal.id) }
       ]);
     }
+    const moduleObject: any = {
+      table: {
+        widths: ["*", 25, 25, 25, 25, "*"],
+        body: body
+      }
+    };
+    content.push(moduleObject);
   }
-  const moduleObject: any = {
-    table: {
-      widths: ["*", 25, 25, 25, 25, "*"],
-      body: body
-    }
-  };
-  content.push(moduleObject);
 }
 
 export async function createReportPDF(

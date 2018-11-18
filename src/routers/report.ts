@@ -6,7 +6,7 @@ import { teacherOrAdminOnly } from "../util/accessMiddleware";
 import * as reportService from "../services/reports";
 import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
-import * as printer from "../util/printer";
+import * as pdfMaker from "../util/pdf";
 import * as moduleService from "../services/modules";
 import * as userService from "../services/users";
 
@@ -96,7 +96,7 @@ router.get(
   executor(async function(req, trx, { reportid }) {
     console.log(reportid);
     const report = await reportService.fetchReport(trx, reportid);
-    return printer.createReportPDF(report);
+    return pdfMaker.createReportPDF(report);
   })
 );
 
