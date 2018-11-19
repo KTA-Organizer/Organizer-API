@@ -7,6 +7,8 @@ import PDF from "./Classes/PDF";
 import Table from "./Classes/Table";
 import Row from "./Classes/Row";
 import Cell from "./Classes/Cell";
+import * as Constants from "./Classes/Constants";
+import { Item, IItem } from "./Classes/Item";
 
 const writeRotatedText = function(text: string) {
   const canvas = Canvas.createCanvas(40, 500);
@@ -21,48 +23,39 @@ const writeRotatedText = function(text: string) {
   return canvas.toDataURL();
 };
 
-const scoreHeader = {
-  table: {
-    widths: ["*", 25, 25, 25, 25, "*"],
-    heights: [100, 100, 100, 100, 100, 100],
-    body: [
-      [
-        {
-          text: "Vakken",
-          style: "tableheader"
-        },
-        {
-          image: writeRotatedText("GOED"),
-          fit: [25, 100],
-          alignment: "center",
-          style: "tableheader"
-        },
-        {
-          image: writeRotatedText("VOLDOENDE"),
-          fit: [25, 100],
-          alignment: "center",
-          style: "tableheader"
-        },
-        {
-          image: writeRotatedText("ONVOLDOENDE"),
-          fit: [25, 100],
-          alignment: "center",
-          style: "tableheader"
-        },
-        {
-          image: writeRotatedText("RUIM ONVOLDOENDE"),
-          fit: [25, 100],
-          alignment: "center",
-          style: "tableheader"
-        },
-        {
-          text: "Opmerking",
-          style: "tableheader"
-        }
-      ]
-    ]
-  }
-};
+const scoreHeader = (function() {
+  const widths = [
+    Constants.defaultWidth,
+    Constants.scoreWidth,
+    Constants.scoreWidth,
+    Constants.scoreWidth,
+    Constants.scoreWidth,
+    Constants.defaultWidth
+  ];
+  const table = new Table(widths);
+  const row = new Row();
+  let cell = new Cell({
+    text: "Vakken",
+    style: "tableheader"
+  });
+  row.addCell(cell);
+  Constants.grades.forEach(grade => {
+    const cell = new Cell({
+      image: writeRotatedText(grade.text),
+      fit: [Constants.scoreWidth, Constants.defaultHeight],
+      alignment: "center",
+      style: "tableheader"
+    });
+    row.addCell(cell);
+  });
+  cell = new Cell({
+    text: "Opmerking",
+    style: "tableheader"
+  });
+  row.addCell(cell);
+  table.addRow(row);
+  return { table };
+})();
 
 function createHeaderObject(student: User, module: Module) {
   const headerObject: any = { layout: "noBorders" };
@@ -110,51 +103,16 @@ async function getDataURL(image: string) {
 }
 
 async function createFrontPage(student: User) {
-  const reportHeader = {
+  const studentTable = createStudentTable(student);
+  const reportHeader = new Item({
     columns: [
-      {
+      new Cell({
         width: "*",
         text: ""
-      },
-      {
+      }).toJson(),
+      new Item({
         width: "auto",
-        table: {
-          body: [
-            [
-              {
-                text: "Rapport",
-                style: {
-                  bold: true
-                },
-                alignment: "center"
-              }
-            ],
-            [
-              {
-                text: `${student.lastname} ${student.firstname}`,
-                style: {
-                  bold: true
-                },
-                alignment: "center"
-              }
-            ],
-            [
-              {
-                text: "Klas 7",
-                style: {
-                  bold: true
-                },
-                alignment: "center"
-              }
-            ],
-            [
-              {
-                text: "Schooljaar: 20XX-20XX",
-                alignment: "center"
-              }
-            ]
-          ]
-        },
+        table: studentTable.toJson(),
         layout: {
           hLineWidth: function(i: any, node: any) {
             return i === 0 || i === node.table.body.length ? 2 : 0;
@@ -163,73 +121,115 @@ async function createFrontPage(student: User) {
             return i === 0 || i === node.table.widths.length ? 2 : 0;
           }
         }
-      },
-      {
+      }).toJson(),
+      new Cell({
         width: "*",
         text: ""
-      }
+      }).toJson()
     ]
-  };
-  const image = {
-    columns: [
-      {
-        width: "*",
-        text: ""
-      },
-      {
-        image: await getDataURL("images/Logos_CLW_KTA_ZWAAN.png"),
-        fit: [200, 200],
-        margin: [0, 200, 0, 230]
-      },
-      {
-        width: "*",
-        text: ""
-      }
-    ]
-  };
-  const address = {
-    columns: [
-      {
-        width: "*",
-        text: ""
-      },
-      {
-        width: "auto",
-        layout: "noBorders",
-        table: {
-          body: [
-            [
-              {
-                text: "KTA- Centrum voor Leren en Werken",
-                stye: {
-                  bold: true
-                },
-                alignment: "center"
-              }
-            ],
-            [
-              {
-                text: "Fonteinstraat 30",
-                alignment: "center"
-              }
-            ],
-            [
-              {
-                text: "8020 Oostkamp",
-                alignment: "center"
-              }
-            ]
-          ]
-        }
-      },
-      {
-        width: "*",
-        text: "",
-        pageBreak: "after"
-      }
-    ]
-  };
-  return [reportHeader, image, address];
+  }).toJson();
+  // const image = {
+  //   columns: [
+  //     {
+  //       width: "*",
+  //       text: ""
+  //     },
+  //     {
+  //       image: await getDataURL("images/Logos_CLW_KTA_ZWAAN.png"),
+  //       fit: [200, 200],
+  //       margin: [0, 200, 0, 230]
+  //     },
+  //     {
+  //       width: "*",
+  //       text: ""
+  //     }
+  //   ]
+  // };
+  // const address = {
+  //   columns: [
+  //     {
+  //       width: "*",
+  //       text: ""
+  //     },
+  //     {
+  //       width: "auto",
+  //       layout: "noBorders",
+  //       table: {
+  //         body: [
+  //           [
+  //             {
+  //               text: "KTA- Centrum voor Leren en Werken",
+  //               stye: {
+  //                 bold: true
+  //               },
+  //               alignment: "center"
+  //             }
+  //           ],
+  //           [
+  //             {
+  //               text: "Fonteinstraat 30",
+  //               alignment: "center"
+  //             }
+  //           ],
+  //           [
+  //             {
+  //               text: "8020 Oostkamp",
+  //               alignment: "center"
+  //             }
+  //           ]
+  //         ]
+  //       }
+  //     },
+  //     {
+  //       width: "*",
+  //       text: "",
+  //       pageBreak: "after"
+  //     }
+  //   ]
+  // };
+  return [reportHeader /*, image, address*/];
+}
+
+function createStudentTable(student: User): Table {
+  const studentTable = new Table([Constants.defaultWidth]);
+  let row = new Row();
+  let cell = new Cell({
+    text: "Rapport",
+    style: {
+      bold: true
+    },
+    alignment: "center"
+  });
+  row.addCell(cell);
+  studentTable.addRow(row);
+  row = new Row();
+  cell = new Cell({
+    text: `${student.lastname} ${student.firstname}`,
+    style: {
+      bold: true
+    },
+    alignment: "center"
+  });
+  row.addCell(cell);
+  studentTable.addRow(row);
+  row = new Row();
+  cell = new Cell({
+    text: "Klas 7",
+    style: {
+      bold: true
+    },
+    alignment: "center"
+  });
+  row.addCell(cell);
+  studentTable.addRow(row);
+  row = new Row();
+  cell = new Cell({
+    text: "Schooljaar: 20XX-20XX",
+    alignment: "center"
+  });
+  row.addCell(cell);
+  studentTable.addRow(row);
+  return studentTable;
 }
 
 function getCommentForGoal(goalComments: any, goalid: number) {
@@ -274,16 +274,23 @@ export async function createReportPDF(report: Report) {
   const student = report.evaluationSheet.student;
   const module = report.evaluationSheet.module;
   const pdf = new PDF();
-  const frontPageArray = await createFrontPage(student);
-  frontPageArray.forEach(obj => {
-    pdf.addContent(obj);
-  });
-  pdf.addContent(createHeaderObject(student, module));
-  pdf.addContent(scoreHeader);
-  pdf.addContent({
-    text: `Module: ${module.name}`,
-    style: "header"
-  });
+  const reportTable = new Table();
+  // const frontPageArray = await createFrontPage(student);
+  // frontPageArray.forEach(obj => {
+  //   pdf.addContent(obj);
+  // });
+  // // pdf.addContent(createHeaderObject(student, module));
+  // // pdf.addContent(new Cell(scoreHeader));
+  // pdf.addContent(new Cell({
+  //   text: `Module: ${module.name}`,
+  //   style: "header"
+  // }));
+  const row = new Row();
+  const cell = new Cell(createStudentTable(student), true);
+  row.addCell(cell);
+  reportTable.addRow(row);
+  pdf.addContent(reportTable);
+  // pdf.addContent(createStudentTable(student));
   // createModuleArray(report, module, pdf.content);
-  return pdf;
+  return pdf.toJson();
 }

@@ -1,6 +1,8 @@
+import IItem from "./Item";
+import Table from "./Table";
+
 class PDF {
-  private content: any[];
-private styles: {};
+  private content: IItem[];
   public static STYLES = {
     tableheader: {
       fontSize: 18,
@@ -30,8 +32,17 @@ private styles: {};
     this.content = [];
   }
 
-  addContent(item: any) {
+  public addContent(item: IItem) {
     this.content.push(item);
+  }
+
+  public toJson() {
+    const obj: any = { content: [] };
+    this.content.forEach((item: IItem) => {
+        obj.content.push(item.toJson());
+    });
+    obj.styles = PDF.STYLES;
+    return obj;
   }
 }
 
