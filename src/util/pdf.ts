@@ -3,6 +3,10 @@ import * as Canvas from "canvas";
 import { Module } from "../models/Module";
 import { User } from "../models/User";
 import { promise as DataURI } from "datauri";
+import PDF from "./Classes/PDF";
+import Table from "./Classes/Table";
+import Row from "./Classes/Row";
+import Cell from "./Classes/Cell";
 
 const writeRotatedText = function(text: string) {
   const canvas = Canvas.createCanvas(40, 500);
@@ -15,29 +19,6 @@ const writeRotatedText = function(text: string) {
   ctx.fillText(text, 0, 0);
   ctx.restore();
   return canvas.toDataURL();
-};
-
-const styles = {
-  tableheader: {
-    fontSize: 18,
-    bold: true,
-    fillColor: "#eeeeee"
-  },
-  header: {
-    fontSize: 18,
-    bold: true,
-    margin: [0, 10, 0, 5]
-  },
-  subheader: {
-    fontSize: 15,
-    margin: [0, 10, 0, 5]
-  },
-  info_right: {
-    alignment: "right"
-  },
-  info_left: {
-    alignment: "left"
-  }
 };
 
 const scoreHeader = {
@@ -248,7 +229,7 @@ async function createFrontPage(student: User) {
       }
     ]
   };
-  return { reportHeader, image, address };
+  return [reportHeader, image, address];
 }
 
 function getCommentForGoal(goalComments: any, goalid: number) {
@@ -256,9 +237,13 @@ function getCommentForGoal(goalComments: any, goalid: number) {
   return comment ? comment : "";
 }
 
-function getScoreForGoal(goalAggregateScores: any, goalid: number, expected: number) {
-    const score = goalAggregateScores.find((obj: any) => obj.goalid === goalid);
-    return !!score && Math.round(score.grade) === expected ? "X" : "";
+function getScoreForGoal(
+  goalAggregateScores: any,
+  goalid: number,
+  expected: number
+) {
+  const score = goalAggregateScores.find((obj: any) => obj.goalid === goalid);
+  return !!score && Math.round(score.grade) === expected ? "X" : "";
 }
 
 function createModuleArray(report: Report, module: Module, content: any[]) {
@@ -285,23 +270,20 @@ function createModuleArray(report: Report, module: Module, content: any[]) {
   }
 }
 
-export async function createReportPDF(
-  report: Report
-) {
+export async function createReportPDF(report: Report) {
   const student = report.evaluationSheet.student;
   const module = report.evaluationSheet.module;
-  const content: any[] = [];
-  const pdf = { styles: styles, content: content };
-  const frontPageObject = await createFrontPage(student);
-  pdf.content.push(frontPageObject.reportHeader);
-  pdf.content.push(frontPageObject.image);
-  pdf.content.push(frontPageObject.address);
-  pdf.content.push(createHeaderObject(student, module));
-  pdf.content.push(scoreHeader);
-  pdf.content.push({
+  const pdf = new PDF();
+  const frontPageArray = await createFrontPage(student);
+  frontPageArray.forEach(obj => {
+    pdf.addContent(obj);
+  });
+  pdf.addContent(createHeaderObject(student, module));
+  pdf.addContent(scoreHeader);
+  pdf.addContent({
     text: `Module: ${module.name}`,
     style: "header"
   });
-  createModuleArray(report, module, pdf.content);
+  // createModuleArray(report, module, pdf.content);
   return pdf;
 }

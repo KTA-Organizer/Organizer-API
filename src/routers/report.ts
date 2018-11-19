@@ -21,7 +21,6 @@ router.post("/", [
     check("evaluationsheetid").isNumeric(),
     sanitize("evaluationsheetid").toInt(),
 ], executor(async function (req, trx, { evaluationsheetid }) {
-    const user = req.user as User;
     const reportid = await reportService.generateReport(trx, evaluationsheetid);
     return { reportid };
 }));
