@@ -89,7 +89,8 @@ export async function paginateAllReports(trx: Transaction, { page, perPage, ...f
     .innerJoin("modules", "modules.id", "evaluationsheets.moduleid")
     .innerJoin("disciplines", "disciplines.id", "modules.disciplineid")
     .innerJoin("users as student", "student.id", "evaluationsheets.studentid")
-    .innerJoin("users as teacher", "teacher.id", "evaluationsheets.teacherid");
+    .innerJoin("users as teacher", "teacher.id", "evaluationsheets.teacherid")
+    .orderBy("reports.creation", "DESC");
 
   addFilters(query, filters);
 
