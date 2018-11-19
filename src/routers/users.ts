@@ -34,7 +34,7 @@ router.get(
     sanitize("perpage").toInt(),
     sanitize("disciplineid").toInt(),
   ],
-  executor(async function(req, trx, { search, status, gender, role, disciplineid, page = 1, perpage = 50 }) {
+  executor(async function(req, trx, { search, status, gender, role, disciplineid, page = 1, perpage = 1e10 }) {
     const users = await usersService.paginateAllUsers(trx, {
       search,
       status,

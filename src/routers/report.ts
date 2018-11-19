@@ -39,7 +39,7 @@ router.get("/", [
     sanitize("moduleid").toInt(),
     check("disciplineid").isNumeric().optional(),
     sanitize("disciplineid").toInt(),
-], executor(async function (req, trx, { page = 1, perpage = 50, ...filters }) {
+], executor(async function (req, trx, { page = 1, perpage = 1e10, ...filters }) {
     return await reportService.paginateAllReports(trx, {  page, perPage: perpage, ...filters });
 }));
 
