@@ -365,26 +365,6 @@ describe("Disciplines API", () => {
 
   });
 
-  describe("POST /api/criteria", () => {
-
-    it("should return 200 OK", () => {
-      return agent.post("/api/criteria")
-        .send(TEST_CRITERIA_INSERT_DATA)
-        .expect(200);
-    });
-
-  });
-
-  describe("PUT /api/criteria/:id", () => {
-
-    it("should return 200 OK", () => {
-      return agent.put("/api/criteria/3")
-        .send(TEST_NAME_UPDATE_DATA)
-        .expect(200);
-    });
-
-  });
-
 
   describe("PUT /api/disciplines/student/:id", () => {
 
@@ -550,6 +530,44 @@ describe("Domains API", () => {
 
     it("should return 200 OK", () => {
       return agent.put("/api/domains/14")
+        .send({active: 0})
+        .expect(200);
+    });
+
+  });
+});
+
+describe("Criteria API", () => {
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
+  describe("POST /api/criteria", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/criteria")
+        .send(TEST_CRITERIA_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/criteria/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/criteria/3")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/criteria/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/criteria/3/status")
         .send({active: 0})
         .expect(200);
     });
