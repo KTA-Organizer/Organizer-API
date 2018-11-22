@@ -27,7 +27,7 @@ const TEST_LOGIN_STUDENT_DATA = {
   password: "test"
 };
 
-const TEST_ACCESS_TOKEN = "f432b7151d98e658a4b5d5098cb6023c5a45d6009423b2537e37b934d2b9a7e5";
+const TEST_ACCESS_TOKEN = "f20c25a5b6ffc2a3521246dbb26164d6b5795c49425f1339b799145816640066";
 
 const TEST_MELDING_DATA = {
   titel: "Test",
@@ -278,15 +278,6 @@ describe("Disciplines API", () => {
 
     it("should return 200 OK", () => {
       return agent.get("/api/disciplines")
-        .expect(200);
-    });
-
-  });
-
-  describe("GET /api/disciplines/:id/full", () => {
-
-    it("should return 200 OK", () => {
-      return agent.get("/api/disciplines/2/full")
         .expect(200);
     });
 
