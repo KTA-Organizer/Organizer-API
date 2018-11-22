@@ -36,8 +36,7 @@ const scoreSchema = Joi.array().items([
     {
         name: Joi.string(),
         grade: Joi.number().integer().min(1).max(4).error(new Error("De score moet tussen 1 en 4 liggen!")),
-        criteriaid: Joi.number(),
-        creation: Joi.string().optional()
+        criteriaid: Joi.number()
     }
 ]);
 

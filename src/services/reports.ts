@@ -2,10 +2,9 @@ import { Transaction, QueryBuilder } from "knex";
 import { Report, ReportListItem, GoalComment } from "../models/Report";
 import { datastore } from "../config/datastore";
 import _ from "lodash";
-import { fetchUsers, fetchUser } from "./users";
 import { convertNestedFields, addFilters } from "../util/knexHelpers";
 import { fetchEvaluationSheet, calculateEvaluationSheetAggregateScores } from "./evaluation";
-import { fetchDiscipline } from "./disciplines";
+import { paginate, PaginateResult } from "../config/db";
 
 export async function generateReport(trx: Transaction, evaluationsheetid: number) {
   const evaluationSheet = await fetchEvaluationSheet(trx, evaluationsheetid);
@@ -58,14 +57,16 @@ export async function fetchReport(trx: Transaction, id: string) {
 }
 
 
-export interface ReportFilters {
-  studentid?: number;
-  teacherid?: number;
-  moduleid?: number;
-  disciplineid?: number;
-}
+export type FetchReportsOptions = {
+  page: number,
+  perPage: number,
+  studentid?: number,
+  teacherid?: number,
+  moduleid?: number,
+  disciplineid?: number,
+};
 
-export async function fetchReports(trx: Transaction, filters: ReportFilters) {
+export async function paginateAllReports(trx: Transaction, { page, perPage, ...filters }: FetchReportsOptions) {
   const query = trx.table("reports")
     .select(
       "reports.*",
@@ -88,12 +89,14 @@ export async function fetchReports(trx: Transaction, filters: ReportFilters) {
     .innerJoin("modules", "modules.id", "evaluationsheets.moduleid")
     .innerJoin("disciplines", "disciplines.id", "modules.disciplineid")
     .innerJoin("users as student", "student.id", "evaluationsheets.studentid")
-    .innerJoin("users as teacher", "teacher.id", "evaluationsheets.teacherid");
+    .innerJoin("users as teacher", "teacher.id", "evaluationsheets.teacherid")
+    .orderBy("reports.creation", "DESC");
 
   addFilters(query, filters);
 
-  const reports: ReportListItem[] = await query;
-  return convertNestedFields(reports);
+  const paginator: PaginateResult<ReportListItem> = await paginate(query)(page, perPage);
+  paginator.items = convertNestedFields(paginator.items);
+  return paginator;
 }
 
 export async function updateComments(reportid: string, report: Report, generalComment: string, goalComments: GoalComment[]) {

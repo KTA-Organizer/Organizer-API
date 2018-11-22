@@ -54,6 +54,7 @@ export async function fetchScoresForEvaluationSheet(
   evaluationsheetid: number
 ) {
   return await trx
+    .select("name", "grade", "criteriaid")
     .table("scores")
     .where({ evaluationsheetid })
     .orderBy("scores.creation", "asc");

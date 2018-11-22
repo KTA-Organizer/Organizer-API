@@ -25,12 +25,15 @@ router.post("/", [
     return { reportid };
 }));
 
-router.get(
-  "/",
-  [
-    check("studentid")
-      .isNumeric()
-      .optional(),
+router.get("/", [
+    check("page").isNumeric().optional(),
+    sanitize("page").toInt(),
+
+    check("perpage").isNumeric().optional(),
+    sanitize("perpage").toInt(),
+
+    // Filters
+    check("studentid").isNumeric().optional(),
     sanitize("studentid").toInt(),
     check("teacherid")
       .isNumeric()
@@ -40,15 +43,11 @@ router.get(
       .isNumeric()
       .optional(),
     sanitize("moduleid").toInt(),
-    check("disciplineid")
-      .isNumeric()
-      .optional(),
-    sanitize("disciplineid").toInt()
-  ],
-  executor(async function(req, trx, filters) {
-    return await reportService.fetchReports(trx, filters);
-  })
-);
+    check("disciplineid").isNumeric().optional(),
+    sanitize("disciplineid").toInt(),
+], executor(async function (req, trx, { page = 1, perpage = 1e10, ...filters }) {
+    return await reportService.paginateAllReports(trx, {  page, perPage: perpage, ...filters });
+}));
 
 router.get(
   "/:reportid",

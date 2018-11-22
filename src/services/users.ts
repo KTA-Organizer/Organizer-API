@@ -135,7 +135,8 @@ export type FetchUsersOptions = {
   search?: string;
   status?: UserStatus,
   gender?: Gender,
-  role?: UserRole
+  role?: UserRole,
+  disciplineid?: number
 };
 
 export async function paginateAllUsers(trx: Transaction, options: FetchUsersOptions) {
@@ -152,6 +153,12 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
     const ids = await trx.table(`${options.role.toLowerCase()}${s}`).select("userid");
     const userids = ids.map((x: any) => x.userid);
     query.whereIn("users.id", userids);
+  }
+  if (options.disciplineid) {
+    const ids = await trx.table("student_disciplines")
+      .pluck("studentid")
+      .where("disciplineid", options.disciplineid);
+    query.whereIn("users.id", ids);
   }
   if (options.search) {
     query.whereRaw("CONCAT(firstname, ' ', lastname) LIKE CONCAT('%', ?, '%')", [options.search]);
