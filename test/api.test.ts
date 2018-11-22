@@ -312,42 +312,7 @@ describe("Disciplines API", () => {
     });
   });
 
-  describe("Meldingen API", () => {
-    let agent: any;
-    beforeAll(async function () {
-      agent = await getAgent();
-      await authTeacherWithTest(agent);
-    });
-
-    describe("GET /api/meldingen", () => {
-      it("should return 200 OK", () => {
-        return agent.get("/api/meldingen").expect(200);
-      });
-    });
-
-    describe("POST /api/meldingen", () => {
-      it("should return 200 on succesful melding post", () => {
-        return agent
-          .post("/api/meldingen")
-          .send(TEST_MELDING_DATA)
-          .expect(201);
-      });
-      it("should return 404 on failed melding post", () => {
-        return agent
-          .post("/api/meldingen")
-          .send({})
-          .expect(400);
-      });
-    });
-
-    describe("DELETE /api/meldingen/:id", () => {
-      it("should return 200 OK", () => {
-        return agent.delete("/api/meldingen/" + TEST_MELDING_ID).expect(200);
-      });
-    });
-
-  });
-
+  
   describe("Disciplines API", () => {
     let agent: any;
     beforeAll(async function () {
@@ -489,14 +454,6 @@ describe("Modules API", () => {
     });
 
   });
-});
-
-describe("Modules API", () => {
-  let agent: any;
-  beforeAll(async function () {
-    agent = await getAgent();
-    await authWithTest(agent);
-  });
 
   describe("POST /api/modules", () => {
 
@@ -537,14 +494,79 @@ describe("Modules API", () => {
     });
 
   });
+});
 
+describe("Goals API", () => {
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
 
-  describe("DELETE /api/modules/:id", () => {
+  describe("POST /api/goals", () => {
 
     it("should return 200 OK", () => {
-      return agent.delete("/api/modules/" + TEST_MODULE_ID)
+      return agent.post("/api/goals")
+        .send(TEST_GOALS_INSERT_DATA)
         .expect(200);
     });
 
   });
+
+  describe("PUT /api/goals/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/goals/14")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/goals/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/goals/14")
+        .send({active: 0})
+        .expect(200);
+    });
+
+  });
+});
+
+
+describe("Meldingen API", () => {
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authTeacherWithTest(agent);
+  });
+
+  describe("GET /api/meldingen", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/meldingen").expect(200);
+    });
+  });
+
+  describe("POST /api/meldingen", () => {
+    it("should return 200 on succesful melding post", () => {
+      return agent
+        .post("/api/meldingen")
+        .send(TEST_MELDING_DATA)
+        .expect(201);
+    });
+    it("should return 404 on failed melding post", () => {
+      return agent
+        .post("/api/meldingen")
+        .send({})
+        .expect(400);
+    });
+  });
+
+  describe("DELETE /api/meldingen/:id", () => {
+    it("should return 200 OK", () => {
+      return agent.delete("/api/meldingen/" + TEST_MELDING_ID).expect(200);
+    });
+  });
+
 });
