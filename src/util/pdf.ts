@@ -196,6 +196,7 @@ async function createFrontPage(student: User) {
         text: ""
       },
       {
+        width: "auto",
         image: await getDataURL("images/Logos_CLW_KTA_ZWAAN.png"),
         fit: [200, 200],
         margin: [0, 200, 0, 230]
