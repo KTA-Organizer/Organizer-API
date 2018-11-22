@@ -17,6 +17,11 @@ const TEST_LOGIN_TEACHER_DATA = {
   password: "test"
 };
 
+const TEST_DOMAINS_INSERT_DATA = {
+  name: "Test domain",
+  moduleid: 1
+}
+
 const TEST_LOGIN_STAFF_DATA = {
   email: "staff@test.test",
   password: "test"
@@ -435,26 +440,6 @@ describe("Modules API", () => {
 
   });
 
-  describe("POST /api/goals", () => {
-
-    it("should return 200 OK", () => {
-      return agent.post("/api/goals")
-        .send(TEST_GOALS_INSERT_DATA)
-        .expect(200);
-    });
-
-  });
-
-  describe("PUT /api/goals/:id", () => {
-
-    it("should return 200 OK", () => {
-      return agent.put("/api/goals/14")
-        .send(TEST_NAME_UPDATE_DATA)
-        .expect(200);
-    });
-
-  });
-
   describe("POST /api/modules", () => {
 
     it("should return 200 OK", () => {
@@ -526,7 +511,45 @@ describe("Goals API", () => {
   describe("PUT /api/goals/:id/status", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/goals/14")
+      return agent.put("/api/goals/14/status")
+        .send({active: 0})
+        .expect(200);
+    });
+
+  });
+});
+
+describe("Domains API", () => {
+  let agent: any;
+  beforeAll(async function () {
+    agent = await getAgent();
+    await authWithTest(agent);
+  });
+
+  describe("POST /api/domains", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/domains")
+        .send(TEST_DOMAINS_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/domains/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/domains/1")
+        .send(TEST_NAME_UPDATE_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("PUT /api/domains/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/domains/14")
         .send({active: 0})
         .expect(200);
     });
