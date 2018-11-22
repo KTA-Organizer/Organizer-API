@@ -452,6 +452,15 @@ describe("Modules API", () => {
 
   });
 
+  describe("PUT /api/modules/:id/status", () => {
+
+    it("should return 200 OK", () => {
+      return agent.put("/api/modules/1/status")
+        .send({ active: 0 })
+        .expect(200);
+    });
+  });
+
   describe("GET /api/modules", () => {
 
     it("should return 200 OK", () => {
