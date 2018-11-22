@@ -11,6 +11,7 @@ const TEST_LOGIN_ADMIN_DATA = {
 
 const TEST_USER_ID = 107;
 const TEST_ADMIN_USER_ID = 105;
+const TEST_EVALUATION_ID = 1;
 
 const TEST_LOGIN_TEACHER_DATA = {
   email: "teacher@test.test",
@@ -20,6 +21,12 @@ const TEST_LOGIN_TEACHER_DATA = {
 const TEST_DOMAINS_INSERT_DATA = {
   name: "Test domain",
   moduleid: 1
+}
+
+const TEST_EVALUATION_INSERT_DATA = {
+  studentid: 107,
+  moduleid: 1,
+  startdate: "2018-11-06"
 }
 
 const TEST_LOGIN_STAFF_DATA = {
@@ -529,7 +536,7 @@ describe("Domains API", () => {
   describe("PUT /api/domains/:id/status", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/domains/14")
+      return agent.put("/api/domains/14/status")
         .send({active: 0})
         .expect(200);
     });
@@ -611,3 +618,49 @@ describe("Meldingen API", () => {
   });
 
 });
+
+describe("Evaluation API", () => {
+  let agent: any;
+  beforeAll(async function(){
+    agent = await getAgent();
+    await authTeacherWithTest(agent);
+  })
+
+  //get all, get, put, post, delete
+
+  describe("GET /api/evaluations/", () => {
+    it("should return 200 OK", () => {
+      return agent
+            .get("/api/evaluations")
+            .query({studentid:107, moduleid: 36})
+            .expect(200);
+    });
+  });
+
+  describe("GET /api/evaluations/:id", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/evaluations/1").expect(200);
+    });
+  });
+
+  describe("POST /api/evaluations", () => {
+
+    it("should return 200 OK", () => {
+      return agent.post("/api/evaluations")
+        .send(TEST_EVALUATION_INSERT_DATA)
+        .expect(200);
+    });
+
+  });
+
+  describe("DELETE /api/evaluations/:id", () => {
+
+    it("should return 200 OK", () => {
+      return agent.delete("/api/evaluations/" + TEST_EVALUATION_ID)
+        .expect(200);
+    });
+
+  });
+
+  
+})
