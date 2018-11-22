@@ -37,8 +37,8 @@ const TEST_MELDING_DATA = {
 const TEST_MELDING_ID = 141;
 
 const TEST_USER_INSERT_DATA = {
-  "firstname": "jeanke",
-  "lastname": "bonny",
+  "firstname": "John",
+  "lastname": "Doe",
   "email": "testemail@gmail.com",
   "gender": "F",
   "roles": ["ADMIN"],
@@ -57,26 +57,21 @@ const TEST_OPLEIDING_INSERT_DATA = {
   "creatorId": 3
 };
 
-const TEST_DOELSTELLING_INSERT_DATA = {
-  "name": "Doelstelling Test",
-  "doelstellingscategorieId": 1,
-  "inGebruik": 1,
-  "creatorId": 3
+const TEST_GOALS_INSERT_DATA = {
+  "name": "Goal Test",
+  "domainid": 1,
+  "creatorId": 105
 };
 
 const TEST_CRITERIA_INSERT_DATA = {
-  "name": "EvaluatieCriteria Test",
-  "doelstellingId": 1,
-  "inGebruik": 1,
-  "gewicht": 1,
-  "creatorId": 3
+  "name": "Criteria Test",
+  "goalid": 14,
+  "weight": 1
 };
 
 const TEST_MODULE_INSERT_DATA = {
   "name": "Module Test",
-  "opleidingId": 1,
-  "teacherId": 4,
-  "creatorId": 3
+  "disciplineid": TEST_DISCIPLINE_ID
 };
 
 const TEST_NAME_UPDATE_DATA = {
@@ -273,7 +268,7 @@ describe("Disciplines API", () => {
   describe("GET /api/disciplines/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/disciplines/10")
+      return agent.get("/api/disciplines/2")
         .expect(200);
     });
 
@@ -291,7 +286,7 @@ describe("Disciplines API", () => {
   describe("GET /api/disciplines/:id/full", () => {
 
     it("should return 200 OK", () => {
-      return agent.get("/api/disciplines/1/full")
+      return agent.get("/api/disciplines/2/full")
         .expect(200);
     });
 
@@ -310,7 +305,7 @@ describe("Disciplines API", () => {
   describe("PUT /api/disciplines/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/disciplines/1")
+      return agent.put("/api/disciplines/2")
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -320,7 +315,7 @@ describe("Disciplines API", () => {
   describe("PUT /api/disciplines/:id/status", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/disciplines/1/status")
+      return agent.put("/api/disciplines/2/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -409,20 +404,20 @@ describe("Disciplines API", () => {
 
   });
 
-  describe("POST /api/evaluatieCriteria", () => {
+  describe("POST /api/criteria", () => {
 
     it("should return 200 OK", () => {
-      return agent.post("/api/evaluatieCriteria")
+      return agent.post("/api/criteria")
         .send(TEST_CRITERIA_INSERT_DATA)
         .expect(200);
     });
 
   });
 
-  describe("PUT /api/evaluatieCriteria/:id", () => {
+  describe("PUT /api/criteria/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/evaluatieCriteria/1")
+      return agent.put("/api/criteria/3")
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -475,20 +470,20 @@ describe("Modules API", () => {
 
   });
 
-  describe("POST /api/doelstellingen", () => {
+  describe("POST /api/goals", () => {
 
     it("should return 200 OK", () => {
-      return agent.post("/api/doelstellingen")
-        .send(TEST_DOELSTELLING_INSERT_DATA)
+      return agent.post("/api/goals")
+        .send(TEST_GOALS_INSERT_DATA)
         .expect(200);
     });
 
   });
 
-  describe("PUT /api/doelstellingen/:id", () => {
+  describe("PUT /api/goals/:id", () => {
 
     it("should return 200 OK", () => {
-      return agent.put("/api/doelstellingen/1")
+      return agent.put("/api/goals/14")
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
