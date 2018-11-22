@@ -18,6 +18,8 @@ const TEST_LOGIN_TEACHER_DATA = {
   password: "test"
 };
 
+const TEST_REPORTS_ID = 5643172898144256;
+
 const TEST_DOMAINS_INSERT_DATA = {
   name: "Test domain",
   moduleid: 1
@@ -27,6 +29,10 @@ const TEST_EVALUATION_INSERT_DATA = {
   studentid: 107,
   moduleid: 1,
   startdate: "2018-11-06"
+}
+
+const TEST_REPORTS_INSERT_DATA = {
+  evaluationsheetid: 1
 }
 
 const TEST_LOGIN_STAFF_DATA = {
@@ -626,8 +632,6 @@ describe("Evaluation API", () => {
     await authTeacherWithTest(agent);
   })
 
-  //get all, get, put, post, delete
-
   describe("GET /api/evaluations/", () => {
     it("should return 200 OK", () => {
       return agent
@@ -663,4 +667,30 @@ describe("Evaluation API", () => {
   });
 
   
+})
+
+describe("Reports API", () => {
+  let agent: any;
+  beforeAll(async function(){
+    agent = await getAgent();
+    await authTeacherWithTest(agent);
+  })
+
+  describe("POST /api/reports/", () => {
+    
+    it("should return 200 OK", () => {
+      return agent
+        .post("/api/reports")
+        .send(TEST_REPORTS_INSERT_DATA)
+        .expect(200);
+    });
+
+    describe("GET /api/reports/:id", () => {
+      it("should return 200 OK", () => {
+        return agent.get("/api/reports/" + TEST_REPORTS_ID).expect(200);
+      });
+    });
+
+    
+  });
 })
