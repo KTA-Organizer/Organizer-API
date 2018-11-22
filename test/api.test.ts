@@ -178,18 +178,18 @@ describe("Authentication API", () => {
 
   });
 
-  describe("PUT /api/auth/token/:token", () => {
+  //describe("PUT /api/auth/token/:token", () => {
 
-    it("should return 200 OK", () => {
-      return agent
-        .put(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
-        .send({
-          password: "new password"
-        })
-        .expect(200);
-    });
+  //  it("should return 200 OK", () => {
+  //    return agent
+  //      .put(`/api/auth/token/${TEST_ACCESS_TOKEN}`)
+  //      .send({
+  //        password: "new password"
+  //      })
+   //     .expect(200);
+  //  });
 
-  });
+  //});
 
 });
 
