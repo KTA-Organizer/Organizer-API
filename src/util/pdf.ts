@@ -252,13 +252,19 @@ async function createFrontPage(student: User) {
 }
 
 function getCommentForGoal(goalComments: any, goalid: number) {
-  const comment = goalComments.find((obj: any) => obj.goalid === goalid);
-  return comment ? comment : "";
+  const comment = goalComments.find((obj: any) => {
+    return +obj.goalid === +goalid;
+  });
+  return comment.comment;
 }
 
-function getScoreForGoal(goalAggregateScores: any, goalid: number, expected: number) {
-    const score = goalAggregateScores.find((obj: any) => obj.goalid === goalid);
-    return !!score && Math.round(score.grade) === expected ? "X" : "";
+function getScoreForGoal(
+  goalAggregateScores: any,
+  goalid: number,
+  expected: number
+) {
+  const score = goalAggregateScores.find((obj: any) => obj.goalid === goalid);
+  return !!score && Math.round(score.grade) === expected ? "X" : "";
 }
 
 function createModuleArray(report: Report, module: Module, content: any[]) {
@@ -285,9 +291,29 @@ function createModuleArray(report: Report, module: Module, content: any[]) {
   }
 }
 
-export async function createReportPDF(
-  report: Report
-) {
+function getGeneralComment(report: Report) {
+  const table = {
+    table: {
+      widths: ["*"],
+      headerRows: 1,
+      body: [
+        [{ text: "Algemene commentaar", style: "subheader" }],
+        [
+          {
+            text: "Commentaar van toepassing op deze module",
+            style: { bold: true }
+          }
+        ],
+        [{ text: report.generalComment }]
+      ]
+    },
+    layout: "lightHorizontalLines",
+    margin: [0, 0, 0, 10]
+  };
+  return table;
+}
+
+export async function createReportPDF(report: Report) {
   const student = report.evaluationSheet.student;
   const module = report.evaluationSheet.module;
   const content: any[] = [];
@@ -302,6 +328,7 @@ export async function createReportPDF(
     text: `Module: ${module.name}`,
     style: "header"
   });
+  pdf.content.push(getGeneralComment(report));
   createModuleArray(report, module, pdf.content);
   return pdf;
 }
