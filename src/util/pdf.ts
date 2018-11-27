@@ -256,6 +256,7 @@ function getCommentForGoal(goalComments: any, goalid: number) {
   const comment = goalComments.find((obj: any) => {
     return +obj.goalid === +goalid;
   });
+  if (!comment) return "";
   return comment.comment;
 }
 
