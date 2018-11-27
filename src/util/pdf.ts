@@ -3,6 +3,7 @@ import * as Canvas from "canvas";
 import { Module } from "../models/Module";
 import { User } from "../models/User";
 import { promise as DataURI } from "datauri";
+import moment from "moment";
 
 const writeRotatedText = function(text: string) {
   const canvas = Canvas.createCanvas(40, 500);
@@ -315,11 +316,22 @@ function getGeneralComment(report: Report) {
   return table;
 }
 
+function createDocumentInfo(report: Report) {
+  const title = [
+    "Rapport",
+    report.evaluationSheet.student.firstname,
+    report.evaluationSheet.student.lastname,
+    moment(report.creation).format("DD-MM-YYYY")
+  ].join("_");
+  const author = report.evaluationSheet.teacher.firstname + " " + report.evaluationSheet.teacher.lastname;
+  return { title, author };
+}
+
 export async function createReportPDF(report: Report) {
   const student = report.evaluationSheet.student;
   const module = report.evaluationSheet.module;
   const content: any[] = [];
-  const pdf = { styles: styles, content: content };
+  const pdf = { info: createDocumentInfo(report), styles, content };
   const frontPageObject = await createFrontPage(student);
   pdf.content.push(frontPageObject.reportHeader);
   pdf.content.push(frontPageObject.image);
