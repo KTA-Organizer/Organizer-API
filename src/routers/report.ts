@@ -4,7 +4,7 @@ import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import { teacherOrAdminOnly } from "../util/accessMiddleware";
 import * as reportService from "../services/reports";
-import { User } from "../models/User";
+import { User, UserRole } from "../models/User";
 import { HttpError } from "../util/httpStatus";
 import * as pdfMaker from "../util/pdf";
 import * as moduleService from "../services/modules";
@@ -15,9 +15,8 @@ const router = Router({
   strict: true
 });
 
-router.use(teacherOrAdminOnly);
-
 router.post("/", [
+    teacherOrAdminOnly,
     check("evaluationsheetid").isNumeric(),
     sanitize("evaluationsheetid").toInt(),
 ], executor(async function (req, trx, { evaluationsheetid }) {
@@ -26,6 +25,8 @@ router.post("/", [
 }));
 
 router.get("/", [
+    teacherOrAdminOnly,
+
     check("page").isNumeric().optional(),
     sanitize("page").toInt(),
 
@@ -53,9 +54,15 @@ router.get(
   "/:reportid",
   [check("reportid").isNumeric()],
   executor(async function(req, trx, { reportid }) {
+    const user = req.user as User;
     const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
       throw new HttpError(404, "Report doesnt exist");
+    }
+    const isStudent = user.roles.indexOf(UserRole.student) > -1;
+    const isReportStudent = report.evaluationSheet.student.id === user.id;
+    if (isStudent && (!report.open || !isReportStudent)) {
+      throw new HttpError(401);
     }
     return report;
   })
@@ -64,6 +71,8 @@ router.get(
 router.put(
   "/:reportid",
   [
+    teacherOrAdminOnly,
+
     check("reportid").isNumeric(),
     check("generalComment").exists(),
     check("goalComments").exists()
@@ -86,9 +95,23 @@ router.put(
   })
 );
 
+router.post("/:reportid/open", [
+    teacherOrAdminOnly,
+
+  check("reportid").isNumeric(),
+], executor(async function (req, trx, { reportid }) {
+    const report = await reportService.fetchReportListItem(trx, reportid);
+    if (!report) {
+      throw new HttpError(404, "Report doesnt exist");
+    }
+    await reportService.openReport(trx, reportid);
+}));
+
 router.get(
   "/pdf/:reportid",
   [
+    teacherOrAdminOnly,
+
     check("reportid").exists()
   ],
   executor(async function(req, trx, { reportid }) {

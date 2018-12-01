@@ -5,6 +5,8 @@ import _ from "lodash";
 import { convertNestedFields, addFilters } from "../util/knexHelpers";
 import { fetchEvaluationSheet, calculateEvaluationSheetAggregateScores } from "./evaluation";
 import { paginate, PaginateResult } from "../config/db";
+import { loadConfig } from "../config/storage";
+import { sendMail } from "../config/mail";
 
 export async function generateReport(trx: Transaction, evaluationsheetid: number) {
   const evaluationSheet = await fetchEvaluationSheet(trx, evaluationsheetid);
@@ -15,6 +17,7 @@ export async function generateReport(trx: Transaction, evaluationsheetid: number
   }));
 
   const report: Report = {
+    open: false,
     evaluationsheetid,
     evaluationSheet,
     creation: new Date(),
@@ -51,9 +54,15 @@ function getKey(id: string) {
   return key;
 }
 
-export async function fetchReport(trx: Transaction, id: string) {
-  const [report]: any = await datastore.get(getKey(id));
-  return report as Report;
+export async function fetchReportListItem(trx: Transaction, reportid: string) {
+  const report = await trx.table("reports").where("id", reportid).first();
+  return report as ReportListItem;
+}
+
+export async function fetchReport(trx: Transaction, reportid: string) {
+  const reportListItem = await fetchReportListItem(trx, reportid);
+  const [report]: any = await datastore.get(getKey(reportid));
+  return ({...reportListItem, ...report}) as Report;
 }
 
 
@@ -105,5 +114,29 @@ export async function updateComments(reportid: string, report: Report, generalCo
   await datastore.update({
     key: getKey(reportid),
     data: report
+  });
+}
+
+export async function openReport(trx: Transaction, reportid: string) {
+  await trx.table("reports").update({open: true}).where("id", reportid);
+  const report = await fetchReport(trx, reportid);
+  await sendResetMail(report.evaluationSheet.student.email, reportid);
+}
+
+async function getReportLink(reportid: string) {
+  const config = await loadConfig();
+  return `${config.url}/#/rapport/${reportid}`;
+}
+
+async function sendResetMail(to: string, reportid: string) {
+  const html = `
+U heeft een nieuw rapport ontvangen!
+<a href=${await getReportLink(reportid)}>Rapport openen</a>
+  `;
+
+  await sendMail({
+    to,
+    subject: "Nieuw rapport",
+    html
   });
 }

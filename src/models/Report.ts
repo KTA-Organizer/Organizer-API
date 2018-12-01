@@ -13,6 +13,7 @@ export interface ReportListItem {
   id?: string;
   evaluationsheetid: number;
   creation: Date;
+  open: boolean;
 
   // module?: Module;
   // student?: User;
