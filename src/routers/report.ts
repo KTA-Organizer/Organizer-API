@@ -25,8 +25,6 @@ router.post("/", [
 }));
 
 router.get("/", [
-    teacherOrAdminOnly,
-
     check("page").isNumeric().optional(),
     sanitize("page").toInt(),
 

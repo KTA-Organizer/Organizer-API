@@ -62,7 +62,7 @@ export async function fetchReportListItem(trx: Transaction, reportid: string) {
 export async function fetchReport(trx: Transaction, reportid: string) {
   const reportListItem = await fetchReportListItem(trx, reportid);
   const [report]: any = await datastore.get(getKey(reportid));
-  return ({...reportListItem, ...report}) as Report;
+  return ({...report, ...reportListItem}) as Report;
 }
 
 
