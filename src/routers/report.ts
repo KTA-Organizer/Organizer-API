@@ -6,10 +6,13 @@ import { teacherOrAdminOnly } from "../util/accessMiddleware";
 import * as reportService from "../services/reports";
 import { User } from "../models/User";
 import { HttpError } from "../util/httpStatus";
+import * as pdfMaker from "../util/pdf";
+import * as moduleService from "../services/modules";
+import * as userService from "../services/users";
 
 const router = Router({
-    mergeParams: true,
-    strict: true
+  mergeParams: true,
+  strict: true
 });
 
 router.use(teacherOrAdminOnly);
@@ -18,7 +21,6 @@ router.post("/", [
     check("evaluationsheetid").isNumeric(),
     sanitize("evaluationsheetid").toInt(),
 ], executor(async function (req, trx, { evaluationsheetid }) {
-    const user = req.user as User;
     const reportid = await reportService.generateReport(trx, evaluationsheetid);
     return { reportid };
 }));
@@ -33,9 +35,13 @@ router.get("/", [
     // Filters
     check("studentid").isNumeric().optional(),
     sanitize("studentid").toInt(),
-    check("teacherid").isNumeric().optional(),
+    check("teacherid")
+      .isNumeric()
+      .optional(),
     sanitize("teacherid").toInt(),
-    check("moduleid").isNumeric().optional(),
+    check("moduleid")
+      .isNumeric()
+      .optional(),
     sanitize("moduleid").toInt(),
     check("disciplineid").isNumeric().optional(),
     sanitize("disciplineid").toInt(),
@@ -43,26 +49,53 @@ router.get("/", [
     return await reportService.paginateAllReports(trx, {  page, perPage: perpage, ...filters });
 }));
 
-router.get("/:reportid", [
-    check("reportid").isNumeric(),
-], executor(async function (req, trx, {reportid}) {
+router.get(
+  "/:reportid",
+  [check("reportid").isNumeric()],
+  executor(async function(req, trx, { reportid }) {
     const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
-        throw new HttpError(404, "Report doesnt exist");
+      throw new HttpError(404, "Report doesnt exist");
     }
     return report;
-}));
+  })
+);
 
-router.put("/:reportid", [
+router.put(
+  "/:reportid",
+  [
     check("reportid").isNumeric(),
     check("generalComment").exists(),
-    check("goalComments").exists(),
-], executor(async function (req, trx, { reportid, generalComment, goalComments }) {
+    check("goalComments").exists()
+  ],
+  executor(async function(
+    req,
+    trx,
+    { reportid, generalComment, goalComments }
+  ) {
     const report = await reportService.fetchReport(trx, reportid);
     if (!report) {
-        throw new HttpError(404, "Report doesnt exist");
+      throw new HttpError(404, "Report doesnt exist");
     }
-    return await reportService.updateComments(reportid, report, generalComment, goalComments);
-}));
+    return await reportService.updateComments(
+      reportid,
+      report,
+      generalComment,
+      goalComments
+    );
+  })
+);
+
+router.get(
+  "/pdf/:reportid",
+  [
+    check("reportid").exists()
+  ],
+  executor(async function(req, trx, { reportid }) {
+    console.log(reportid);
+    const report = await reportService.fetchReport(trx, reportid);
+    return pdfMaker.createReportPDF(report);
+  })
+);
 
 export default router;
