@@ -93,7 +93,7 @@ export function calculateEvaluationSheetAggregateScores(evaluationSheet: Evaluat
         return { goalid: goal.id, grade: _.sum(criteriaAvgs) / criteriaAvgs.length };
     })
     .filter(score => score.grade)
-    .value();
+    .value() as any;
 
   return goalAggregates;
 }
