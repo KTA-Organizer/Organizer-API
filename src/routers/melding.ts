@@ -5,7 +5,7 @@ import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as meldingenService from "../services/meldingen";
 import { HttpError } from "../util/httpStatus";
-import { usersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
+import { usersOnly, allStaffOnly, adminsOnly } from "../util/accessMiddleware";
 import { User } from "../models/User";
 
 const router = Router({
@@ -17,7 +17,7 @@ router.use(usersOnly);
 
 router.get(
   "/",
-  [teacherOrAdminOnly],
+  [allStaffOnly],
   executor(async function(req, trx) {
     const user = req.user as User;
     const options: any = { page: 1, perPage: 10000 };
@@ -29,7 +29,7 @@ router.get(
 router.post(
   "/",
   [
-    teacherOrAdminOnly,
+    adminsOnly,
     check("titel").exists(),
     check("tekst").exists(),
   ],
@@ -46,7 +46,7 @@ router.post(
 
 router.delete(
   "/:id",
-  [teacherOrAdminOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  [adminsOnly, check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function(req, trx, { id }) {
     const user = req.user as User;
     const existingMelding = await meldingenService.fetchMelding(trx, id);

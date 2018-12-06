@@ -7,7 +7,7 @@ import { HttpError } from "../util/httpStatus";
 import {
   usersOnly,
   adminsOnly,
-  teacherOrAdminOnly
+  allStaffOnly
 } from "../util/accessMiddleware";
 import { User, genders, userRoles, userStatuses } from "../models/User";
 import logger from "../util/logger";
@@ -22,7 +22,7 @@ router.use(usersOnly);
 router.get(
   "/",
   [
-    teacherOrAdminOnly,
+    allStaffOnly,
     check("search").optional(),
     check("status").isIn(userStatuses).optional(),
     check("gender").isIn(genders).optional(),
@@ -57,7 +57,7 @@ router.get(
 
 router.get(
   "/:id",
-  [teacherOrAdminOnly,
+  [allStaffOnly,
     check("id").isNumeric(), sanitize("id").toInt()],
   executor(async function (req, trx, { id }) {
     const user = await usersService.fetchUser(trx, id);

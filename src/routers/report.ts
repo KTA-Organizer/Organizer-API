@@ -2,7 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator/check";
 import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
-import { teacherOrAdminOnly } from "../util/accessMiddleware";
+import { allStaffOnly } from "../util/accessMiddleware";
 import * as reportService from "../services/reports";
 import { User, UserRole } from "../models/User";
 import { HttpError } from "../util/httpStatus";
@@ -16,7 +16,7 @@ const router = Router({
 });
 
 router.post("/", [
-    teacherOrAdminOnly,
+    allStaffOnly,
     check("evaluationsheetid").isNumeric(),
     sanitize("evaluationsheetid").toInt(),
 ], executor(async function (req, trx, { evaluationsheetid }) {
@@ -69,7 +69,7 @@ router.get(
 router.put(
   "/:reportid",
   [
-    teacherOrAdminOnly,
+    allStaffOnly,
 
     check("reportid").isNumeric(),
     check("generalComment").exists(),
@@ -94,7 +94,7 @@ router.put(
 );
 
 router.post("/:reportid/open", [
-    teacherOrAdminOnly,
+    allStaffOnly,
 
   check("reportid").isNumeric(),
 ], executor(async function (req, trx, { reportid }) {
@@ -108,7 +108,7 @@ router.post("/:reportid/open", [
 router.get(
   "/pdf/:reportid",
   [
-    teacherOrAdminOnly,
+    allStaffOnly,
 
     check("reportid").exists()
   ],

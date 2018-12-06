@@ -4,7 +4,7 @@ import * as Joi from "joi";
 import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as evaluationService from "../services/evaluation";
-import { teachersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
+import { teachersOnly, allStaffOnly } from "../util/accessMiddleware";
 import { HttpError } from "../util/httpStatus";
 import { User } from "../models/User";
 
@@ -13,7 +13,7 @@ const router = Router({
     strict: true
 });
 
-router.use(teacherOrAdminOnly);
+router.use(allStaffOnly);
 
 router.get("/", [
     check("studentid").isNumeric().optional(),

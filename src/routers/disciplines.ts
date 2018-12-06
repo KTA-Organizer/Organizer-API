@@ -5,7 +5,7 @@ import executor from "../util/executor";
 import * as disciplinesService from "../services/disciplines";
 import * as studentDisciplinesService from "../services/studentDisciplines";
 import { HttpError } from "../util/httpStatus";
-import { adminsOnly, usersOnly, teacherOrAdminOnly } from "../util/accessMiddleware";
+import { adminsOnly, usersOnly, allStaffOnly } from "../util/accessMiddleware";
 import { User } from "../models/User";
 
 const router = Router({

@@ -35,7 +35,7 @@ export const studentsOnly = roleFilterMiddlewareFactory([UserRole.student]);
 export const teachersOnly = roleFilterMiddlewareFactory([UserRole.teacher]);
 export const adminsOnly = roleFilterMiddlewareFactory([UserRole.admin]);
 
-export const teacherOrAdminOnly = roleFilterMiddlewareFactory([UserRole.teacher, UserRole.admin]);
+export const allStaffOnly = roleFilterMiddlewareFactory([UserRole.teacher, UserRole.admin, UserRole.staff]);
 
 type Filter = (user: User) => Promise<boolean>;
 export const filteredOnly = (predicate: Filter, errorMessage: string) => async (req: Request, res: Response, next: NextFunction) => {
