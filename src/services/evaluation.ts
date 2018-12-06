@@ -87,10 +87,13 @@ export function calculateEvaluationSheetAggregateScores(evaluationSheet: Evaluat
   const goalAggregates: GoalAggregateScore[] = _.chain(evaluationSheet.module.domains)
     .flatMap(dom => dom.goals)
     .map(goal => {
-        const criteriaAvgs = goal.criteria
+        const goalAvg = _.chain(goal.criteria)
             .map(crit => criteriaAggregates[crit.id] * crit.weight)
-            .filter(avg => avg);
-        return { goalid: goal.id, grade: _.sum(criteriaAvgs) / criteriaAvgs.length };
+            .filter(avg => avg)
+            .sum()
+            .value();
+        const quotient = _.chain(goal.criteria).map(crit => crit.weight).sum().value();
+        return { goalid: goal.id, grade: goalAvg / quotient };
     })
     .filter(score => score.grade)
     .value() as any;
