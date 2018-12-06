@@ -4,6 +4,7 @@ import { Module } from "../models/Module";
 import { User } from "../models/User";
 import { promise as DataURI } from "datauri";
 import moment from "moment";
+import { EvaluationSheet } from "../models/EvaluationSheet";
 
 const writeRotatedText = function(text: string) {
   const canvas = Canvas.createCanvas(40, 500);
@@ -40,6 +41,11 @@ const styles = {
     alignment: "left"
   }
 };
+
+function getPeriodString(evaluationSheet: EvaluationSheet) {
+  const format = "DD/MM/YY";
+  return `Periode: ${moment(evaluationSheet.startdate).format(format)} - ${moment(evaluationSheet.enddate).format(format)}`;
+}
 
 const scoreHeader = {
   table: {
@@ -84,7 +90,7 @@ const scoreHeader = {
   }
 };
 
-function createHeaderObject(student: User, module: Module) {
+function createHeaderObject(report: Report, student: User, module: Module) {
   const headerObject: any = { layout: "noBorders" };
   headerObject["table"] = {
     widths: ["*", "*"],
@@ -94,10 +100,6 @@ function createHeaderObject(student: User, module: Module) {
           text: `Leerling(e): ${student.lastname} ${student.firstname}`,
           style: `info_left`
         },
-        {
-          text: `Klas: XXXXX`,
-          style: `info_right`
-        }
       ],
       [
         {
@@ -111,13 +113,9 @@ function createHeaderObject(student: User, module: Module) {
       ],
       [
         {
-          text: `Schooljaar: 20XX-20XX`,
+          text: getPeriodString(report.evaluationSheet),
           style: `info_left`
         },
-        {
-          text: `TRIMESTER: X`,
-          style: `info_right`
-        }
       ]
     ]
   };
@@ -129,7 +127,7 @@ async function getDataURL(image: string) {
   return URI;
 }
 
-async function createFrontPage(student: User) {
+async function createFrontPage(report: Report, student: User) {
   const reportHeader = {
     columns: [
       {
@@ -160,16 +158,7 @@ async function createFrontPage(student: User) {
             ],
             [
               {
-                text: "Klas 7",
-                style: {
-                  bold: true
-                },
-                alignment: "center"
-              }
-            ],
-            [
-              {
-                text: "Schooljaar: 20XX-20XX",
+                text: getPeriodString(report.evaluationSheet),
                 alignment: "center"
               }
             ]
@@ -332,11 +321,11 @@ export async function createReportPDF(report: Report) {
   const module = report.evaluationSheet.module;
   const content: any[] = [];
   const pdf = { info: createDocumentInfo(report), styles, content };
-  const frontPageObject = await createFrontPage(student);
+  const frontPageObject = await createFrontPage(report, student);
   pdf.content.push(frontPageObject.reportHeader);
   pdf.content.push(frontPageObject.image);
   pdf.content.push(frontPageObject.address);
-  pdf.content.push(createHeaderObject(student, module));
+  pdf.content.push(createHeaderObject(report, student, module));
   pdf.content.push(scoreHeader);
   pdf.content.push({
     text: `Module: ${module.name}`,
