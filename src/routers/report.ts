@@ -9,6 +9,7 @@ import { HttpError } from "../util/httpStatus";
 import * as pdfMaker from "../util/pdf";
 import * as moduleService from "../services/modules";
 import * as userService from "../services/users";
+import * as evaluationService from "../services/evaluation";
 
 const router = Router({
   mergeParams: true,
@@ -21,6 +22,7 @@ router.post("/", [
     sanitize("evaluationsheetid").toInt(),
 ], executor(async function (req, trx, { evaluationsheetid }) {
     const reportid = await reportService.generateReport(trx, evaluationsheetid);
+    await evaluationService.endEvaluation(trx, evaluationsheetid);
     return { reportid };
 }));
 
