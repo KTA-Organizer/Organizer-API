@@ -11,28 +11,29 @@ const TEST_LOGIN_ADMIN_DATA = {
 
 const TEST_USER_ID = 107;
 const TEST_ADMIN_USER_ID = 105;
-const TEST_EVALUATION_ID = 1;
+const TEST_EVALUATION_ID = 35;
 
 const TEST_LOGIN_TEACHER_DATA = {
   email: "teacher@test.test",
   password: "test"
 };
 
-const TEST_REPORTS_ID = 5643172898144256;
+const TEST_REPORTS_ID = 5715999101812736;
 
 const TEST_DOMAINS_INSERT_DATA = {
   name: "Test domain",
-  moduleid: 1
+  moduleid: 52
 };
 
 const TEST_EVALUATION_INSERT_DATA = {
   studentid: 107,
-  moduleid: 1,
-  startdate: "2018-11-06"
+  moduleid: 52,
+  startdate: "2018-11-06",
+  periodname: "Kerst"
 };
 
 const TEST_REPORTS_INSERT_DATA = {
-  evaluationsheetid: 1
+  evaluationsheetid: 35
 };
 
 const TEST_LOGIN_STAFF_DATA = {
@@ -46,14 +47,14 @@ const TEST_LOGIN_STUDENT_DATA = {
 };
 
 const TEST_ACCESS_TOKEN =
-  "f20c25a5b6ffc2a3521246dbb26164d6b5795c49425f1339b799145816640066";
+  "00174be80dc622bc6cdd084f5c35a186ad15a6806dfaca04beda695f07fcf8eb";
 
 const TEST_MELDING_DATA = {
   titel: "Test",
   tekst: "Test Text"
 };
 
-const TEST_MELDING_ID = 141;
+const TEST_MELDING_ID = 208;
 
 const TEST_USER_INSERT_DATA = {
   firstname: "John",
@@ -64,7 +65,7 @@ const TEST_USER_INSERT_DATA = {
   nationalRegisterNumber: "13051828367"
 };
 
-const TEST_DISCIPLINE_ID = 2;
+const TEST_DISCIPLINE_ID = 24;
 
 const TEST_DISCIPLINE_DATA = {
   name: "test opleiding"
@@ -73,18 +74,18 @@ const TEST_DISCIPLINE_DATA = {
 const TEST_OPLEIDING_INSERT_DATA = {
   name: "Opleiding Test",
   active: 1,
-  creatorId: 3
+  creatorId: 105
 };
 
 const TEST_GOALS_INSERT_DATA = {
   name: "Goal Test",
-  domainid: 1,
+  domainid: 19,
   creatorId: 105
 };
 
 const TEST_CRITERIA_INSERT_DATA = {
   name: "Criteria Test",
-  goalid: 14,
+  goalid: 29,
   weight: 1
 };
 
@@ -105,7 +106,10 @@ const TEST_USER_UPDATE_DATA = {
   roles: ["ADMIN", "TEACHER"]
 };
 
-const TEST_MODULE_ID = 1;
+const TEST_MODULE_ID = 52;
+const TEST_GOAL_ID = 29;
+const TEST_DOMAIN_ID = 19;
+const TEST_CRITERIA_ID = 17;
 
 const TEST_MODULE_DATA = {
   disciplineid: TEST_DISCIPLINE_ID,
@@ -260,7 +264,7 @@ describe("Disciplines API", () => {
 
   describe("GET /api/disciplines/:id", () => {
     it("should return 200 OK", () => {
-      return agent.get("/api/disciplines/2").expect(200);
+      return agent.get("/api/disciplines/" + TEST_DISCIPLINE_ID).expect(200);
     });
   });
 
@@ -282,7 +286,7 @@ describe("Disciplines API", () => {
   describe("PUT /api/disciplines/:id", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/disciplines/2")
+        .put("/api/disciplines/" + TEST_DISCIPLINE_ID)
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -291,7 +295,7 @@ describe("Disciplines API", () => {
   describe("PUT /api/disciplines/:id/status", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/disciplines/2/status")
+        .put("/api/disciplines/" + TEST_DISCIPLINE_ID + "/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -369,7 +373,7 @@ describe("Modules API", () => {
   describe("PUT /api/modules/:id/status", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/modules/1/status")
+        .put("/api/modules/" + TEST_MODULE_ID + "/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -413,7 +417,7 @@ describe("Modules API", () => {
   describe("PUT /api/modules/:id", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/modules/1")
+        .put("/api/modules/" + TEST_MODULE_ID)
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -439,7 +443,7 @@ describe("Goals API", () => {
   describe("PUT /api/goals/:id", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/goals/14")
+        .put("/api/goals/" + TEST_GOAL_ID)
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -448,7 +452,7 @@ describe("Goals API", () => {
   describe("PUT /api/goals/:id/status", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/goals/14/status")
+        .put("/api/goals/" + TEST_GOAL_ID + "/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -474,7 +478,7 @@ describe("Domains API", () => {
   describe("PUT /api/domains/:id", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/domains/1")
+        .put("/api/domains/" + TEST_DOMAIN_ID)
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -483,7 +487,7 @@ describe("Domains API", () => {
   describe("PUT /api/domains/:id/status", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/domains/14/status")
+        .put("/api/domains/" + TEST_DOMAIN_ID + "/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -509,7 +513,7 @@ describe("Criteria API", () => {
   describe("PUT /api/criteria/:id", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/criteria/3")
+        .put("/api/criteria/" + TEST_CRITERIA_ID)
         .send(TEST_NAME_UPDATE_DATA)
         .expect(200);
     });
@@ -518,7 +522,7 @@ describe("Criteria API", () => {
   describe("PUT /api/criteria/:id/status", () => {
     it("should return 200 OK", () => {
       return agent
-        .put("/api/criteria/3/status")
+        .put("/api/criteria/" + TEST_CRITERIA_ID + "/status")
         .send({ active: 0 })
         .expect(200);
     });
@@ -571,14 +575,14 @@ describe("Evaluation API", () => {
     it("should return 200 OK", () => {
       return agent
         .get("/api/evaluations")
-        .query({ studentid: 107, moduleid: 36 })
+        .query({ studentid: 107, moduleid: 56 })
         .expect(200);
     });
   });
 
   describe("GET /api/evaluations/:id", () => {
     it("should return 200 OK", () => {
-      return agent.get("/api/evaluations/1").expect(200);
+      return agent.get("/api/evaluations/" + TEST_EVALUATION_ID).expect(200);
     });
   });
 
