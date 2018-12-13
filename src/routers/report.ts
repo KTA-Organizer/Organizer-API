@@ -16,25 +16,37 @@ const router = Router({
   strict: true
 });
 
-router.post("/", [
+router.post(
+  "/",
+  [
     allStaffOnly,
     check("evaluationsheetid").isNumeric(),
-    sanitize("evaluationsheetid").toInt(),
-], executor(async function (req, trx, { evaluationsheetid }) {
-    const reportid = await reportService.generateReport(trx, evaluationsheetid);
+    sanitize("evaluationsheetid").toInt()
+  ],
+  executor(async function(req, trx, { evaluationsheetid }) {
     await evaluationService.endEvaluation(trx, evaluationsheetid);
+    const reportid = await reportService.generateReport(trx, evaluationsheetid);
     return { reportid };
-}));
+  })
+);
 
-router.get("/", [
-    check("page").isNumeric().optional(),
+router.get(
+  "/",
+  [
+    check("page")
+      .isNumeric()
+      .optional(),
     sanitize("page").toInt(),
 
-    check("perpage").isNumeric().optional(),
+    check("perpage")
+      .isNumeric()
+      .optional(),
     sanitize("perpage").toInt(),
 
     // Filters
-    check("studentid").isNumeric().optional(),
+    check("studentid")
+      .isNumeric()
+      .optional(),
     sanitize("studentid").toInt(),
     check("teacherid")
       .isNumeric()
@@ -44,11 +56,19 @@ router.get("/", [
       .isNumeric()
       .optional(),
     sanitize("moduleid").toInt(),
-    check("disciplineid").isNumeric().optional(),
-    sanitize("disciplineid").toInt(),
-], executor(async function (req, trx, { page = 1, perpage = 1e10, ...filters }) {
-    return await reportService.paginateAllReports(trx, {  page, perPage: perpage, ...filters });
-}));
+    check("disciplineid")
+      .isNumeric()
+      .optional(),
+    sanitize("disciplineid").toInt()
+  ],
+  executor(async function(req, trx, { page = 1, perpage = 1e10, ...filters }) {
+    return await reportService.paginateAllReports(trx, {
+      page,
+      perPage: perpage,
+      ...filters
+    });
+  })
+);
 
 router.get(
   "/:reportid",
@@ -95,25 +115,21 @@ router.put(
   })
 );
 
-router.post("/:reportid/open", [
-    allStaffOnly,
-
-  check("reportid").isNumeric(),
-], executor(async function (req, trx, { reportid }) {
+router.post(
+  "/:reportid/open",
+  [allStaffOnly, check("reportid").isNumeric()],
+  executor(async function(req, trx, { reportid }) {
     const report = await reportService.fetchReportListItem(trx, reportid);
     if (!report) {
       throw new HttpError(404, "Report doesnt exist");
     }
     await reportService.openReport(trx, reportid);
-}));
+  })
+);
 
 router.get(
   "/pdf/:reportid",
-  [
-    allStaffOnly,
-
-    check("reportid").exists()
-  ],
+  [allStaffOnly, check("reportid").exists()],
   executor(async function(req, trx, { reportid }) {
     console.log(reportid);
     const report = await reportService.fetchReport(trx, reportid);
