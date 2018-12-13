@@ -67,6 +67,7 @@ export async function insertEvaluationSheet(
     studentid: number;
     teacherid: number;
     startdate: Date;
+    periodname: string;
   }
 ) {
   const [id] = await trx.table("evaluationsheets").insert(data);

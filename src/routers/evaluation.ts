@@ -71,6 +71,7 @@ router.post("/", [
     sanitize("moduleid").toInt(),
     check("startdate").exists(),
     sanitize("startdate").toDate(),
+    check("periodname").exists()
 ], executor(async function (req, trx, data) {
     console.log(data);
     const user = req.user as User;

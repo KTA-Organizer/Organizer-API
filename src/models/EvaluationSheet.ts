@@ -10,6 +10,7 @@ export interface EvaluationSheet {
   studentid: number;
   teacherid: number;
   moduleid: number;
+  periodname: string;
 
   student?: User;
   teacher?: User;
