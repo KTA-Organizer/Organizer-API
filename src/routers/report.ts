@@ -59,7 +59,15 @@ router.get(
     check("disciplineid")
       .isNumeric()
       .optional(),
-    sanitize("disciplineid").toInt()
+    sanitize("disciplineid").toInt(),
+
+    check("open").isBoolean().optional(),
+    sanitize("open").toBoolean(),
+
+    check("studentname").optional(),
+    check("teachername").optional(),
+    check("disciplinename").optional(),
+    check("modulename").optional(),
   ],
   executor(async function(req, trx, { page = 1, perpage = 1e10, ...filters }) {
     return await reportService.paginateAllReports(trx, {
