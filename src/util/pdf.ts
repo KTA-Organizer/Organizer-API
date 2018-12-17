@@ -43,8 +43,7 @@ const styles = {
 };
 
 function getPeriodString(evaluationSheet: EvaluationSheet) {
-  const format = "DD/MM/YY";
-  return `Periode: ${moment(evaluationSheet.startdate).format(format)} - ${moment(evaluationSheet.enddate).format(format)}`;
+  return evaluationSheet.periodname;
 }
 
 const scoreHeader = {

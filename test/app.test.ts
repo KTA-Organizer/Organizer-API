@@ -2,7 +2,7 @@ import request from "supertest";
 import { createApp } from "../src/app";
 import { loadConfig } from "../src/config/storage";
 
-let app;
+let app: any;
 beforeAll(async function () {
   const config = await loadConfig();
   app = createApp(config);
