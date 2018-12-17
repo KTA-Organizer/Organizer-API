@@ -49,7 +49,7 @@ export const paginate = (query: QueryInterface) => async (page: number, perPage:
   const offset = (page - 1) * perPage;
   const [total, items] = await Promise.all([
     query.clone().clearSelect().count("* as count").first(),
-    query.offset(offset).limit(perPage)
+    query.offset(offset).limit(perPage > 0 ? perPage : 50000)
   ]);
   const count = total.count;
   return {
