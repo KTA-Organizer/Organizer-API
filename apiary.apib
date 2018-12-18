@@ -5,7 +5,7 @@ HOST: https://ktatje-219919.appspot.com/api
 
 Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer platform.
 
-## Opleiding Collectie [/opleidingen]
+## Opleiding Collectie [/disciplines]
 
 ### Lijst de opleidingen [GET]
 
@@ -13,22 +13,10 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
 
         [
             {
-                "active": 1,
-                "creatorId": 3,
-                "id": 1,
-                "name": "Keukenmedewerker"
-            },
-            {
-                "active": 1,
-                "creatorId": 3,
-                "id": 2,
-                "name": "Kapper"
-            },
-            {
-                "active": 1,
-                "creatorId": 3,
-                "id": 3,
-                "name": "Tegelzetter"
+                "id":73,
+                "name":"Kapper",
+                "active":1,
+                "creatorId":202
             }
         ]
 
@@ -55,18 +43,18 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
                 "name": "Tegelzetter"
             }
 
-## Opleiding [/questions/{opleiding_id}]
+## Opleiding [/disciplines/{id}]
 
 + Parameters
-    + opleiding_id (number) - ID van the opleiding
+    + id (number) - ID van the opleiding
 
 ### Vraag de opleiding op [GET]
 
 + Response 200 (application/json)
 
         {
-            "active": 1,
-            "creatorId": 3,
-            "id": 5,
-            "name": "Tegelzetter"
+            "id":24,
+            "name":"Leraar lichamelijke opvoeding",
+            "active":1,
+            "creatorId":105
         }
