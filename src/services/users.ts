@@ -39,7 +39,9 @@ export async function fetchUserPasswordByEmail(
 
 const getUserQuery = (trx: Transaction) => trx
   .table("users")
-  .select("users.*", "students.userid", "teachers.userid", "admins.userid", "staff.userid", "teachers.active as teacher", "students.active as student", "admins.active as admin", "staff.active as staff")
+  .select("users.*", "students.userid", "teachers.userid", "admins.userid", "staff.userid", "teachers.active as teacher", "students.active as student", "admins.active as admin", "staff.active as staff", "disciplines.id as disciplineid", "disciplines.name as disciplinename")
+  .leftJoin("student_disciplines", "users.id", "student_disciplines.studentid")
+  .leftJoin("disciplines", "student_disciplines.disciplineid", "disciplines.id")
   .leftJoin("teachers", "users.id", "teachers.userid")
   .leftJoin("students", "users.id", "students.userid")
   .leftJoin("admins", "users.id", "admins.userid")
@@ -47,14 +49,14 @@ const getUserQuery = (trx: Transaction) => trx
 
 export async function fetchUser(trx: Transaction, id: number) {
   const row = await getUserQuery(trx)
-    .where({ id })
+    .where("users.id", id)
     .first();
   return rowToUser(row);
 }
 
 export async function fetchUsers(trx: Transaction, ids: number[]) {
   const rows = await getUserQuery(trx)
-    .whereIn("id", ids);
+    .whereIn("users.id", ids);
   return rows.map(rowToUser);
 }
 
@@ -155,15 +157,13 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
     query.whereIn("users.id", userids);
   }
   if (options.disciplineid) {
-    const ids = await trx.table("student_disciplines")
-      .pluck("studentid")
-      .where("disciplineid", options.disciplineid);
-    query.whereIn("users.id", ids);
+    query.where("disciplines.id", options.disciplineid);
   }
   if (options.search) {
     query.whereRaw("CONCAT(firstname, ' ', lastname) LIKE CONCAT('%', ?, '%')", [options.search]);
   }
   const paginator: PaginateResult<User> = await paginate(query)(options.page, options.perPage);
+  console.log(paginator.items);
   paginator.items = paginator.items
     .map(rowToUser);
   return paginator;
