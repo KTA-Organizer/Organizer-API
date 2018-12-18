@@ -4,11 +4,7 @@ import { sanitize } from "express-validator/filter";
 import executor from "../util/executor";
 import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
-import {
-  usersOnly,
-  adminsOnly,
-  allStaffOnly
-} from "../util/accessMiddleware";
+import { usersOnly, adminsOnly, allStaffOnly } from "../util/accessMiddleware";
 import { User, genders, userRoles, userStatuses } from "../models/User";
 import logger from "../util/logger";
 
@@ -24,17 +20,33 @@ router.get(
   [
     allStaffOnly,
     check("search").optional(),
-    check("status").isIn(userStatuses).optional(),
-    check("gender").isIn(genders).optional(),
-    check("role").isIn(userRoles).optional(),
-    check("page").isNumeric().optional(),
-    check("perpage").isNumeric().optional(),
-    check("disciplineid").isNumeric().optional(),
+    check("status")
+      .isIn(userStatuses)
+      .optional(),
+    check("gender")
+      .isIn(genders)
+      .optional(),
+    check("role")
+      .isIn(userRoles)
+      .optional(),
+    check("page")
+      .isNumeric()
+      .optional(),
+    check("perpage")
+      .isNumeric()
+      .optional(),
+    check("disciplineid")
+      .isNumeric()
+      .optional(),
     sanitize("page").toInt(),
     sanitize("perpage").toInt(),
-    sanitize("disciplineid").toInt(),
+    sanitize("disciplineid").toInt()
   ],
-  executor(async function(req, trx, { search, status, gender, role, disciplineid, page = 1, perpage = 1e10 }) {
+  executor(async function(
+    req,
+    trx,
+    { search, status, gender, role, disciplineid, page = 1, perpage = 1e10 }
+  ) {
     const users = await usersService.paginateAllUsers(trx, {
       search,
       status,
@@ -57,9 +69,8 @@ router.get(
 
 router.get(
   "/:id",
-  [allStaffOnly,
-    check("id").isNumeric(), sanitize("id").toInt()],
-  executor(async function (req, trx, { id }) {
+  [allStaffOnly, check("id").isNumeric(), sanitize("id").toInt()],
+  executor(async function(req, trx, { id }) {
     const user = await usersService.fetchUser(trx, id);
     if (!user) {
       throw new HttpError(404, "User doesn't exist");
@@ -74,21 +85,25 @@ router.post(
     adminsOnly,
     check("firstname").exists(),
     check("lastname").exists(),
-    check("email").isEmail(),
+    check("email")
+      .optional()
+      .isEmail(),
     check("gender").isIn(genders),
     check("roles").exists(),
-    check("nationalRegisterNumber").exists(),
+    check("nationalRegisterNumber").optional()
   ],
   executor(async function(req, trx, data) {
     const currentUser = req.user as User;
-    const existingUser = await usersService.fetchUserByEmail(
-      trx,
-      data.email
-    );
-    if (existingUser) {
-      throw new HttpError(400, "A user with this email already exists");
+    if (data.email) {
+      const existingUser = await usersService.fetchUserByEmail(trx, data.email);
+      if (existingUser) {
+        throw new HttpError(400, "A user with this email already exists");
+      }
     }
-    const newUser = await usersService.insertUser(trx, { ...data, creatorId: currentUser.id });
+    const newUser = await usersService.insertUser(trx, {
+      ...data,
+      creatorId: currentUser.id
+    });
     return newUser;
   })
 );
@@ -104,7 +119,7 @@ router.put(
     check("email").isEmail(),
     check("gender").isIn(genders),
     check("roles").exists(),
-    check("nationalRegisterNumber").exists(),
+    check("nationalRegisterNumber").exists()
   ],
   executor(async function(req, trx, { id, ...userData }) {
     await usersService.updateUser(trx, id, { ...userData }, true);

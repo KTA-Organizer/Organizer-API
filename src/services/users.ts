@@ -102,7 +102,11 @@ export async function insertUser(
 
   const newUser = await fetchUser(trx, userid);
 
-  await invitesService.inviteUser(trx, newUser);
+  if (userData.email) {
+    await invitesService.inviteUser(trx, newUser);
+  } else {
+    await activateUser(trx, newUser.id);
+  }
 
   return newUser;
 }
