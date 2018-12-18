@@ -24,7 +24,7 @@ export const userRoles = [UserRole.admin, UserRole.staff, UserRole.teacher, User
 
 export interface User {
   id: number;
-  email: string;
+  email?: string;
   firstname: string;
   lastname: string;
   password?: string;
@@ -32,7 +32,7 @@ export interface User {
   status: UserStatus;
   creation: Date;
   creatorId?: number;
-  nationalRegisterNumber: string;
+  nationalRegisterNumber?: string;
 
   /**
    * Optional properties which are not columns

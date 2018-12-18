@@ -1,0 +1,94 @@
+FORMAT: 1A
+HOST: https://ktatje-219919.appspot.com/api
+
+# KTA Organizer
+
+Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer platform.
+
+## Opleiding Collectie [/disciplines]
+
+### Lijst de opleidingen [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id":73,
+                "name":"Kapper",
+                "active":1,
+                "creatorId":202
+            }
+        ]
+
+### Maak een nieuwe opleiding [POST]
+
++ Request (application/json)
+
+        {
+            "name": "Vrouwenkapper"
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                82
+            ]
+
+## Opleiding [/disciplines/{id}]
+
++ Parameters
+    + id (number) - ID van de opleiding
+
+### Vraag de opleiding op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "id":24,
+            "name":"Leraar lichamelijke opvoeding",
+            "active":1,
+            "creatorId":105
+        }
+        
+### Verander de naam van de opleiding [PUT]
+
++ Request (application/json)
+
+        {
+            "name": "Herenkapper"
+        }
+
++ Response 200 (application/json)
+
+        
+## Opleiding Student [/disciplines/student/{id}]
+        
++ Parameters
+    + id (number) - ID van de student
+
+### Vraag de opleiding van een student op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "id":26,
+            "name":"PAV",
+            "active":1,
+            "creatorId":105
+        }
+        
+### Verander de opleiding van een student [PUT]
+
++ Request (application/json)
+
+        {
+            "disciplineid": 26
+        }
+
++ Response 200 (application/json)
+
+### Verwijder de opleiding van een student [DELETE]
+
++ Response 200 (application/json)
