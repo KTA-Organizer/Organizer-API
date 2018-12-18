@@ -11,7 +11,11 @@ const userRoleTable = {
 };
 
 export async function makeUserRole(trx: Transaction, userid: number, role: UserRole) {
-    await trx.table(userRoleTable[role]).insert({ userid: userid, active: 1 });
+    try {
+      await trx.table(userRoleTable[role]).insert({ userid: userid, active: 1 });
+    } catch (err) {
+      await trx.table(userRoleTable[role]).update({ active: 1 }).where({ userid: userid, });
+    }
 }
 
 export async function makeUserNotRole(trx: Transaction, userid: number, role: UserRole) {

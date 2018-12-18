@@ -152,7 +152,7 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
     const s = options.role.toLowerCase() === "staff" ? "" : "s";
     const ids = await trx.table(`${options.role.toLowerCase()}${s}`).select("userid");
     const userids = ids.map((x: any) => x.userid);
-    query.whereIn("users.id", userids);
+    query.whereIn("users.id", userids).andWhere(`${options.role.toLowerCase()}${s}.active`, true);
   }
   if (options.disciplineid) {
     const ids = await trx.table("student_disciplines")

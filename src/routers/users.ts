@@ -107,7 +107,7 @@ router.put(
     check("nationalRegisterNumber").exists(),
   ],
   executor(async function(req, trx, { id, ...userData }) {
-    await usersService.updateUser(trx, id, { ...userData });
+    await usersService.updateUser(trx, id, { ...userData }, true);
   })
 );
 
