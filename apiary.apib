@@ -46,7 +46,7 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
 ## Opleiding [/disciplines/{id}]
 
 + Parameters
-    + id (number) - ID van the opleiding
+    + id (number) - ID van de opleiding
 
 ### Vraag de opleiding op [GET]
 
@@ -55,6 +55,22 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
         {
             "id":24,
             "name":"Leraar lichamelijke opvoeding",
+            "active":1,
+            "creatorId":105
+        }
+        
+## Opleiding Student [/disciplines/student/{id}]
+        
++ Parameters
+    + id (number) - ID van de student
+
+### Vraag de opleiding van een student op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "id":26,
+            "name":"PAV",
             "active":1,
             "creatorId":105
         }
