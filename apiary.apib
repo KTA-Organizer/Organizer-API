@@ -60,7 +60,7 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
             "name": "Herenkapper"
         }
 
-+ Response 200
++ Response 200 (application/json)
 
         
 ## Opleiding Student [/disciplines/student/{id}]
@@ -78,3 +78,13 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
             "active":1,
             "creatorId":105
         }
+        
+### Verander de opleiding van een student [PUT]
+
++ Request (application/json)
+
+        {
+            "disciplineid": 26
+        }
+
++ Response 200 (application/json)
