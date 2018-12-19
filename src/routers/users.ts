@@ -119,7 +119,7 @@ router.put(
     sanitize("id").toInt(),
     check("firstname").exists(),
     check("lastname").exists(),
-    check("email").isEmail(),
+    check("email").isEmail().optional(),
     check("gender").isIn(genders).optional(),
     check("roles").exists(),
     check("nationalRegisterNumber").optional()
