@@ -139,7 +139,6 @@ router.get(
   "/pdf/:reportid",
   [allStaffOnly, check("reportid").exists()],
   executor(async function(req, trx, { reportid }) {
-    console.log(reportid);
     const report = await reportService.fetchReport(trx, reportid);
     return pdfMaker.createReportPDF(report);
   })

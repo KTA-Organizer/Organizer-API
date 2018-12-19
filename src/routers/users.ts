@@ -154,7 +154,7 @@ router.post(
     upload.single("userfile"),
   ],
   executor(async function(req, trx) {
-    if (!req.file || req.file.mimetype !== "text/csv") {
+    if (!req.file || (req.file.mimetype !== "text/csv" && req.file.mimetype !== "application/vnd.ms-excel")) {
       throw new HttpError(400);
     }
     const path = req.file.path;

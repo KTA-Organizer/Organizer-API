@@ -29,7 +29,6 @@ export function addFilters(query: QueryBuilder, filters: any) {
 }
 
 function addNameFilter(query: QueryBuilder, key: string, filter: any) {
-  console.log(key, filter);
   switch (key) {
     case "studentname":
       query.whereRaw("concat(student.firstname, ' ', student.lastname) like ?", [`%${filter}%`]);

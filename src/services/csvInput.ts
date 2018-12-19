@@ -12,10 +12,8 @@ interface CsvRow {
 async function executeTask(row: CsvRow) {
   const trx = await createTrx();
   const userExists = await usersService.checkIfPersonExists(trx, row);
-  console.log("exists", userExists);
   if (!userExists) {
     await usersService.insertUser(trx, { roles: [UserRole.student], ...row });
-    console.log("added user", row.email, row.firstname, row.lastname);
   }
   trx.commit();
 }

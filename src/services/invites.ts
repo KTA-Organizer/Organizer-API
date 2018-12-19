@@ -30,5 +30,4 @@ export async function inviteUser(trx: Transaction, user: User) {
   const token = await accessTokensService.createAccessToken(trx, user.id);
 
   await sendInviteMail(user.firstname, user.email, token);
-  console.log("Token:", token);
 }

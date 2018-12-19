@@ -29,5 +29,4 @@ export async function requestPasswordReset(trx: Transaction, user: User) {
   const token = await accessTokensService.createAccessToken(trx, user.id);
 
   await sendResetMail(user.email, token);
-  console.log("Token:", token);
 }
