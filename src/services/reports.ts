@@ -59,6 +59,11 @@ export async function fetchReportListItem(trx: Transaction, reportid: string) {
   return report as ReportListItem;
 }
 
+export async function fetchReportIdForEvaluationsheet(trx: Transaction, evaluationsheetid: number) {
+  const report = await trx.table("reports").where("evaluationsheetid", evaluationsheetid).first();
+  return report.id;
+}
+
 export async function fetchReport(trx: Transaction, reportid: string) {
   const reportListItem = await fetchReportListItem(trx, reportid);
   const [report]: any = await datastore.get(getKey(reportid));

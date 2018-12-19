@@ -144,4 +144,9 @@ router.get(
   })
 );
 
+router.get("/evaluationsheet/:evaluationsheetid", [], executor(async function(req, trx, { evaluationsheetid }) {
+  const reportid = await reportService.fetchReportIdForEvaluationsheet(trx, evaluationsheetid);
+  return { reportid };
+}));
+
 export default router;
