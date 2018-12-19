@@ -28,7 +28,7 @@ export interface User {
   firstname: string;
   lastname: string;
   password?: string;
-  gender: Gender;
+  gender?: Gender;
   status: UserStatus;
   creation: Date;
   creatorId?: number;

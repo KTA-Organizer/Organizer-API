@@ -7,6 +7,7 @@ import { paginate, PaginateResult } from "../config/db";
 import * as invitesService from "./invites";
 import * as accessTokenService from "./accessTokens";
 import _ from "lodash";
+import { ENVIRONMENT } from "../util/env";
 
 function rowToUser(row: any) {
   if (!row) {
@@ -47,6 +48,18 @@ const getUserQuery = (trx: Transaction) => trx
   .leftJoin("admins", "users.id", "admins.userid")
   .leftJoin("staff", "users.id", "staff.userid");
 
+export async function checkIfPersonExists(trx: Transaction, row: {lastname: string; firstname: string; nationalRegisterNumber?: string; email?: string; }) {
+  if (row.nationalRegisterNumber && await fetchUserByNationalRegisterNumber(trx, row.nationalRegisterNumber)) {
+    return true;
+  }
+  if (row.email && await fetchUserByEmail(trx, row.email)) {
+    return true;
+  }
+  if (await fetchUserByName(trx, row.firstname, row.lastname)) {
+    return true;
+  }
+  return false;
+}
 export async function fetchUser(trx: Transaction, id: number) {
   const row = await getUserQuery(trx)
     .where("users.id", id)
@@ -63,6 +76,20 @@ export async function fetchUsers(trx: Transaction, ids: number[]) {
 export async function fetchUserByEmail(trx: Transaction, email: string) {
   const row = await getUserQuery(trx)
     .where({ email })
+    .first();
+  return rowToUser(row);
+}
+
+export async function fetchUserByNationalRegisterNumber(trx: Transaction, nationalRegisterNumber: string) {
+  const row = await getUserQuery(trx)
+    .where({ nationalRegisterNumber })
+    .first();
+  return rowToUser(row);
+}
+
+export async function fetchUserByName(trx: Transaction, firstname: string, lastname: string) {
+  const row = await getUserQuery(trx)
+    .where({ firstname, lastname })
     .first();
   return rowToUser(row);
 }
@@ -84,11 +111,11 @@ export async function activateUser(trx: Transaction, userid: number) {
 export interface InsertUser {
   firstname: string;
   lastname: string;
-  email: string;
-  gender: Gender;
+  email?: string;
+  gender?: Gender;
   roles: UserRole[];
-  creatorId: number;
-  nationalRegisterNumber: string;
+  creatorId?: number;
+  nationalRegisterNumber?: string;
 }
 
 export async function insertUser(
@@ -97,17 +124,15 @@ export async function insertUser(
 ) {
   const insertedIds: number[] = await trx.table("users").insert({
     ...userData,
-    status: UserStatus.waitActivation
+    status:  !userData.email ? UserStatus.active : UserStatus.waitActivation
   });
   const userid = insertedIds[0];
   await userRolesService.updateUserRoles(trx, userid, roles);
 
   const newUser = await fetchUser(trx, userid);
 
-  if (userData.email) {
+  if (ENVIRONMENT === "production" && userData.email) {
     await invitesService.inviteUser(trx, newUser);
-  } else {
-    await activateUser(trx, newUser.id);
   }
 
   return newUser;
@@ -167,7 +192,6 @@ export async function paginateAllUsers(trx: Transaction, options: FetchUsersOpti
     query.whereRaw("CONCAT(firstname, ' ', lastname) LIKE CONCAT('%', ?, '%')", [options.search]);
   }
   const paginator: PaginateResult<User> = await paginate(query)(options.page, options.perPage);
-  console.log(paginator.items);
   paginator.items = paginator.items
     .map(rowToUser);
   return paginator;

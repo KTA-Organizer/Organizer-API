@@ -6,7 +6,10 @@ import * as usersService from "../services/users";
 import { HttpError } from "../util/httpStatus";
 import { usersOnly, adminsOnly, allStaffOnly } from "../util/accessMiddleware";
 import { User, genders, userRoles, userStatuses } from "../models/User";
+import * as csvService from "../services/csvInput";
 import logger from "../util/logger";
+import multer from "multer";
+import os from "os";
 
 const router = Router({
   mergeParams: true,
@@ -88,7 +91,7 @@ router.post(
     check("email")
       .optional()
       .isEmail(),
-    check("gender").isIn(genders),
+    check("gender").isIn(genders).optional(),
     check("roles").exists(),
     check("nationalRegisterNumber").optional()
   ],
@@ -117,9 +120,9 @@ router.put(
     check("firstname").exists(),
     check("lastname").exists(),
     check("email").isEmail(),
-    check("gender").isIn(genders),
+    check("gender").isIn(genders).optional(),
     check("roles").exists(),
-    check("nationalRegisterNumber").exists()
+    check("nationalRegisterNumber").optional()
   ],
   executor(async function(req, trx, { id, ...userData }) {
     await usersService.updateUser(trx, id, { ...userData }, true);
@@ -140,6 +143,22 @@ router.delete(
   executor(async function(req, trx, matchedData) {
     logger.info("deleting user => " + matchedData.id);
     await usersService.disableUser(trx, matchedData.id);
+  })
+);
+
+const upload = multer({ dest: os.tmpdir() });
+router.post(
+  "/csv",
+  [
+    adminsOnly,
+    upload.single("userfile"),
+  ],
+  executor(async function(req, trx) {
+    if (!req.file) {
+      throw new HttpError(400);
+    }
+    const path = req.file.path;
+    await csvService.csvInput(trx, path);
   })
 );
 
