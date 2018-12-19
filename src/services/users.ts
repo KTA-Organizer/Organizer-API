@@ -49,16 +49,13 @@ const getUserQuery = (trx: Transaction) => trx
   .leftJoin("staff", "users.id", "staff.userid");
 
 export async function checkIfPersonExists(trx: Transaction, row: {lastname: string; firstname: string; nationalRegisterNumber?: string; email?: string; }) {
-  if (row.nationalRegisterNumber && await fetchUserByNationalRegisterNumber(trx, row.nationalRegisterNumber)) {
-    return true;
+  if (row.nationalRegisterNumber) {
+    return !!(await fetchUserByNationalRegisterNumber(trx, row.nationalRegisterNumber));
   }
-  if (row.email && await fetchUserByEmail(trx, row.email)) {
-    return true;
+  if (row.email) {
+    return !!(await fetchUserByEmail(trx, row.email));
   }
-  if (await fetchUserByName(trx, row.firstname, row.lastname)) {
-    return true;
-  }
-  return false;
+  return !!(await fetchUserByName(trx, row.firstname, row.lastname));
 }
 export async function fetchUser(trx: Transaction, id: number) {
   const row = await getUserQuery(trx)
