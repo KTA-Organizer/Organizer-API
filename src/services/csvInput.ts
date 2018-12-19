@@ -50,7 +50,8 @@ export function csvInput(trx: Transaction, csvPath: string) {
     })
     .on("data", function(data: CsvRow) {
       rowCount++;
-      if (rowCount === 1) {
+      const hasRequiredFields = data.firstname.length > 1 && data.lastname.length > 1;
+      if (rowCount === 1 || !hasRequiredFields) {
         return;
       }
       taskQueue.push(data);
