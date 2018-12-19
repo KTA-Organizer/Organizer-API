@@ -146,6 +146,9 @@ router.get(
 
 router.get("/evaluationsheet/:evaluationsheetid", [check("evaluationsheetid").isNumeric(), sanitize("evaluationsheetid").toInt()], executor(async function (req, trx, { evaluationsheetid }) {
   const reportid = await reportService.fetchReportIdForEvaluationsheet(trx, evaluationsheetid);
+  if (!reportid) {
+    return {};
+  }
   return { reportid };
 }));
 

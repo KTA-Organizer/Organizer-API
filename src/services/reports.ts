@@ -61,7 +61,7 @@ export async function fetchReportListItem(trx: Transaction, reportid: string) {
 
 export async function fetchReportIdForEvaluationsheet(trx: Transaction, evaluationsheetid: number) {
   const report = await trx.table("reports").where("evaluationsheetid", evaluationsheetid).first();
-  return report.id;
+  return report && report.id;
 }
 
 export async function fetchReport(trx: Transaction, reportid: string) {
