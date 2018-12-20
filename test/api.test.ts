@@ -116,6 +116,11 @@ const TEST_MODULE_DATA = {
   name: "test module"
 };
 
+const TEST_REPORT_COMMENT_DATA = {
+  generalComment: "Goed gewerkt!",
+  goalComments: new Array()
+};
+
 async function authWithTest(agent: any) {
   await agent.post("/api/auth/login").send(TEST_LOGIN_ADMIN_DATA);
 }
@@ -609,6 +614,15 @@ describe("Reports API", () => {
     await authTeacherWithTest(agent);
   });
 
+  describe("GET /api/reports/", () => {
+    it("should return 200 OK", () => {
+      return agent
+        .get("/api/reports")
+        .query({ page: 1, perpage: 5 })
+        .expect(200);
+    });
+  });
+
   describe("POST /api/reports/", () => {
     it("should return 200 OK", () => {
       return agent
@@ -617,10 +631,40 @@ describe("Reports API", () => {
         .expect(200);
     });
 
-    describe("GET /api/reports/:id", () => {
-      it("should return 200 OK", () => {
-        return agent.get("/api/reports/" + TEST_REPORTS_ID).expect(200);
-      });
+  });
+
+  describe("GET /api/reports/:id", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/reports/" + TEST_REPORTS_ID).expect(200);
     });
   });
+
+  describe("GET /api/reports/pdf/:reportid", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/reports/pdf/" + TEST_REPORTS_ID).expect(200);
+    });
+  });
+
+  describe("PUT /api/reports/:reportid", () => {
+    it("should return 200 OK", () => {
+      return agent.put("/api/reports/" + TEST_REPORTS_ID)
+      .send(TEST_REPORT_COMMENT_DATA)
+      .expect(200);
+    });
+  });
+
+  describe("POST /api/reports/:reportid/open", () => {
+    it("should return 200 OK", () => {
+      return agent.post("/api/reports/" + TEST_REPORTS_ID + "/open")
+      .expect(200);
+    });
+  });
+
+  describe("GET /api/reports//evaluationsheet/:evaluationsheetid", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/reports//evaluationsheet/" + TEST_EVALUATION_ID)
+      .expect(200);
+    });
+  });
+
 });

@@ -16,7 +16,8 @@ async function sendResetMail(to: string, resetToken: string) {
   const html = `
 Wachtwoord vergeten? Geen Paniek!
 <a href=${await getResetLink(resetToken)}>Wachtwoord wijzigen</a>
-Als u geen aanvraag heeft gemaakt om u wachtwoord te veranderen hoeft u niets te doen.
+<br/>
+Negeer dit bericht indien u geen aanvraag heeft ingediend.
   `;
 
   await sendMail({
