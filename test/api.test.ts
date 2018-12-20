@@ -609,6 +609,15 @@ describe("Reports API", () => {
     await authTeacherWithTest(agent);
   });
 
+  describe("GET /api/reports/", () => {
+    it("should return 200 OK", () => {
+      return agent
+        .get("/api/reports")
+        .query({ page: 1, perpage: 5 })
+        .expect(200);
+    });
+  });
+
   describe("POST /api/reports/", () => {
     it("should return 200 OK", () => {
       return agent
