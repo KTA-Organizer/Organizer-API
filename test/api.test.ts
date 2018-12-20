@@ -660,4 +660,11 @@ describe("Reports API", () => {
     });
   });
 
+  describe("GET /api/reports//evaluationsheet/:evaluationsheetid", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/reports//evaluationsheet/" + TEST_EVALUATION_ID)
+      .expect(200);
+    });
+  });
+
 });
