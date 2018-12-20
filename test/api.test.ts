@@ -637,6 +637,7 @@ describe("Reports API", () => {
 
   describe("GET /api/reports/pdf/:id", () => {
     it("should return 200 OK", () => {
+      return agent.get("/api/reports/pdf/" + TEST_REPORTS_ID).expect(200);
     });
   });
 
