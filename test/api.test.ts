@@ -116,6 +116,11 @@ const TEST_MODULE_DATA = {
   name: "test module"
 };
 
+const TEST_REPORT_COMMENT_DATA = {
+  generalComment: "Goed gewerkt!",
+  goalComments: new Array()
+};
+
 async function authWithTest(agent: any) {
   await agent.post("/api/auth/login").send(TEST_LOGIN_ADMIN_DATA);
 }
@@ -626,7 +631,6 @@ describe("Reports API", () => {
         .expect(200);
     });
 
-    
   });
 
   describe("GET /api/reports/:id", () => {
@@ -635,11 +639,18 @@ describe("Reports API", () => {
     });
   });
 
-  describe("GET /api/reports/pdf/:id", () => {
+  describe("GET /api/reports/pdf/:reportid", () => {
     it("should return 200 OK", () => {
       return agent.get("/api/reports/pdf/" + TEST_REPORTS_ID).expect(200);
     });
   });
 
+  describe("PUT /api/reports/:reportid", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/reports/" + TEST_REPORTS_ID)
+      .send(TEST_REPORT_COMMENT_DATA)
+      .expect(200);
+    });
+  });
 
 });
