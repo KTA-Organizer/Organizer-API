@@ -1,6 +1,5 @@
 import * as mailer from "nodemailer";
 import { Options } from "nodemailer/lib/mailer";
-import logger from "../util/logger";
 import { loadConfig } from "./storage";
 import { ENVIRONMENT } from "../util/env";
 
