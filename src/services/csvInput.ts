@@ -27,7 +27,7 @@ function delay(ms: number) {
 export function csvInput(trx: Transaction, csvPath: string) {
   const taskQueue: CsvRow[]  = [];
   const options = {
-    delimiter : ";", // default is ,
+    delimiter : ";", // default is space ,
     endLine : "\n", // default is \n,
     columns : ["lastname", "firstname", "nationalRegisterNumber", "email"], // by default read the first line and use values found as columns
     columnOffset : 0, // default is 0
