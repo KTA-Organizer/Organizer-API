@@ -647,8 +647,15 @@ describe("Reports API", () => {
 
   describe("PUT /api/reports/:reportid", () => {
     it("should return 200 OK", () => {
-      return agent.get("/api/reports/" + TEST_REPORTS_ID)
+      return agent.put("/api/reports/" + TEST_REPORTS_ID)
       .send(TEST_REPORT_COMMENT_DATA)
+      .expect(200);
+    });
+  });
+
+  describe("POST /api/reports/:reportid/open", () => {
+    it("should return 200 OK", () => {
+      return agent.post("/api/reports/" + TEST_REPORTS_ID + "/open")
       .expect(200);
     });
   });
