@@ -626,10 +626,19 @@ describe("Reports API", () => {
         .expect(200);
     });
 
-    describe("GET /api/reports/:id", () => {
-      it("should return 200 OK", () => {
-        return agent.get("/api/reports/" + TEST_REPORTS_ID).expect(200);
-      });
+    
+  });
+
+  describe("GET /api/reports/:id", () => {
+    it("should return 200 OK", () => {
+      return agent.get("/api/reports/" + TEST_REPORTS_ID).expect(200);
     });
   });
+
+  describe("GET /api/reports/pdf/:id", () => {
+    it("should return 200 OK", () => {
+    });
+  });
+
+
 });
