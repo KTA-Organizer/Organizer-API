@@ -3,9 +3,6 @@
 
 This API provides all logic on which to build the client.
 
-## Progress
-You can follow the progress on [Trello](https://trello.com/b/XxmwBDop/kta-organizer-progress).
-
 ## Deployment
 We build this uppon Google Cloud. It uses storage buckets, MySQL, Redis and App Engine.
 
