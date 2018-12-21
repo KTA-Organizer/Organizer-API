@@ -3,8 +3,65 @@ HOST: https://ktatje-219919.appspot.com/api
 
 # KTA Organizer
 
-Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer platform.
+# General
+## Documentation
+This document contains all general information.
+For API documentation you can go here [KTA Organizer · Apiary](https://ktaorganizer.docs.apiary.io).
 
+## Source Code
+All source code is publicly (don't worry its secure) available in the [KTA Organizer](https://github.com/KTA-Organizer) organisation on Github.
+
+### Organizer-API
+It provides all API calls abstracted away that the front-end needs such as MySQL calls, bucket storage, document storage, etc. It is written in Typescript and deployed on Google App Engine for NodeJS. Browser client written in Vue. Development instructions in the README.
+
+### Organizer-Client
+Browser client written in Vue. Development instructions in the README.
+
+# Devops
+Everything is hosted on Google Cloud (project id: `ktatje-219919`). The following services are used.
+* App Engine for the back-end
+* SQL (MySQL) for our main database
+* Storage for backend configs, and the frontend build.
+* Datastore for storage of reports
+* Cloud Build for continuous deployment
+
+## Continuous Integration
+Integration tests for the back-end are executed on every commit in the `dev` and `master` branch. These can be viewed here [Travis CI](https://travis-ci.org/KTA-Organizer/Organizer-API).
+
+## Continuous Deployment
+We make use of Google Build to achieve a continuous deployment cycle. This means that when the `dev` branch is merged into the `master` branch a new version is built and deployment.
+
+### Back-end
+On the back-end the builder creates a new App Engine image to deploy. This new version will seamlessly replace the current version and migrate the traffic.
+
+### Front-end
+The front-end builder transpiles the Vue code and puts the final javascript files into a bucket (Google Cloud Storage). The backend streams the html, javascript and css files from the bucket to the browser.
+
+
+# Why we chose to do X?
+An explanation why we made non straight-forward decisions.
+
+### Why are reports stored in Datastore instead of MySQL?
+Reports need to be immutable (except for comments) thus using a relational database would retroactively change the reports when a discipline is changed.  By storing the full report in datastore (JSON) and keeping a reference in MySQL we get queryable but immutable reports.
+
+### Why are the front-end files in a bucket?
+The back-api not only handles REST API request but also serves the front-end files. We use continuous deployment and the front-end and back-end deployment should happen separate from each other. By putting the front-end files in the `kta-frontend-public` bucket the back-end can always stream the latest version of the front-end to the browser without restarting.
+
+### Why are the back-end configurations in a bucket?
+All configuration of the backend is done in a JSON file that is stored on the `kta-backend-config` bucket. There are 3 configurations, 1 for each environment (testing, development and production). This way all configuration is centralised and stored seperatly. No sensitive data is stored in the source code.
+
+###  How we check on duplicate users while inserting.
+First we check if the user has a National Register Number. If not, we check on the email address. It is possible that the user doesn't have both. If this is the case we check on the name. When a user is added without both unique properties and has the same name as an existing user, the system won't add this user. The administrator must provide an unique addition to the name to add this user.
+
+
+# License
+Copyright 2018 Howest
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## Opleiding Collectie [/disciplines]
 
 ### Lijst de opleidingen [GET]
@@ -87,8 +144,1387 @@ Deze API zorgt voor alle functionaliteit die nodig is voor het KTA Organizer pla
             "disciplineid": 26
         }
 
-+ Response 200 (application/json)
++ Response 200 
 
 ### Verwijder de opleiding van een student [DELETE]
 
++ Response 200
+
+## Module Collectie [/modules{?disciplineid}]
+
++ Parameters
+    + disciplineid (number) - ID van de opleiding
+
+### Lijst de modules van een opleiding [GET]
+
 + Response 200 (application/json)
+
+        [
+            {
+                "id": 52,
+                "name": "Basket",
+                "active": 1,
+                "creatorId": 105,
+                "disciplineid": 24,
+                "creation": "2018-12-17T13:31:46.000Z"
+            },
+            {
+                "id": 53,
+                "name": "Voetbal",
+                "active": 1,
+                "creatorId": 105,
+                "disciplineid": 24,
+                "creation": "2018-11-16T16:31:14.000Z"
+            },
+            {
+                "id": 54,
+                "name": "Ping pong",
+                "active": 1,
+                "creatorId": 105,
+                "disciplineid": 24,
+                "creation": "2018-11-16T16:36:34.000Z"
+            }
+        ]
+
+## Module [/modules]
+
+### Maak een nieuwe module [POST]
+
++ Request (application/json)
+
+        {
+            "disciplineid": 24,
+            "name": "Zwemmen"
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                158
+            ]
+
+## Bestaande Module [/modules/{id}]
+
++ Parameters
+    + id (number) - ID van de module
+
+### Vraag een module op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "id": 52,
+            "name": "Basket",
+            "active": 1,
+            "creatorId": 105,
+            "disciplineid": 24,
+            "creation": "2018-12-17T13:31:46.000Z",
+            "domains": [
+                {
+                    "id": 19,
+                    "moduleid": 52,
+                    "name": "Lay-ups scoren",
+                    "active": 1,
+                    "creatorId": 105,
+                    "creation": "2018-11-16T16:20:52.000Z",
+                    "goals": [
+                        {
+                            "id": 29,
+                            "name": "3 lay-ups scoren van de 5",
+                            "domainid": 19,
+                            "creation": "2018-11-16T16:21:39.000Z",
+                            "active": 1,
+                            "creatorId": 105,
+                            "criteria": [
+                                {
+                                    "id": 17,
+                                    "name": "de leerling zet twee stappen voor hij springt",
+                                    "weight": 1,
+                                    "goalid": 29,
+                                    "creation": "2018-11-16T16:22:06.000Z",
+                                    "creatorId": 105,
+                                    "active": 0
+                                },
+                                {
+                                    "id": 24,
+                                    "name": "de leerling kan zijn stress onder controle houden",
+                                    "weight": 1,
+                                    "goalid": 29,
+                                    "creation": "2018-11-16T16:29:12.000Z",
+                                    "creatorId": 105,
+                                    "active": 0
+                                }
+                            ]
+                        },
+                        {
+                            "id": 30,
+                            "name": "lay-up via twee kanten",
+                            "domainid": 19,
+                            "creation": "2018-11-16T16:22:59.000Z",
+                            "active": 1,
+                            "creatorId": 105,
+                            "criteria": [
+                                {
+                                    "id": 18,
+                                    "name": "de leerling kan zowel een lay-up scoren via rechts al links",
+                                    "weight": 1,
+                                    "goalid": 30,
+                                    "creation": "2018-11-16T16:23:30.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                },
+                                {
+                                    "id": 144,
+                                    "name": "effffffffffffffffffffffffffffffff",
+                                    "weight": 1,
+                                    "goalid": 30,
+                                    "creation": "2018-12-17T12:40:54.000Z",
+                                    "creatorId": 105,
+                                    "active": 0
+                                }
+                            ]
+                        },
+                        {
+                            "id": 31,
+                            "name": "Correcte techniek",
+                            "domainid": 19,
+                            "creation": "2018-11-16T16:24:20.000Z",
+                            "active": 0,
+                            "creatorId": 105,
+                            "criteria": [
+                                {
+                                    "id": 19,
+                                    "name": "de leerlingen gebruikt het twee-passen ritme",
+                                    "weight": 1,
+                                    "goalid": 31,
+                                    "creation": "2018-11-16T16:25:12.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                },
+                                {
+                                    "id": 20,
+                                    "name": "de leerling blijft links van het bord als hij links aanloopt",
+                                    "weight": 1,
+                                    "goalid": 31,
+                                    "creation": "2018-11-16T16:25:36.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                },
+                                {
+                                    "id": 21,
+                                    "name": "de leerling kan zijn techniek beschrijven ",
+                                    "weight": 1,
+                                    "goalid": 31,
+                                    "creation": "2018-11-16T16:26:41.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 20,
+                    "moduleid": 52,
+                    "name": "Driepunters",
+                    "active": 0,
+                    "creatorId": 105,
+                    "creation": "2018-11-16T16:27:14.000Z",
+                    "goals": [
+                        {
+                            "id": 32,
+                            "name": "3 driepunters scoren van de 6",
+                            "domainid": 20,
+                            "creation": "2018-11-16T16:27:38.000Z",
+                            "active": 1,
+                            "creatorId": 105,
+                            "criteria": [
+                                {
+                                    "id": 25,
+                                    "name": "de leerling houdt zijn stress onder controleren",
+                                    "weight": 1,
+                                    "goalid": 32,
+                                    "creation": "2018-11-16T16:29:25.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                },
+                                {
+                                    "id": 125,
+                                    "name": "test",
+                                    "weight": 3,
+                                    "goalid": 32,
+                                    "creation": "2018-12-13T12:10:14.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                }
+                            ]
+                        },
+                        {
+                            "id": 33,
+                            "name": "Correcte techniek",
+                            "domainid": 20,
+                            "creation": "2018-11-16T16:27:56.000Z",
+                            "active": 1,
+                            "creatorId": 105,
+                            "criteria": [
+                                {
+                                    "id": 22,
+                                    "name": "De leerling sprint lichtjes omhoog",
+                                    "weight": 1,
+                                    "goalid": 33,
+                                    "creation": "2018-11-16T16:28:12.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                },
+                                {
+                                    "id": 23,
+                                    "name": "de leerling heeft geen balansproblemen bij het terecht komen",
+                                    "weight": 1,
+                                    "goalid": 33,
+                                    "creation": "2018-11-16T16:28:42.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                }
+                            ]
+                        },
+                        {
+                            "id": 34,
+                            "name": "driepunters van links, rechts en midden",
+                            "domainid": 20,
+                            "creation": "2018-11-16T16:30:00.000Z",
+                            "active": 1,
+                            "creatorId": 105,
+                            "criteria": [
+                                {
+                                    "id": 26,
+                                    "name": "de leerling scoort van elke richting",
+                                    "weight": 1,
+                                    "goalid": 34,
+                                    "creation": "2018-11-16T16:30:24.000Z",
+                                    "creatorId": 105,
+                                    "active": 1
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        
+### Pas de opleiding en de naam van een module aan [PUT]
+
++ Request (application/json)
+
+        {
+            "disciplineid": 26,
+            "name": "Basketten"
+        }
+
++ Response 200 
+
+## Module status [/modules/{id}/status]
+
++ Parameters
+    + id (number) - ID van de module
+
+### Pas de status van een module aan [PUT]
+
++ Request (application/json)
+
+        {
+            "active": 0
+        }
+
++ Response 200 
+
+## Doelstellingen [/goals]
+
+### Maak een nieuwe doelstelling [POST]
+
++ Request (application/json)
+
+        {
+            "name": "Test doelstelling",
+            "domainid": 19,
+            "creatorid": 105
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                135
+            ]
+
+## Doelstelling update [/goals/{id}]
+
++ Parameters
+    + id (number) - ID van de doelstelling
+
+### Pas een doelstelling aan [PUT]
+
++ Request (application/json)
+
+        {
+            "name": "Test doelstelling update"
+        }
+
++ Response 200
+
+## Doelstelling status update [/goals/{id}/status]
+
++ Parameters
+    + id (number) - ID van de doelstelling
+
+### Aanpassing status doelstelling [PUT]
+
++ Request (application/json)
+
+        {
+            "active": 0
+        }
+
++ Response 200
+
+## Domeinen [/domains]
+
+### Maak een nieuw domein [POST]
+
++ Request (application/json)
+
+        {
+            "name": "Test domein",
+            "moduleid": 52
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                101
+            ]
+
+## Domein update [/domains/{id}]
+
++ Parameters
+    + id (number) - ID van het domein
+
+### Pas een domein aan [PUT]
+
++ Request (application/json)
+
+        {
+            "name": "Test domein update"
+        }
+
++ Response 200
+
+## Domein status update [/domains/{id}/status]
+
++ Parameters
+    + id (number) - ID van het domein
+
+### Aanpassing status domein [PUT]
+
++ Request (application/json)
+
+        {
+            "active": 0
+        }
+
++ Response 200
+
+## Criteria [/criteria]
+
+### Maak een nieuw criterion [POST]
+
++ Request (application/json)
+
+        {
+            "name": "Test criterion",
+            "goalid": 29,
+            "weight": 1
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": 174,
+                "name": "Test criterion",
+                "weight": 1,
+                "goalid": 29,
+                "creation": "2018-12-19T07:54:16.000Z",
+                "creatorId": 105,
+                "active": 1
+            }
+
+## Criteria update [/criteria/{id}]
+
++ Parameters
+    + id (number) - ID van het criterion
+
+### Pas een criterion aan [PUT]
+
++ Request (application/json)
+
+        {
+            "name": "Test criterion update"
+        }
+
++ Response 200
+
+## Criterion status update [/criteria/{id}/status]
+
++ Parameters
+    + id (number) - ID van het criterion
+
+### Aanpassing status criterion [PUT]
+
++ Request (application/json)
+
+        {
+            "active": 0
+        }
+
++ Response 200
+
+## Meldingen Collectie [/meldingen]
+
+### Lijst alle meldingen [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 208,
+                "creatorId": 187,
+                "titel": "Prettige feestdagen",
+                "tekst": "<p>Ben, Thomas en Ward wensen iedereen prettige feestdagen toe!</p><p><br></p><p><strong>HOHOHO</strong></p><p><br></p><p><em>xoxo</em></p><p><br></p><p><em><span class=\"ql-cursor\">\ufeff</span></em><img src=\"https://i2.wp.com/consciouscat.net/wp-content/uploads/2015/12/Christmas-cats-e1450783361146.jpg?resize=550%2C413&amp;ssl=1\" alt=\"Image result for christmas cat\"></p>",
+                "datum": "2018-12-13T11:04:56.000Z",
+                "creator": {
+                    "id": 187,
+                    "email": "ben.de.boevere@student.howest.be",
+                    "firstname": "Ben",
+                    "lastname": "De Boevere",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-12-06T08:28:22.000Z",
+                    "creatorId": 105,
+                    "nationalRegisterNumber": "84346846846",
+                    "userid": null,
+                    "teacher": null,
+                    "student": null,
+                    "staff": null,
+                    "roles": [
+                        "ADMIN"
+                    ],
+                    "role": "ADMIN"
+                }
+            },
+            {
+                "id": 211,
+                "creatorId": 105,
+                "titel": "deadline rapport kerst",
+                "tekst": "<p>13/12/2018</p>",
+                "datum": "2018-12-13T12:17:20.000Z",
+                "creator": {
+                    "id": 105,
+                    "email": "admin@test.test",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-05T17:16:51.000Z",
+                    "creatorId": null,
+                    "nationalRegisterNumber": "93051822361",
+                    "userid": 105,
+                    "teacher": null,
+                    "student": null,
+                    "staff": 0,
+                    "roles": [
+                        "ADMIN"
+                    ],
+                    "role": "ADMIN"
+                }
+            },
+            {
+                "id": 225,
+                "creatorId": 105,
+                "titel": "Hello world!",
+                "tekst": "<p><strong>Hello world!</strong></p>",
+                "datum": "2018-12-17T14:48:29.000Z",
+                "creator": {
+                    "id": 105,
+                    "email": "admin@test.test",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-05T17:16:51.000Z",
+                    "creatorId": null,
+                    "nationalRegisterNumber": "93051822361",
+                    "userid": 105,
+                    "teacher": null,
+                    "student": null,
+                    "staff": 0,
+                    "roles": [
+                        "ADMIN"
+                    ],
+                    "role": "ADMIN"
+                }
+            }
+        ]
+        
+### Maak een nieuwe melding [POST]
+
++ Request (application/json)
+
+        {
+            "titel": "Test melding",
+            "tekst": "Dit is de tekst van deze melding."
+        }
+
++ Response 201 
+
+## Melding [/meldingen/{id}]
+
++ Parameters
+    + id (number) - ID van de melding
+
+### Verwijder een melding [DELETE]
+
++ Response 200
+
+## Evaluations [/evaluations]
+
+### Lijst alle evaluaties op [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 35,
+                "startdate": "2018-12-12T23:00:00.000Z",
+                "enddate": "2018-12-12T23:00:00.000Z",
+                "studentid": 186,
+                "teacherid": 105,
+                "moduleid": 56,
+                "periodname": "Kerst"
+            },
+            {
+                "id": 36,
+                "startdate": "2018-12-12T23:00:00.000Z",
+                "enddate": "2018-12-16T23:00:00.000Z",
+                "studentid": 107,
+                "teacherid": 105,
+                "moduleid": 56,
+                "periodname": "Pasen"
+            },
+            {
+                "id": 39,
+                "startdate": "2018-08-31T22:00:00.000Z",
+                "enddate": "2018-12-16T23:00:00.000Z",
+                "studentid": 186,
+                "teacherid": 105,
+                "moduleid": 56,
+                "periodname": "Kerst"
+            },
+            {
+                "id": 43,
+                "startdate": "2018-12-16T23:00:00.000Z",
+                "enddate": "2018-12-16T23:00:00.000Z",
+                "studentid": 183,
+                "teacherid": 105,
+                "moduleid": 52,
+                "periodname": "Pasen"
+            },
+            {
+                "id": 44,
+                "startdate": "2018-12-16T23:00:00.000Z",
+                "enddate": "2018-12-16T23:00:00.000Z",
+                "studentid": 107,
+                "teacherid": 105,
+                "moduleid": 56,
+                "periodname": "Pasen"
+            },
+            {
+                "id": 45,
+                "startdate": "2018-12-16T23:00:00.000Z",
+                "enddate": "2018-12-16T23:00:00.000Z",
+                "studentid": 155,
+                "teacherid": 105,
+                "moduleid": 54,
+                "periodname": "Pasen"
+            },
+            {
+                "id": 46,
+                "startdate": "2018-12-16T23:00:00.000Z",
+                "enddate": null,
+                "studentid": 153,
+                "teacherid": 106,
+                "moduleid": 53,
+                "periodname": "Pasen"
+            },
+            {
+                "id": 47,
+                "startdate": "2018-12-16T23:00:00.000Z",
+                "enddate": "2018-12-16T23:00:00.000Z",
+                "studentid": 183,
+                "teacherid": 106,
+                "moduleid": 54,
+                "periodname": "Pasen"
+            }
+        ]
+        
+### Maak een nieuwe evaluatie [POST]
+
++ Request (application/json)
+
+        {
+            "studentid": 107,
+            "moduleid": 52,
+            "startdate": "2018-11-06",
+            "periodname": "Kerst"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "evaluationsheetid": 61
+        }
+        
+## Evaluatie [/evaluations/{id}]
+
++ Parameters
+    + id (number) - ID van de evaluatie
+
+### Vraag een evaluatie op [GET]
+
++ Response 200 (application/json)
+
+            {
+                "id": 61,
+                "startdate": "2018-11-05T23:00:00.000Z",
+                "enddate": null,
+                "studentid": 107,
+                "teacherid": 105,
+                "moduleid": 52,
+                "periodname": "Kerst",
+                "student": {
+                    "id": 107,
+                    "email": "student@test.test",
+                    "firstname": "Bob",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-06T12:11:12.000Z",
+                    "creatorId": 105,
+                    "nationalRegisterNumber": "63051822369",
+                    "userid": null,
+                    "teacher": null,
+                    "admin": null,
+                    "staff": null,
+                    "roles": [
+                        "STUDENT"
+                    ],
+                    "role": "STUDENT"
+                },
+                "teacher": {
+                    "id": 105,
+                    "email": "admin@test.test",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-05T17:16:51.000Z",
+                    "creatorId": null,
+                    "nationalRegisterNumber": "93051822361",
+                    "userid": 105,
+                    "teacher": null,
+                    "student": null,
+                    "staff": 0,
+                    "roles": [
+                        "ADMIN"
+                    ],
+                    "role": "ADMIN"
+                },
+                "scores": [],
+                "module": {
+                    "id": 52,
+                    "name": "Basket",
+                    "active": 0,
+                    "creatorId": 105,
+                    "disciplineid": 24,
+                    "creation": "2018-12-18T14:18:11.000Z",
+                    "domains": [
+                        {
+                            "id": 19,
+                            "moduleid": 52,
+                            "name": "Lay-ups scoren",
+                            "active": 1,
+                            "creatorId": 105,
+                            "creation": "2018-11-16T16:20:52.000Z",
+                            "goals": [
+                                {
+                                    "id": 29,
+                                    "name": "3 lay-ups scoren van de 5",
+                                    "domainid": 19,
+                                    "creation": "2018-11-16T16:21:39.000Z",
+                                    "active": 1,
+                                    "creatorId": 105,
+                                    "criteria": [
+                                        {
+                                            "id": 17,
+                                            "name": "de leerling zet twee stappen voor hij springt",
+                                            "weight": 1,
+                                            "goalid": 29,
+                                            "creation": "2018-11-16T16:22:06.000Z",
+                                            "creatorId": 105,
+                                            "active": 0
+                                        },
+                                        {
+                                            "id": 24,
+                                            "name": "de leerling kan zijn stress onder controle houden",
+                                            "weight": 1,
+                                            "goalid": 29,
+                                            "creation": "2018-11-16T16:29:12.000Z",
+                                            "creatorId": 105,
+                                            "active": 0
+                                        },
+                                        {
+                                            "id": 174,
+                                            "name": "Test criterion update",
+                                            "weight": 1,
+                                            "goalid": 29,
+                                            "creation": "2018-12-19T07:54:16.000Z",
+                                            "creatorId": 105,
+                                            "active": 0
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 30,
+                                    "name": "lay-up via twee kanten",
+                                    "domainid": 19,
+                                    "creation": "2018-11-16T16:22:59.000Z",
+                                    "active": 1,
+                                    "creatorId": 105,
+                                    "criteria": [
+                                        {
+                                            "id": 18,
+                                            "name": "de leerling kan zowel een lay-up scoren via rechts al links",
+                                            "weight": 1,
+                                            "goalid": 30,
+                                            "creation": "2018-11-16T16:23:30.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 31,
+                                    "name": "Correcte techniek",
+                                    "domainid": 19,
+                                    "creation": "2018-11-16T16:24:20.000Z",
+                                    "active": 0,
+                                    "creatorId": 105,
+                                    "criteria": [
+                                        {
+                                            "id": 19,
+                                            "name": "de leerlingen gebruikt het twee-passen ritme",
+                                            "weight": 1,
+                                            "goalid": 31,
+                                            "creation": "2018-11-16T16:25:12.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        },
+                                        {
+                                            "id": 20,
+                                            "name": "de leerling blijft links van het bord als hij links aanloopt",
+                                            "weight": 1,
+                                            "goalid": 31,
+                                            "creation": "2018-11-16T16:25:36.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        },
+                                        {
+                                            "id": 21,
+                                            "name": "de leerling kan zijn techniek beschrijven ",
+                                            "weight": 1,
+                                            "goalid": 31,
+                                            "creation": "2018-11-16T16:26:41.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 135,
+                                    "name": "Test doelstelling updated",
+                                    "domainid": 19,
+                                    "creation": "2018-12-18T14:22:24.000Z",
+                                    "active": 0,
+                                    "creatorId": 105,
+                                    "criteria": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 20,
+                            "moduleid": 52,
+                            "name": "Driepunters",
+                            "active": 0,
+                            "creatorId": 105,
+                            "creation": "2018-11-16T16:27:14.000Z",
+                            "goals": [
+                                {
+                                    "id": 32,
+                                    "name": "3 driepunters scoren van de 6",
+                                    "domainid": 20,
+                                    "creation": "2018-11-16T16:27:38.000Z",
+                                    "active": 1,
+                                    "creatorId": 105,
+                                    "criteria": [
+                                        {
+                                            "id": 25,
+                                            "name": "de leerling houdt zijn stress onder controleren",
+                                            "weight": 1,
+                                            "goalid": 32,
+                                            "creation": "2018-11-16T16:29:25.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 33,
+                                    "name": "Correcte techniek",
+                                    "domainid": 20,
+                                    "creation": "2018-11-16T16:27:56.000Z",
+                                    "active": 1,
+                                    "creatorId": 105,
+                                    "criteria": [
+                                        {
+                                            "id": 22,
+                                            "name": "De leerling sprint lichtjes omhoog",
+                                            "weight": 1,
+                                            "goalid": 33,
+                                            "creation": "2018-11-16T16:28:12.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        },
+                                        {
+                                            "id": 23,
+                                            "name": "de leerling heeft geen balansproblemen bij het terecht komen",
+                                            "weight": 1,
+                                            "goalid": 33,
+                                            "creation": "2018-11-16T16:28:42.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 34,
+                                    "name": "driepunters van links, rechts en midden",
+                                    "domainid": 20,
+                                    "creation": "2018-11-16T16:30:00.000Z",
+                                    "active": 1,
+                                    "creatorId": 105,
+                                    "criteria": [
+                                        {
+                                            "id": 26,
+                                            "name": "de leerling scoort van elke richting",
+                                            "weight": 1,
+                                            "goalid": 34,
+                                            "creation": "2018-11-16T16:30:24.000Z",
+                                            "creatorId": 105,
+                                            "active": 1
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": 101,
+                            "moduleid": 52,
+                            "name": "Test domain update",
+                            "active": 0,
+                            "creatorId": 105,
+                            "creation": "2018-12-18T14:31:27.000Z",
+                            "goals": []
+                        }
+                    ]
+                },
+                "discipline": {
+                    "id": 24,
+                    "name": "Leraar lichamelijke opvoeding",
+                    "active": 1,
+                    "creatorId": 105
+                }
+            }
+            
+### Verwijder een evaluatie [DELETE]
+
++ Response 200
+
+## Rapporten Collectie [/reports]
+
+### Lijst alle rapporten op [GET]
+
++ Response 200 (application/json)
+
+        {
+          "total": 7,
+          "perPage": 10000000000,
+          "lastPage": 1,
+          "page": 1,
+          "items": [
+            {
+              "id": "5726607939469312",
+              "evaluationsheetid": 47,
+              "creation": "2018-12-17T20:35:47.000Z",
+              "open": 0,
+              "discipline": {
+                "id": 24,
+                "name": "Leraar lichamelijke opvoeding"
+              },
+              "module": {
+                "id": 54,
+                "name": "Ping pong"
+              },
+              "student": {
+                "id": 183,
+                "firstname": "Thomas",
+                "lastname": "Billietje"
+              },
+              "teacher": {
+                "id": 106,
+                "firstname": "Anna",
+                "lastname": "Doe"
+              }
+            },
+            {
+              "id": "5676533754626048",
+              "evaluationsheetid": 45,
+              "creation": "2018-12-17T20:07:51.000Z",
+              "open": 0,
+              "discipline": {
+                "id": 24,
+                "name": "Leraar lichamelijke opvoeding"
+              },
+              "module": {
+                "id": 54,
+                "name": "Ping pong"
+              },
+              "student": {
+                "id": 155,
+                "firstname": "Bert",
+                "lastname": "Decloedt"
+              },
+              "teacher": {
+                "id": 105,
+                "firstname": "John",
+                "lastname": "Doe"
+              }
+            },
+            {
+              "id": "5668294832947200",
+              "evaluationsheetid": 44,
+              "creation": "2018-12-17T20:07:34.000Z",
+              "open": 0,
+              "discipline": {
+                "id": 26,
+                "name": "PAV"
+              },
+              "module": {
+                "id": 56,
+                "name": "Algemeen"
+              },
+              "student": {
+                "id": 107,
+                "firstname": "Bob",
+                "lastname": "Doe"
+              },
+              "teacher": {
+                "id": 105,
+                "firstname": "John",
+                "lastname": "Doe"
+              }
+            },
+            {
+              "id": "5660980839186432",
+              "evaluationsheetid": 43,
+              "creation": "2018-12-17T19:43:54.000Z",
+              "open": 0,
+              "discipline": {
+                "id": 24,
+                "name": "Leraar lichamelijke opvoeding"
+              },
+              "module": {
+                "id": 52,
+                "name": "Basket"
+              },
+              "student": {
+                "id": 183,
+                "firstname": "Thomas",
+                "lastname": "Billietje"
+              },
+              "teacher": {
+                "id": 105,
+                "firstname": "John",
+                "lastname": "Doe"
+              }
+            },
+            {
+              "id": "5741031244955648",
+              "evaluationsheetid": 36,
+              "creation": "2018-12-17T19:43:05.000Z",
+              "open": 0,
+              "discipline": {
+                "id": 26,
+                "name": "PAV"
+              },
+              "module": {
+                "id": 56,
+                "name": "Algemeen"
+              },
+              "student": {
+                "id": 107,
+                "firstname": "Bob",
+                "lastname": "Doe"
+              },
+              "teacher": {
+                "id": 105,
+                "firstname": "John",
+                "lastname": "Doe"
+              }
+            },
+            {
+              "id": "5747286126624768",
+              "evaluationsheetid": 39,
+              "creation": "2018-12-17T11:38:56.000Z",
+              "open": 1,
+              "discipline": {
+                "id": 26,
+                "name": "PAV"
+              },
+              "module": {
+                "id": 56,
+                "name": "Algemeen"
+              },
+              "student": {
+                "id": 186,
+                "firstname": "Ward",
+                "lastname": "Vandendriessche"
+              },
+              "teacher": {
+                "id": 105,
+                "firstname": "John",
+                "lastname": "Doe"
+              }
+            },
+            {
+              "id": "5715999101812736",
+              "evaluationsheetid": 35,
+              "creation": "2018-12-13T15:34:19.000Z",
+              "open": 0,
+              "discipline": {
+                "id": 26,
+                "name": "PAV"
+              },
+              "module": {
+                "id": 56,
+                "name": "Algemeen"
+              },
+              "student": {
+                "id": 186,
+                "firstname": "Ward",
+                "lastname": "Vandendriessche"
+              },
+              "teacher": {
+                "id": 105,
+                "firstname": "John",
+                "lastname": "Doe"
+              }
+            }
+          ]
+        }
+        
+### Voeg een rapport toe [POST]
+
++ Request (application/json)
+
+        {
+            "evaluationsheetid": 35
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "reportid": "5651124426113024"
+            }
+        
+
+## Gebruikers Collectie [/users]
+
+### Lijst alle gebruikers op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "total": 16,
+            "perPage": 10000000000,
+            "lastPage": 1,
+            "page": 1,
+            "items": [
+                {
+                    "id": 105,
+                    "email": "admin@test.test",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-05T17:16:51.000Z",
+                    "creatorId": null,
+                    "nationalRegisterNumber": "93051822361",
+                    "userid": 105,
+                    "teacher": null,
+                    "student": null,
+                    "staff": 0,
+                    "roles": [
+                        "ADMIN"
+                    ],
+                    "role": "ADMIN"
+                },
+                {
+                    "id": 108,
+                    "email": "staff@test.test",
+                    "firstname": "Peter",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-06T12:12:24.000Z",
+                    "creatorId": 105,
+                    "nationalRegisterNumber": "23051822367",
+                    "userid": 108,
+                    "teacher": 0,
+                    "student": 0,
+                    "admin": 0,
+                    "roles": [
+                        "STAFF"
+                    ],
+                    "role": "STAFF"
+                },
+                {
+                    "id": 188,
+                    "email": "testgebruiker@hotmail.com",
+                    "firstname": "Perso",
+                    "lastname": "Neel",
+                    "gender": "F",
+                    "status": "DISABLED",
+                    "creation": "2018-12-06T08:32:47.000Z",
+                    "creatorId": 187,
+                    "nationalRegisterNumber": "43813813893",
+                    "userid": 188,
+                    "teacher": null,
+                    "student": null,
+                    "admin": null,
+                    "roles": [
+                        "STAFF"
+                    ],
+                    "role": "STAFF"
+                }
+            ]
+        }
+
+### Voeg een nieuwe gebruiker toe [POST]
+
++ Request (application/json)
+
+        {
+            "firstname": "Fred",
+            "lastname": "Billiet",
+            "email": "testemailFred@gmail.com",
+            "gender": "F",
+            "roles": ["ADMIN"],
+            "nationalRegisterNumber": "13751828367"
+        }
+
++ Response 200
+
+## Huidige Gebruiker [/users/current]
+
+### Vraag de huidige gebruiker op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "id": 105,
+            "email": "admin@test.test",
+            "firstname": "John",
+            "lastname": "Doe",
+            "gender": "M",
+            "status": "ACTIVE",
+            "creation": "2018-11-05T17:16:51.000Z",
+            "creatorId": null,
+            "nationalRegisterNumber": "93051822361",
+            "userid": 105,
+            "teacher": null,
+            "student": null,
+            "staff": 0,
+            "roles": [
+                "ADMIN"
+            ],
+            "role": "ADMIN"
+        }
+
+## Gebruiker [/users/{id}]
+
++ Parameters
+    + id (number) - ID van de gebruiker
+
+### Vraag een gebruiker op [GET]
+
++ Response 200 (application/json)
+
+        {
+            "id": 105,
+            "email": "admin@test.test",
+            "firstname": "John",
+            "lastname": "Doe",
+            "gender": "M",
+            "status": "ACTIVE",
+            "creation": "2018-11-05T17:16:51.000Z",
+            "creatorId": null,
+            "nationalRegisterNumber": "93051822361",
+            "userid": 105,
+            "teacher": null,
+            "student": null,
+            "staff": 0,
+            "roles": [
+                "ADMIN"
+            ],
+            "role": "ADMIN"
+        }
+
+### Pas een gebruiker aan [PUT]
+
++ Request (application/json)
+
+        {
+            "firstname": "Fred",
+            "lastname": "Debakker",
+            "email": "testemailfred@gmail.com",
+            "gender": "F",
+            "roles": ["ADMIN"],
+            "nationalRegisterNumber": "13051828367"
+        }
+
++ Response 200
+
+## Studenten CSV [/users/csv]
+
+### Importeren [POST]
+
++ Request (multipart/form-data; boundary=---BOUNDARY)
+
+        -----BOUNDARY
+        Content-Disposition: form-data; filename="leerlingen.csv"
+        Content-Type: text/csv
+        -----BOUNDARY
+
++ Response 200
+
+## Authenticatie login [/auth/login]
+
+### Gebruiker aanmelden [POST]
+
++ Request (application/json)
+
+        {
+            "email": "admin@test.test",
+            "password": "test"
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+                {
+                    "id": 105,
+                    "email": "admin@test.test",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "gender": "M",
+                    "status": "ACTIVE",
+                    "creation": "2018-11-05T17:16:51.000Z",
+                    "creatorId": null,
+                    "nationalRegisterNumber": "93051822361",
+                    "userid": 105,
+                    "teacher": null,
+                    "student": null,
+                    "staff": 0,
+                    "roles": [
+                        "ADMIN"
+                    ],
+                    "role": "ADMIN"
+                }
+                
+## Authenticatie logout [/auth/logout]
+
+### Gebruiker afmelden [POST]
+
++ Response 200 
+
+## Authenticatie vergeten [/auth/forgot]
+
+### Gebruiker passwoord terugkrijgen [POST]
+
++ Request (application/json)
+
+        {
+            "email": "teacher@test.test"
+        }
+
++ Response 200
+
+## Token [/auth/token/{token}]
+
+### Token opvragen [GET]
+
++ Response 200 (application/json)
+
+        {
+            "userid": 105,
+            "tokenTimestamp": "2018-12-13T12:00:53.000Z",
+            "token": "00174be80dc622bc6cdd084f5c35a186ad15a6806dfaca04beda695f07fcf8eb",
+            "user": {
+                "id": 105,
+                "email": "admin@test.test",
+                "firstname": "John",
+                "lastname": "Doe",
+                "gender": "F",
+                "status": "ACTIVE",
+                "creation": "2018-11-05T17:16:51.000Z",
+                "creatorId": null,
+                "nationalRegisterNumber": "13051826567",
+                "userid": 105,
+                "teacher": null,
+                "student": null,
+                "staff": 0,
+                "roles": [
+                    "ADMIN"
+                ],
+                "role": "ADMIN"
+            },
+            "type": "PASSWORD_RESET"
+        }
